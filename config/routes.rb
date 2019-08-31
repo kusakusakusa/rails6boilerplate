@@ -4,7 +4,8 @@ Rails.application.routes.draw do
   apipie
 
   namespace :cms do
-    root :to => 'application#index'
+    root to: 'application#index'
+    resources :posts
   end
 
   devise_for :admin_users,

@@ -36,3 +36,9 @@ jwt:
   secret: <MY_VALUE>
 ```
 The `jwt[:secret]` is used to create secrets.
+
+Remove `post` model and `cms/posts_controller` by running these commands:
+```
+rails d scaffold post
+rails d controller cms::posts
+```

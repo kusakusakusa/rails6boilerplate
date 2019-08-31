@@ -1,0 +1,7 @@
+<p id="notice"><%= notice %></p>
+
+<p><%= @cms_post.title %></p>
+<p><%= @cms_post.publish_date %></p>
+
+<%= link_to 'Edit', edit_cms_post_path(@cms_post) %> |
+<%= link_to 'Back', cms_posts_path %>

@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<% flash.each do |key, value| %>
+  <%= content_tag :div, value, class: "flash #{key}" %>
+<% end %>
+
+<h1>Cms Posts</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @cms_posts.each do |cms_post| %>
+      <tr>
+        <td><%= cms_post.title %>
+        <td><%= cms_post.publish_date %>
+        <td><%= link_to 'Show', cms_post_path(cms_post) %></td>
+        <td><%= link_to 'Edit', edit_cms_post_path(cms_post) %></td>
+        <td><%= link_to 'Destroy', cms_post_path(cms_post), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Cms Post', new_cms_post_path %>
