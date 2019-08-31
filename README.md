@@ -22,4 +22,17 @@ These steps are taken when setting up the project. It affects only the first com
 
 ## Models
 
-User model should use devise gem and jwt. It allows only api access.
+User model should use devise and devise-jwt. It allows only api access. These are the steps taken:
+
+1. Run `rails generate devise:install`
+
+## Usage
+
+Add password to `database.yml` for your root user to authenticate with the database.
+
+Run `EDITOR=vim rails credentials:edit` to generate `config/master.key` file and `config/credentials.yml.enc` file too. Make sure to add the key:
+```
+jwt:
+  secret: <MY_VALUE>
+```
+The `jwt[:secret]` is used to create secrets.
