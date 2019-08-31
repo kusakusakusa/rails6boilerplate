@@ -3,6 +3,16 @@
 Rails.application.routes.draw do
   apipie
 
+  namespace :cms do
+    root :to => 'application#index'
+  end
+
+  devise_for :admin_users,
+             path: '',
+             path_names: {
+               sign_in: 'cms/login'
+             }
+
   scope '/api' do
     scope '/v1' do
       devise_for :users,
