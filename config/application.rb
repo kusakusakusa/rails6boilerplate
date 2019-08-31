@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require 'rails/all'
@@ -16,16 +18,17 @@ module Rails6boilerplate
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
+    # allow Authorization header to be sent to client
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
         resource(
           '*',
           headers: :any,
-          expose: ["Authorization"],
-          methods: [:get, :patch, :put, :delete, :post, :options, :show]
+          expose: ['Authorization'],
+          methods: %i[get patch put delete post options show]
         )
       end
-   end
+    end
   end
 end
