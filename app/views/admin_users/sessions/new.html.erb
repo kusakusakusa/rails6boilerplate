@@ -1,30 +1,30 @@
-<h2>Log in</h2>
-
 <% flash.each do |key, value| %>
   <%= content_tag :div, value, class: "flash #{key}" %>
 <% end %>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+<div class="text-center">
+  <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+</div>
+<%= form_for resource, as: resource_name, url: session_path(resource_name), class: "user" do |f| %>
+  <div class="form-group">
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-user", "aria-describedby": "emailHelp", placeholder: "Enter Email Address..."%>
   </div>
-  
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
+  <div class="form-group">
+    <%= f.password_field :password, autocomplete: "current-password", class: "form-control form-control-user", placeholder: "Password" %>
   </div>
 
   <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+    <div class="form-group">
+      <div class="custom-control custom-checkbox small">
+        <%= f.check_box :remember_me, class: "custom-control-input", id: "rememberMeCheck" %>
+        <label class="custom-control-label" for="rememberMeCheck">Remember Me</label>
+      </div>
     </div>
   <% end %>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
+  <%= f.submit "Login", class: "btn btn-primary btn-user btn-block" %>
 <% end %>
+
+<hr>
 
 <%= render "admin_users/shared/links" %>
