@@ -4,9 +4,8 @@ A rails 6 boilerplate to get things started quickly on future pojects.
 
 The project will bootstrap
 * user models with non-social register, login and logout apis (logout for removing mobile notification token since jwt technically dont need a logout function in backend)
-* admin user models with non-social login web pages at the front of a CMS
+* admin user models with non-social login web pages at the front of a CMS, following the [SB2 Admin template](https://startbootstrap.com/themes/sb-admin-2/).
 * a default post model for demo purpose, which should be removed on start up.
-
 
 ## Setup
 

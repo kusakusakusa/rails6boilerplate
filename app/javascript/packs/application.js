@@ -8,7 +8,9 @@ require("turbolinks").start()
 require("@rails/activestorage").start()
 require("channels")
 require("jquery")
+require("chart.js")
 require("bootstrap")
+require('jquery.easing')(jQuery)
 require("./scss/bootstrap.scss")
 
 // Uncomment to copy all static images under ../images to the output folder and reference
