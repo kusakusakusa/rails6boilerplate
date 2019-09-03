@@ -41,3 +41,9 @@ Remove `post` model and `cms/posts_controller` by running these commands:
 rails d scaffold post
 rails d controller cms::posts
 ```
+
+## Notes
+
+### datatables
+
+Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6d6e74e95#file-jquery-datatables-webpack).
