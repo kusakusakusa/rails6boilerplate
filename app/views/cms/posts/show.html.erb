@@ -1,7 +1,26 @@
-<p id="notice"><%= notice %></p>
-
-<p><%= @cms_post.title %></p>
-<p><%= @cms_post.publish_date %></p>
-
-<%= link_to 'Edit', edit_cms_post_path(@cms_post) %> |
-<%= link_to 'Back', cms_posts_path %>
+<div class="col-xl-12">
+  <div class="card shadow mb-4">
+    <!-- Card Header -->
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Post <%= @cms_post.id %>
+        <div class="float-right">
+          <%= link_to edit_cms_post_path(@cms_post) do %>
+            <i class="fas fa-fw fa-edit"></i>
+          <% end %>
+          <%= link_to cms_post_path(@cms_post), method: :delete, data: { confirm: 'Are you sure?' } do %>
+            <i class="fas fa-fw fa-trash-alt"></i>
+          <% end %>
+        </div>
+      </h6>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      <h4 class="small font-weight-bold">ID</h4>
+      <p><%= @cms_post.id %></p>
+      <h4 class="small font-weight-bold">Title</h4>
+      <p><%= @cms_post.title %></p>
+      <h4 class="small font-weight-bold">Publish Date</h4>
+      <p><%= @cms_post.publish_date.strftime('%b %d, %Y') %></p>
+    </div>
+  </div>
+</div>

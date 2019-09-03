@@ -1,4 +1,4 @@
-class Cms::PostsController < ApplicationController
+class Cms::PostsController < Cms::BaseController
   rescue_from ActiveRecord::RecordNotFound, with: :handle_record_not_found
 
   def index
@@ -23,7 +23,7 @@ class Cms::PostsController < ApplicationController
     if @cms_post.errors.empty?
       redirect_to cms_posts_path
     else
-      flash[:error] = @cms_post.errors.full_messages.to_sentence
+      flash[:danger] = @cms_post.errors.full_messages.to_sentence
       render :new
     end
   end
@@ -46,7 +46,7 @@ class Cms::PostsController < ApplicationController
     if @cms_post.errors.empty?
       flash[:success] = "#{@cms_post.title} successfully deleted!"
     else
-      flash[:error] = @cms_post.errors.full_messages.to_sentence
+      flash[:danger] = @cms_post.errors.full_messages.to_sentence
     end
     redirect_to cms_posts_path
   end
@@ -54,7 +54,7 @@ class Cms::PostsController < ApplicationController
   private
 
   def handle_record_not_found
-    flash[:error] = 'Post not found!'
+    flash[:danger] = 'Post not found!'
     redirect_to cms_posts_path
   end
 
