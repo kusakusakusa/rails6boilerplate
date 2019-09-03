@@ -64,5 +64,4 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 # authentication
 gem 'apipie-rails', '~> 0.5.16'
 gem 'devise', '~> 4.7.0'
-gem 'devise-jwt', '~> 0.6.0'
 gem 'rack-cors', '~> 1.0.3'
