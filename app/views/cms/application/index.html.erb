@@ -279,3 +279,8 @@
   </div>
 
 </div>
+
+<% content_for :javascript do %>
+  <%= javascript_pack_tag 'custom/chart-area-demo' %>
+  <%= javascript_pack_tag 'custom/chart-pie-demo' %>
+<% end %>
