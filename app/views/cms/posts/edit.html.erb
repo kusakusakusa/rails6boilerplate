@@ -1,6 +1,18 @@
-<h1>Editing Cms Post</h1>
-
-<%= render 'form', cms_post: @cms_post %>
-
-<%= link_to 'Show', cms_post_path(@cms_post) %> |
-<%= link_to 'Back', cms_posts_path %>
+<div class="col-xl-12">
+  <div class="card shadow mb-4">
+    <!-- Card Header -->
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Editing Post <%= @cms_post.id %>
+        <div class="float-right">
+          <%= link_to cms_post_path(@cms_post) do %>
+            <i class="fas fa-fw fa-info-circle"></i>
+          <% end %>
+        </div>
+      </h6>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      <%= render 'form', cms_post: @cms_post %>
+    </div>
+  </div>
+</div>

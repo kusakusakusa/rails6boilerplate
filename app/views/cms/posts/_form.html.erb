@@ -1,6 +1,6 @@
-<%= form_with(model: cms_post, url: cms_post.id ? cms_post_path(cms_post) : cms_posts_path, local: true) do |form| %>
+<%= form_with(model: cms_post, url: cms_post.new_record? ? cms_posts_path : cms_post_path(cms_post), local: true) do |form| %>
   <% if cms_post.errors.any? %>
-    <div id="error_explanation">
+    <div class="alert alert-dismissible alert-danger">
       <h2><%= pluralize(cms_post.errors.count, "error") %> prohibited this cms_post from being saved:</h2>
 
       <ul>
@@ -11,16 +11,16 @@
     </div>
   <% end %>
 
-  <div class="field">
-    <%= form.text_field :title, placeholder: "Title" %>
+  <div class="form-group">
+    <%= form.text_field :title, placeholder: "Title", class: 'form-control' %>
   </div>
 
-  <div class="field">
-    <%= form.text_field :publish_date, placeholder: "Publish Date", data: { behavior: "flatpickr" } %>
+  <div class="form-group">
+    <%= form.text_field :publish_date, placeholder: "Publish Date", data: { behavior: "flatpickr" }, class: 'form-control' %>
   </div>
 
   <div class="actions">
-    <%= form.submit %>
+    <%= form.submit class: "btn btn-primary" %>
   </div>
 
 <% end %>
