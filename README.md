@@ -21,11 +21,30 @@ These steps are taken when setting up the project. It affects only the first com
 
 ## Models
 
-User model should use devise and devise-jwt. It allows only api access. These are the steps taken:
+### User
+
+User model use `devise` with OAuth provider `doorkeeper` and `doorkeeper-jwt` to allow refresh token and for users stay logged in. Consider `devise-jwt` if you want to expire your users' sessions. The decision to use `doorkeeper` instead of devise-jwt is due to the requirement for permanent logged in session in most of the applications that I need to build and [this comment from the owner of `devise-jwt` gem](https://github.com/waiting-for-dev/devise-jwt/issues/7#issuecomment-322115576).
+
+These are the steps taken:
 
 1. Run `rails generate devise:install`
+2. Run `rails generate devise user`
+3. Follow this [guide](https://doorkeeper.gitbook.io/guides/ruby-on-rails/getting-started) to setup doorkeeper with devise
+4. Follow this [guide](https://github.com/doorkeeper-gem/doorkeeper-jwt) to add the jwt support for doorkeeper
+
+
+
+3. Add `:jwt_authenticatable` and `jwt_revocation_strategy: JwtBlacklist` to model file
+4. Run `rails g model jwt_blacklist jti:string:index exp:datetime`
+5. Add `include Devise::JWT::RevocationStrategies::Blacklist` and `self.table_name = 'jwt_blacklists'` to `JwtBlacklist` model file.
+
+### Admin User
+
+Admin user will authenticate without using `devise-jwt`. The only interaction admin users will have with this app is via a browser to work on the CMS. That implies the use of cookies instead of jwt.
 
 ## Usage
+
+### Credentials
 
 Add password to `database.yml` for your root user to authenticate with the database.
 
@@ -36,11 +55,22 @@ jwt:
 ```
 The `jwt[:secret]` is used to create secrets.
 
+### Doorkeeper
+
+With reference to [this guide](https://naturaily.com/blog/api-authentication-devise-doorkeeper-setup), the `oauth_applications` table and all its associated indices and associations are removed. The `t.references :application, null: false` is also changed to  `t.integer :application_id`. `previous_refresh_token` column is also removed.
+
+In the `config/routes.rb` file, `token_info` controller is skipped.
+
+[API mode](https://doorkeeper.gitbook.io/guides/ruby-on-rails/api-mode) is established and authorization request are removed and `doorkeeper` applications views are not rendered.
+
+### Models
+
 Remove `post` model and `cms/posts_controller` by running these commands:
 ```
-rails d scaffold post
-rails d controller cms::posts
+rails d model post
+rails d scaffold cms::posts
 ```
+
 
 ## Notes
 

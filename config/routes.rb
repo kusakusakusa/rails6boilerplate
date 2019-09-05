@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  use_doorkeeper
+  use_doorkeeper scope: 'api/v1' do
+    skip_controllers :token_info
+    controllers tokens: 'api/v1/custom_tokens'
+  end
+
   apipie
 
   namespace :cms do
@@ -17,16 +21,17 @@ Rails.application.routes.draw do
 
   scope '/api' do
     scope '/v1' do
+      # another path exposed on apipie
+      post '/login', to: 'api/v1/custom_tokens#create'
+      get '/token', to: 'api/v1/custom_token_info#show'
+
+      # TODO update password
       devise_for :users,
                  path: '',
                  path_names: {
-                   sign_in: 'user/login',
-                   sign_out: 'user/logout',
-                   registration: 'user/signup',
-                   account_update: 'user/update'
+                   account_update: 'update'
                  },
                  controllers: {
-                   sessions: 'user_sessions',
                    registrations: 'user_registrations'
                  },
                  defaults: { format: :json }
