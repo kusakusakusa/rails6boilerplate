@@ -39,7 +39,7 @@ RSpec.describe 'Authentications', type: :request do
 
       post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(JSON.parse(response.body)['access_token']).to be_present
+      expect(response_body['access_token']).to be_present
     end
   end
 
@@ -53,8 +53,8 @@ RSpec.describe 'Authentications', type: :request do
 
       post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
 
-      @access_token = JSON.parse(response.body)['access_token']
-      @refresh_token = JSON.parse(response.body)['refresh_token']
+      @access_token = response_body['access_token']
+      @refresh_token = response_body['refresh_token']
     end
 
     scenario 'should fail with invalid refresh_token' do
@@ -78,7 +78,7 @@ RSpec.describe 'Authentications', type: :request do
 
       expect(response.status).to eq 200
 
-      expect(JSON.parse(response.body)['access_token']).to be_present
+      expect(response_body['access_token']).to be_present
     end
   end
 end

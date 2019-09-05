@@ -1,0 +1,4 @@
+en:
+  custom:
+    errors:
+      doorkeeper_unauthorized_nil: "Not authorized"

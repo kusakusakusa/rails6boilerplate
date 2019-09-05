@@ -19,6 +19,18 @@ These steps are taken when setting up the project. It affects only the first com
 6. Run `rails new rails6boilerplate --database=mysql --webpack=react` to setup project
 7. Run `brew install mysql@5.7` to install latest version of mysql-5.7. `mysql-8` will not be used.
 
+## API
+
+The api responses will contain `error_code` and `error_message`.
+
+The message will rely on I18n translation as much as possible, with `error_code` representing the key and `error_message` representing the message.
+
+Run the command below to generate example response and request for apipie
+```
+APIPIE_RECORD=can_be_anything_here rspec
+```
+
+
 ## Models
 
 ### User
