@@ -65,10 +65,12 @@ In the `config/routes.rb` file, `token_info` controller is skipped.
 
 ### Models
 
-Remove `post` model and `cms/posts_controller` by running these commands:
+Remove `post` model and `cms/posts_controller` by removing these files:
 ```
+TODO
 rails d model post
 rails d scaffold cms::posts
+rails d scaffold_controller api::v1::posts
 ```
 
 
