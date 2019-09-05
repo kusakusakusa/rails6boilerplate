@@ -1,0 +1,146 @@
+{
+  "Posts#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/posts",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": null,
+      "response_data": [
+        {
+          "id": 85,
+          "user_id": 366,
+          "title": "I wish I could go with you.",
+          "publish_date": "2018-12-29",
+          "created_at": "2019-09-05T16:49:52.965Z",
+          "updated_at": "2019-09-05T16:49:52.965Z"
+        }
+      ],
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "Sessions#create": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "luba.goyette@halvorson.info",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MiwianRpIjoiMTU1NTk4NjMtYzMzZC00ZTVlLTk4NDUtNTQ4NzdiZjQ0ZDYxIiwidXNlciI6eyJpZCI6MzY2LCJlbWFpbCI6Imx1YmEuZ295ZXR0ZUBoYWx2b3Jzb24uaW5mbyJ9fQ.VfDMtaGKXzr-vt1RCLXOqeiiCaBFI3_vwfRTa5W6sEFTmvLKiCe7LaZy-7sYFK2s_ZbMx-PIaciMI3CTwu0gTQ",
+        "token_type": "Bearer",
+        "expires_in": 7199,
+        "refresh_token": "2Ca_kRL5q-IG96V80jwoKBOJRS2gozUsEP90QqASzp0",
+        "created_at": 1567702192
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "anglea_orn@streichmayer.net",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MywianRpIjoiMjcxNTQ5MmItYjIwOS00MmUyLWJkMTItOThmMmJjMmNmMjZlIiwidXNlciI6eyJpZCI6MzY5LCJlbWFpbCI6ImFuZ2xlYV9vcm5Ac3RyZWljaG1heWVyLm5ldCJ9fQ.oN5dYd2NRHsLHYmsJm6rp2m0LSos7otBPOS9xco_sS6TmI5q7cj_sldNQVzTYByFNYHntG9eUk-de-z271Xz2A",
+        "token_type": "Bearer",
+        "expires_in": 7200,
+        "refresh_token": "JaxLrnznyQnEiluP3CuzvN6BSY-jbWnQjqBoXqvIo6U",
+        "created_at": 1567702193
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "alicia.waters@carroll.com",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MywianRpIjoiNDFiYTU3MTItOTdmNS00NGRkLTg2MmUtYWFhNzcxOTYxMjI0IiwidXNlciI6eyJpZCI6MzcwLCJlbWFpbCI6ImFsaWNpYS53YXRlcnNAY2Fycm9sbC5jb20ifX0.b51k0kBC1xW1E_Yw10HDLwDjF2KdHurxOyDHj8s-JKXl1n1HANJa1GPAr7O5kp8tlyeiKWledZMsrVPMm1CzWQ",
+        "token_type": "Bearer",
+        "expires_in": 7200,
+        "refresh_token": "xuALo7aSo1BkO4tpLRs1WBo28Ip5YvELwj-AgfxQAUc",
+        "created_at": 1567702193
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    }
+  ],
+  "Sessions#refresh": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/refresh",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "refresh_token": "xuALo7aSo1BkO4tpLRs1WBo28Ip5YvELwj-AgfxQAUc",
+        "grant_type": "refresh_token"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MywianRpIjoiMWIyNWI4MDctYjYzMS00NGIxLWJhZDctNGYyNWEwYmEwNTRkIiwidXNlciI6eyJpZCI6MzcwLCJlbWFpbCI6ImFsaWNpYS53YXRlcnNAY2Fycm9sbC5jb20ifX0.hYeZDC-fa-028237gm1Sg6i3FmkVObbahYg7pgmWijGol4qXTvcmA3dHTEe_p8Ueq8fMpkK7ew7F5lsWqcKkEA",
+        "token_type": "Bearer",
+        "expires_in": 7200,
+        "refresh_token": "mXaXW9n8XiQ0z7Z2BCLLn6z_nD1uWXB63GsPtH2JDEs",
+        "created_at": 1567702193
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "user_registrations#create": [
+    {
+      "verb": "POST",
+      "path": "/api/v1",
+      "versions": [
+
+      ],
+      "query": null,
+      "request_data": {
+        "user": {
+          "email": "test@test.com",
+          "password": "password"
+        }
+      },
+      "response_data": {
+        "id": 367,
+        "email": "test@test.com",
+        "created_at": "2019-09-05T16:49:52.916Z",
+        "updated_at": "2019-09-05T16:49:52.916Z"
+      },
+      "code": 201,
+      "show_in_doc": 0,
+      "recorded": true
+    }
+  ]
+}

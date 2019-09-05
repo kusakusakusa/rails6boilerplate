@@ -10,17 +10,6 @@ RSpec.describe 'Posts', type: :request do
     let(:post2) { create(:post, user: user2) }
 
     before :each do
-      reg_params = {
-        user: {
-          email: 'test@test.com',
-          password: 'password'
-        }
-      }
-
-      post user_registration_path, params: reg_params.to_json, headers: DEFAULT_HEADERS
-
-      cookies.delete "_#{Rails.application.class.module_parent_name.downcase}_session"
-
       login_params = {
         email: user1.email,
         password: '12345678',
@@ -33,7 +22,7 @@ RSpec.describe 'Posts', type: :request do
       @refresh_token = JSON.parse(response.body)['refresh_token']
     end
 
-    scenario 'should fail if there is not access token' do
+    scenario 'should fail if there is no access token' do
       get api_v1_posts_path
       expect(response).to have_http_status(401)
     end
@@ -48,7 +37,7 @@ RSpec.describe 'Posts', type: :request do
       expect(response).to have_http_status(200)
     end
 
-    scenario "should pass the user's posts" do
+    scenario "should pass the user's posts", :show_in_doc do
       post1 # lazyload
       post2 # lazyload
 

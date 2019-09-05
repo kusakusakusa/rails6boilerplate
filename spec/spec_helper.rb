@@ -22,6 +22,9 @@ DEFAULT_HEADERS = {
 }
 
 RSpec.configure do |config|
+  # apipie show_in_doc output recording
+  config.filter_run show_in_doc: true if ENV['APIPIE_RECORD']
+
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
