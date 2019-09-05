@@ -31,3 +31,42 @@ module Api
     end
   end
 end
+
+#### OVERWRITE ####
+# need add `response_code` and `response_message` to response for standardization
+
+module Doorkeeper
+  module OAuth
+    class ErrorResponse
+      # overwrite, do not use default error and error_description key
+      def body
+        {
+          response_code: name,
+          response_message: description,
+          state: state
+        }
+      end
+    end
+  end
+end
+
+module Doorkeeper
+  module OAuth
+    class TokenResponse
+      def body
+        {
+          # copied
+          "access_token" => token.plaintext_token,
+          "token_type" => token.token_type,
+          "expires_in" => token.expires_in_seconds,
+          "refresh_token" => token.plaintext_refresh_token,
+          "scope" => token.scopes_string,
+          "created_at" => token.created_at.to_i,
+          # custom
+          response_code: 'custom.success.default',
+          response_message: I18n.t('custom.success.default')
+        }.reject { |_, value| value.blank? }
+      end
+    end
+  end
+end

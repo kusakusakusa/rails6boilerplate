@@ -16,6 +16,8 @@ RSpec.describe 'Authentications', type: :request do
       post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
+      expect(response_body.response_code).to eq 'invalid_grant'
+      expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
     end
 
     scenario 'should fail with wrong password' do
@@ -28,6 +30,8 @@ RSpec.describe 'Authentications', type: :request do
       post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
+      expect(response_body.response_code).to eq 'invalid_grant'
+      expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
     end
 
     scenario 'should get token with correct credentials', :show_in_doc do
@@ -39,7 +43,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response_body['access_token']).to be_present
+      expect(response_body.access_token).to be_present
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t('custom.success.default')
     end
   end
 
@@ -66,6 +72,8 @@ RSpec.describe 'Authentications', type: :request do
       post api_v1_refresh_path, params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
+      expect(response_body.response_code).to eq 'invalid_grant'
+      expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
     end
 
     scenario 'should return new access_token with valid refresh_token', :show_in_doc do
@@ -78,7 +86,12 @@ RSpec.describe 'Authentications', type: :request do
 
       expect(response.status).to eq 200
 
-      expect(response_body['access_token']).to be_present
+      expect(response_body.access_token).to be_present
+      expect(response_body.refresh_token).to be_present
+      expect(response_body.access_token).not_to eq @access_token
+      expect(response_body.refresh_token).not_to eq @refresh_token
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t('custom.success.default')
     end
   end
 end
