@@ -27,15 +27,13 @@ ActiveRecord::Schema.define(version: 2019_09_05_013830) do
   create_table "oauth_access_tokens", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "resource_owner_id"
     t.integer "application_id"
-    t.string "token", null: false
-    t.string "refresh_token"
+    t.text "token", null: false
+    t.text "refresh_token", null: false
     t.integer "expires_in"
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
     t.string "scopes"
-    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
     t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
-    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
   end
 
   create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

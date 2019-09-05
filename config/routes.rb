@@ -21,7 +21,8 @@ Rails.application.routes.draw do
 
   scope '/api' do
     scope '/v1' do
-      # another path exposed on apipie
+      # duplicate paths to doorkeeper that is exposed on apipie
+      # front end will use this for pretty purpose
       post '/login', to: 'api/v1/custom_tokens#create'
       get '/token', to: 'api/v1/custom_token_info#show'
 
