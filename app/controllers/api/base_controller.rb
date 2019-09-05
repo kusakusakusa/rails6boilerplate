@@ -2,6 +2,8 @@
 
 module Api
   class BaseController < ActionController::API
+    before_action :add_default_response_keys
+
     protected
 
     def doorkeeper_unauthorized_render_options(error: nil)
@@ -30,6 +32,11 @@ module Api
       else
         "#{I18n.t('custom.errors.doorkeeper_unauthorized_nil')} - this should not happen, please alert backend"
       end
+    end
+
+    def add_default_response_keys
+      @response_code ||= 'custom.success.default'
+      @response_message ||= I18n.t('custom.success.default')
     end
   end
 end

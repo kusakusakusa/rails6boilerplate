@@ -56,7 +56,9 @@ RSpec.describe 'Posts', type: :request do
 
       get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
 
-      posts = response_body
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t response_body.response_code
+      posts = response_body.data
       expect(posts.count).to eq 1
       expect(posts.first['id']).to eq post1.id
     end

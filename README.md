@@ -21,13 +21,17 @@ These steps are taken when setting up the project. It affects only the first com
 
 ## API
 
-The api responses will contain `error_code` and `error_message`.
+The api responses will contain `response_code` and `response_message`.
 
-The message will rely on I18n translation as much as possible, with `error_code` representing the key and `error_message` representing the message.
+The message will rely on I18n translation as much as possible, with `response_code` representing the key and `response_message` representing the message.
 
-Run the command below to generate example response and request for apipie
+Each API controller will inherit from `Api::BaseController` and their actions will have `@response_code` and `@response_message` variables added in a `before_action` call. To change the `response_code` or `response_message` in the response json, overwrite the `@response_code` or `@response_message` variables.
+
+### Documentation
+
+Run the command below to generate example responses and request using apipie and rspec
 ```
-APIPIE_RECORD=can_be_anything_here rspec
+APIPIE_RECORD=true rspec
 ```
 
 
