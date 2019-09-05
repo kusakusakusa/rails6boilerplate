@@ -34,9 +34,9 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to
   # stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  gem 'faker', '~> 2.2.1'
   gem 'letter_opener'
   gem 'rspec-rails', '~> 3.8.0'
-  gem 'faker'
 end
 
 group :development do
@@ -64,5 +64,6 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 # authentication
 gem 'apipie-rails', '~> 0.5.16'
 gem 'devise', '~> 4.7.0'
-gem 'devise-jwt', '~> 0.6.0'
+gem 'doorkeeper', '~> 5.1.0'
+gem 'doorkeeper-jwt', '~> 0.3.0'
 gem 'rack-cors', '~> 1.0.3'
