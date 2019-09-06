@@ -33,7 +33,13 @@ class User < ApplicationRecord
       ### START overwrite ###
       # self.confirmation_token = @raw_confirmation_token = Devise.friendly_token
       ### END overwrite ###
-      self.confirmation_token = @raw_confirmation_token = SecureRandom.alphanumeric(Rails.configuration.confirmation_token_length)
+
+      # ensure unique confirmation_token
+      loop do
+        self.confirmation_token = @raw_confirmation_token = SecureRandom.alphanumeric(Rails.configuration.confirmation_token_length)
+      break if !self.class.exists?(confirmation_token: self.confirmation_token)
+      end
+
       self.confirmation_sent_at = Time.now.utc
     end
   end
