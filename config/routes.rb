@@ -14,31 +14,7 @@ Rails.application.routes.draw do
                sign_in: 'cms/login'
              }
 
-  # full list of devise path:
-  # sign_in:
-  # sign_out:
-  # password:
-  # confirmation:
-  # registration:
-  # edit:
-
-  scope '/api' do
-    scope '/v1' do
-      # TODO update password
-      devise_for :users,
-                 only: %i[registrations password confirmation],
-                 path: '',
-                 path_names: {
-                   registration: 'register',
-                   confirmation: 'confirm'
-                 },
-                 controllers: {
-                   registrations: 'api/v1/user_registrations',
-                   confirmations: 'api/v1/user_confirmations'
-                 },
-                 defaults: { format: :json }
-    end
-  end
+  devise_for :users, skip: :all
 
   namespace 'api' do
     namespace 'v1' do
@@ -46,6 +22,12 @@ Rails.application.routes.draw do
       # front end will use this for pretty purpose
       post 'login', to: 'tokens#create'
       post 'refresh', to: 'tokens#refresh'
+
+      as :user do
+        post 'user/account', to: 'accounts#create'
+        get 'user/confirm', to: 'confirmations#create'
+        post 'user/confirm', to: 'confirmations#show'
+      end
 
       resources :posts, only: [:index], defaults: { format: :json }
     end

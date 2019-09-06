@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class UserRegistrationsController < Devise::RegistrationsController
+    class AccountsController < Devise::RegistrationsController
       before_action :add_default_response_keys
 
       resource_description do
@@ -13,8 +13,8 @@ module Api
       respond_to :json
       skip_before_action :verify_authenticity_token
 
-      api :POST, '/register', 'Create account and register. Retrieve user and tokens.'
-      description 'Create account and register. Retrieve user and tokens.'
+      api :POST, '/user/account', 'Create account and register. Sends confirmation email'
+      description 'Create account and register. Sends confirmation email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       param :password, String, desc: "Length #{Devise.password_length.to_a.first} to #{Devise.password_length.to_a.last}", required: true
       def create
