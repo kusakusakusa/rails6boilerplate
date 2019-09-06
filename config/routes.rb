@@ -29,10 +29,12 @@ Rails.application.routes.draw do
                  only: %i[registrations password confirmation],
                  path: '',
                  path_names: {
-                  registration: 'register'
+                   registration: 'register',
+                   confirmation: 'confirm'
                  },
                  controllers: {
-                   registrations: 'api/v1/user_registrations'
+                   registrations: 'api/v1/user_registrations',
+                   confirmations: 'api/v1/user_confirmations'
                  },
                  defaults: { format: :json }
     end

@@ -33,7 +33,7 @@ class User < ApplicationRecord
       ### START overwrite ###
       # self.confirmation_token = @raw_confirmation_token = Devise.friendly_token
       ### END overwrite ###
-      self.confirmation_token = @raw_confirmation_token = SecureRandom.alphanumeric(6)
+      self.confirmation_token = @raw_confirmation_token = SecureRandom.alphanumeric(Rails.configuration.confirmation_token_length)
       self.confirmation_sent_at = Time.now.utc
     end
   end
