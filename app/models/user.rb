@@ -21,10 +21,26 @@ class User < ApplicationRecord
            dependent: :delete_all # or :destroy if you need callbacks
 
   has_many :posts
+
+  protected
+
+  # overwrite devise confirmation_token generation
+  # use confirmation_token as the inpupt code
+  def generate_confirmation_token
+    if self.confirmation_token && !confirmation_period_expired?
+      @raw_confirmation_token = self.confirmation_token
+    else
+      ### START overwrite ###
+      # self.confirmation_token = @raw_confirmation_token = Devise.friendly_token
+      ### END overwrite ###
+      self.confirmation_token = @raw_confirmation_token = SecureRandom.alphanumeric(6)
+      self.confirmation_sent_at = Time.now.utc
+    end
+  end
 end
 
 class User::ParameterSanitizer < Devise::ParameterSanitizer
-  def initialize(*args)
+  def initialize(*)
     super
   end
 end

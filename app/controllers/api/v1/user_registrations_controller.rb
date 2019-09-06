@@ -55,9 +55,12 @@ module Api
       def devise_parameter_sanitizer
         # should not happen
         return unless resource_class == User
+        params_copy = params.clone
+        params_copy.delete :user_registration
+        params_copy.delete :format
 
         # modify the params to add the 'user' key for the ParameterSanitizer to use
-        User::ParameterSanitizer.new(User, :user, user: params)
+        User::ParameterSanitizer.new(User, :user, user: params_copy)
       end
 
       private
