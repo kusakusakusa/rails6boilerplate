@@ -14,14 +14,22 @@ Rails.application.routes.draw do
                sign_in: 'cms/login'
              }
 
+  # full list of devise path:
+  # sign_in:
+  # sign_out:
+  # password:
+  # confirmation:
+  # registration:
+  # edit:
+
   scope '/api' do
     scope '/v1' do
       # TODO update password
       devise_for :users,
+                 only: %i[registrations password confirmation],
                  path: '',
                  path_names: {
-                  sign_up: 'register',
-                  account_update: 'update'
+                  registration: 'register'
                  },
                  controllers: {
                    registrations: 'api/v1/user_registrations'
