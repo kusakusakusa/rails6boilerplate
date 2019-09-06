@@ -23,18 +23,17 @@ module Api
         yield resource if block_given?
         if resource.persisted?
           if resource.active_for_authentication?
+            # should not reach here upon sign up if :confirmable module enabled
             set_flash_message! :notice, :signed_up
             sign_up(resource_name, resource)
-
-            ### START overwrite ###
-            # respond_with resource, location: after_sign_up_path_for(resource)
-            ### END overwrite ###
-            @user = resource
+            respond_with resource, location: after_sign_up_path_for(resource)
           else
             set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
             expire_data_after_sign_in!
             ### START overwrite ###
             # respond_with resource, location: after_inactive_sign_up_path_for(resource)
+            @response_code = 'devise.confirmations.send_instructions'
+            @response_message = I18n.t('devise.confirmations.send_instructions')
             ### END overwrite ###
           end
         else
@@ -46,10 +45,7 @@ module Api
           @response_code = 'custom.errors.default'
           @response_message = resource.errors.full_messages.to_sentence.capitalize
 
-          render json: {
-            response_code: @response_code,
-            response_message: @response_message
-          }, status: 400
+          render status: 400
           ### END overwrite ###
         end
       end
