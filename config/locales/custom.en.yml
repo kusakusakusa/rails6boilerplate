@@ -5,3 +5,6 @@ en:
     errors:
       doorkeeper_unauthorized_nil: "Not authorized"
       default: "Error"
+      devise:
+        regsitrations: ""
+        confirmations: ""

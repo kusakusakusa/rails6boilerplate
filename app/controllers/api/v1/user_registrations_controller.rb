@@ -42,7 +42,7 @@ module Api
           ### START overwrite ###
           # respond_with resource
 
-          @response_code = 'custom.errors.default'
+          @response_code = 'custom.errors.devise.registrations'
           @response_message = resource.errors.full_messages.to_sentence.capitalize
 
           render status: 400

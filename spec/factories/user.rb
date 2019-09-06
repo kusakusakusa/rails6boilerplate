@@ -9,5 +9,11 @@ FactoryBot.define do
     before :create do |user|
       user.skip_confirmation!
     end
+
+    trait :unconfirmed do
+      before :create do |user|
+        user.confirmed_at = nil
+      end
+    end
   end
 end

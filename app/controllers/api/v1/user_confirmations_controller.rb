@@ -16,7 +16,7 @@ module Api
 
       api :GET, '/confirm', 'Confirm user with token sent to their email'
       description 'Confirm user with token sent to their email'
-      param :confirmation_token, String, desc: 'Confirmation token sent to email'
+      param :confirmation_token, String, desc: 'Confirmation token sent to email', required: true
       def show
         self.resource = resource_class.confirm_by_token(params[:confirmation_token])
         yield resource if block_given?
@@ -26,10 +26,16 @@ module Api
           # set_flash_message!(:notice, :confirmed)
           # respond_with_navigational(resource){ redirect_to after_confirmation_path_for(resource_name, resource) }
           ### END overwrite ###
+          @response_code = 'custom.success.default'
+          @response_message = I18n.t(@response_code)
         else
           ### START overwrite ###
           # respond_with_navigational(resource.errors, status: :unprocessable_entity){ render :new }
           ### END overwrite ###
+
+          @response_code = 'custom.errors.devise.confirmations'
+          @response_message = resource.errors.full_messages.to_sentence
+          render status: 400
         end
       end
 
@@ -37,7 +43,7 @@ module Api
 
       def add_default_response_keys
         @response_code ||= 'custom.success.default'
-        @response_message ||= I18n.t('custom.success.default')
+        @response_message ||= I18n.t(@response_code)
       end
     end
   end
