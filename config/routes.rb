@@ -27,6 +27,7 @@ Rails.application.routes.draw do
         post 'user/account', to: 'accounts#create'
         get 'user/confirm', to: 'confirmations#create'
         post 'user/confirm', to: 'confirmations#show'
+        get 'user/forgot-password', to: 'passwords#create'
       end
 
       resources :posts, only: [:index], defaults: { format: :json }

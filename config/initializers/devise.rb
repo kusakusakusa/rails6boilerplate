@@ -1,5 +1,24 @@
 # frozen_string_literal: true
 
+# custom `custom_generate` method in Devise Token generator
+# for creating reset_password_token with custom raw password reset code for user to verify with
+module Devise
+  class TokenGenerator
+    def custom_generate(klass, column)
+      key = key_for(column)
+
+      loop do
+        ### START overwrite ###
+        # raw = Devise.friendly_token
+        raw = SecureRandom.alphanumeric(Rails.configuration.confirmation_token_length)
+        ### END overwrite ###
+        enc = OpenSSL::HMAC.hexdigest(@digest, key, raw)
+        break [raw, enc] unless klass.to_adapter.find_first({ column => enc })
+      end
+    end
+  end
+end
+
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
