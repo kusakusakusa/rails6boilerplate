@@ -30,4 +30,13 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    attributes:
+      user:
+        email: "Your password"
+    errors:
+      models:
+        user:
+          attributes:
+            password:
+              too_short: "is holy super short (minimum is %{count} characters)"

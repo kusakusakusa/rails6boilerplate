@@ -19,6 +19,22 @@ These steps are taken when setting up the project. It affects only the first com
 6. Run `rails new rails6boilerplate --database=mysql --webpack=react` to setup project
 7. Run `brew install mysql@5.7` to install latest version of mysql-5.7. `mysql-8` will not be used.
 
+## API
+
+The api responses will contain `response_code` and `response_message`.
+
+The message will rely on I18n translation as much as possible, with `response_code` representing the key and `response_message` representing the message.
+
+Each API controller will inherit from `Api::BaseController` and their actions will have `@response_code` and `@response_message` variables added in a `before_action` call. To change the `response_code` or `response_message` in the response json, overwrite the `@response_code` or `@response_message` variables.
+
+### Documentation
+
+Run the command below to generate example responses and request using apipie and rspec
+```
+APIPIE_RECORD=examples rspec
+```
+
+
 ## Models
 
 ### User
@@ -65,10 +81,12 @@ In the `config/routes.rb` file, `token_info` controller is skipped.
 
 ### Models
 
-Remove `post` model and `cms/posts_controller` by running these commands:
+Remove `post` model and `cms/posts_controller` by removing these files:
 ```
+TODO
 rails d model post
 rails d scaffold cms::posts
+rails d scaffold_controller api::v1::posts
 ```
 
 

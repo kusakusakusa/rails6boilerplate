@@ -1,0 +1,7 @@
+en:
+  custom:
+    success:
+      default: "Success!"
+    errors:
+      doorkeeper_unauthorized_nil: "Not authorized"
+      default: "Error"

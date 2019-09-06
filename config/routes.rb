@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  use_doorkeeper scope: 'api/v1' do
-    skip_controllers :token_info
-    controllers tokens: 'api/v1/custom_tokens'
-  end
-
   apipie
 
   namespace :cms do
@@ -21,21 +16,28 @@ Rails.application.routes.draw do
 
   scope '/api' do
     scope '/v1' do
-      # duplicate paths to doorkeeper that is exposed on apipie
-      # front end will use this for pretty purpose
-      post '/login', to: 'api/v1/custom_tokens#create'
-      get '/token', to: 'api/v1/custom_token_info#show'
-
       # TODO update password
       devise_for :users,
                  path: '',
                  path_names: {
-                   account_update: 'update'
+                  sign_up: 'register',
+                  account_update: 'update'
                  },
                  controllers: {
-                   registrations: 'user_registrations'
+                   registrations: 'api/v1/user_registrations'
                  },
                  defaults: { format: :json }
+    end
+  end
+
+  namespace 'api' do
+    namespace 'v1' do
+      # duplicate paths to doorkeeper that is exposed on apipie
+      # front end will use this for pretty purpose
+      post 'login', to: 'tokens#create'
+      post 'refresh', to: 'tokens#refresh'
+
+      resources :posts, only: [:index], defaults: { format: :json }
     end
   end
 

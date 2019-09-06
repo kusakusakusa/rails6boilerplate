@@ -52,8 +52,10 @@ group :development do
 end
 
 group :test do
+  gem 'factory_bot_rails', '~> 5.0.2'
   # Adds support for Capybara system testing and selenium driver
   gem 'selenium-webdriver'
+  gem 'timecop', '~> 0.9.1'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end

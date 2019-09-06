@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2019_09_05_013830) do
     t.bigint "resource_owner_id"
     t.integer "application_id"
     t.text "token", null: false
-    t.text "refresh_token", null: false
+    t.string "refresh_token"
     t.integer "expires_in"
     t.datetime "revoked_at"
     t.datetime "created_at", null: false
@@ -37,10 +37,12 @@ ActiveRecord::Schema.define(version: 2019_09_05_013830) do
   end
 
   create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "user_id"
     t.string "title"
     t.date "publish_date"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

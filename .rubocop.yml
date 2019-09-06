@@ -1,0 +1,6 @@
+Metrics/LineLength:
+  Max: 9999
+Metrics/BlockLength:
+  Max: 9999
+Metrics/MethodLength:
+  Max: 9999

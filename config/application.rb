@@ -34,5 +34,9 @@ module Rails6boilerplate
     config.generators do |g|
       g.test_framework :rspec
     end
+
+    # overriding the error message’s format at the model level and at the attribute level
+    # wrt https://blog.bigbinary.com/2019/04/22/rails-6-allows-to-override-the-activemodel-errors-full_message-format-at-the-model-level-and-at-the-attribute-level.html
+    config.active_model.i18n_customize_full_message
   end
 end
