@@ -34,9 +34,12 @@ en:
     attributes:
       user:
         email: "Your password"
+        confirmation_token: "The token"
     errors:
       models:
         user:
           attributes:
             password:
               too_short: "is holy super short (minimum is %{count} characters)"
+            confirmation_token:
+              invalid: "is invalid. Please check your email."

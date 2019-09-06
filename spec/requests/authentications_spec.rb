@@ -13,7 +13,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'invalid_grant'
@@ -27,7 +27,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'invalid_grant'
@@ -41,7 +41,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response_body.access_token).to be_present
       expect(response_body.response_code).to eq 'custom.success.default'
@@ -57,7 +57,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post api_v1_login_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       @access_token = response_body['access_token']
       @refresh_token = response_body['refresh_token']

@@ -11,7 +11,7 @@ RSpec.describe 'Registrations', type: :request do
         password: SecureRandom.alphanumeric(Devise.password_length.to_a.first - 1)
       }
 
-      post user_registration_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.default'
@@ -19,19 +19,20 @@ RSpec.describe 'Registrations', type: :request do
       expect(User.count).to eq 0
     end
 
-    scenario 'should pass, create user and return user object with proper inputs', :show_in_doc do
+    scenario 'should pass, create unconfirmed user and return user object with proper inputs', :show_in_doc do
       expect(User.count).to eq 0
       params = {
         email: 'test@test.com',
         password: SecureRandom.alphanumeric(Devise.password_length.to_a.first)
       }
 
-      post user_registration_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
-      expect(response_body.response_code).to eq 'custom.success.default'
-      expect(response_body.response_message).to eq I18n.t('custom.success.default')
+      expect(response_body.response_code).to eq 'devise.confirmations.send_instructions'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
       expect(User.count).to eq 1
+      expect(User.first.confirmed?).to eq false
     end
   end
 end
