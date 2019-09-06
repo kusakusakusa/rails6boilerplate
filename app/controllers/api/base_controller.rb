@@ -11,14 +11,14 @@ module Api
         {
           json: {
             response_code: 'custom.errors.doorkeeper_unauthorized_nil',
-            response_message: default_message
+            response_message: doorkeeper_unauthorized_default_message
           }
         }
       else
         {
           json: {
             response_code: "doorkeeper.errors.messages.#{error.name}.#{error.reason}",
-            response_message: error.try(:description) || default_message
+            response_message: error.try(:description) || doorkeeper_unauthorized_default_message
           }
         }
       end
@@ -26,7 +26,7 @@ module Api
 
     private
 
-    def default_message
+    def doorkeeper_unauthorized_default_message
       if Rails.env.production?
         I18n.t('custom.errors.doorkeeper_unauthorized_nil')
       else

@@ -4,3 +4,4 @@ en:
       default: "Success!"
     errors:
       doorkeeper_unauthorized_nil: "Not authorized"
+      default: "Error"

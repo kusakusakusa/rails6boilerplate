@@ -21,3 +21,9 @@ class User < ApplicationRecord
 
   has_many :posts
 end
+
+class User::ParameterSanitizer < Devise::ParameterSanitizer
+  def initialize(*args)
+    super
+  end
+end

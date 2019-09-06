@@ -4,8 +4,8 @@ module Api
   module V1
     class TokensController < Doorkeeper::TokensController
       resource_description do
-        name 'Sessions'
-        resource_id 'Sessions'
+        name 'Tokens'
+        resource_id 'Tokens'
         api_versions 'v1' # , 'v2'
       end
 

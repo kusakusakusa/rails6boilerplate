@@ -1,4 +1,31 @@
 {
+  "Accounts#create": [
+    {
+      "verb": "POST",
+      "path": "/api/v1",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "test@test.com",
+        "password": "QppoNh"
+      },
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "user": {
+          "id": 812,
+          "email": "test@test.com",
+          "created_at": "2019-09-06T12:20:07.419Z",
+          "updated_at": "2019-09-06T12:20:07.419Z"
+        }
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
   "Posts#index": [
     {
       "verb": "GET",
@@ -8,22 +35,26 @@
       ],
       "query": null,
       "request_data": null,
-      "response_data": [
-        {
-          "id": 85,
-          "user_id": 366,
-          "title": "I wish I could go with you.",
-          "publish_date": "2018-12-29",
-          "created_at": "2019-09-05T16:49:52.965Z",
-          "updated_at": "2019-09-05T16:49:52.965Z"
-        }
-      ],
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "data": [
+          {
+            "id": 169,
+            "user_id": 808,
+            "title": "I regret that I should leave this world without again beholding him.",
+            "publish_date": "2017-10-16",
+            "created_at": "2019-09-06T12:20:07.297Z",
+            "updated_at": "2019-09-06T12:20:07.297Z"
+          }
+        ]
+      },
       "code": 200,
       "show_in_doc": 1,
       "recorded": true
     }
   ],
-  "Sessions#create": [
+  "Tokens#create": [
     {
       "verb": "POST",
       "path": "/api/v1/login",
@@ -32,16 +63,18 @@
       ],
       "query": null,
       "request_data": {
-        "email": "luba.goyette@halvorson.info",
+        "email": "alexander_tromp@boderomaguera.info",
         "password": "12345678",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MiwianRpIjoiMTU1NTk4NjMtYzMzZC00ZTVlLTk4NDUtNTQ4NzdiZjQ0ZDYxIiwidXNlciI6eyJpZCI6MzY2LCJlbWFpbCI6Imx1YmEuZ295ZXR0ZUBoYWx2b3Jzb24uaW5mbyJ9fQ.VfDMtaGKXzr-vt1RCLXOqeiiCaBFI3_vwfRTa5W6sEFTmvLKiCe7LaZy-7sYFK2s_ZbMx-PIaciMI3CTwu0gTQ",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2Nzc3MjQwNywianRpIjoiZTYyOTUyZmQtM2MwOC00ODVlLThmOTktZjhiMzljNWEzODIzIiwidXNlciI6eyJpZCI6ODA4LCJlbWFpbCI6ImFsZXhhbmRlcl90cm9tcEBib2Rlcm9tYWd1ZXJhLmluZm8ifX0.rBxrTcFWitgsKODgf4Bmgdyqqu7jkrvwo8KghIM4A2H6P43HswdQAaYeGITf1v9hAqn44YJdHIznkD4azWPR1g",
         "token_type": "Bearer",
-        "expires_in": 7199,
-        "refresh_token": "2Ca_kRL5q-IG96V80jwoKBOJRS2gozUsEP90QqASzp0",
-        "created_at": 1567702192
+        "expires_in": 7200,
+        "refresh_token": "ElXchPWZ3NN5AS2oTsCZlDp9V7SaaHQKXw3fxS5B7d0",
+        "created_at": 1567772407,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
       },
       "code": 200,
       "show_in_doc": 1,
@@ -55,16 +88,18 @@
       ],
       "query": null,
       "request_data": {
-        "email": "anglea_orn@streichmayer.net",
+        "email": "bennie@mccullough.net",
         "password": "12345678",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MywianRpIjoiMjcxNTQ5MmItYjIwOS00MmUyLWJkMTItOThmMmJjMmNmMjZlIiwidXNlciI6eyJpZCI6MzY5LCJlbWFpbCI6ImFuZ2xlYV9vcm5Ac3RyZWljaG1heWVyLm5ldCJ9fQ.oN5dYd2NRHsLHYmsJm6rp2m0LSos7otBPOS9xco_sS6TmI5q7cj_sldNQVzTYByFNYHntG9eUk-de-z271Xz2A",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2Nzc3MjQwNywianRpIjoiZGYyOGI4ZDItYjRiNS00NjQyLTk2MDgtYWVkMGJkMmY0MmIyIiwidXNlciI6eyJpZCI6ODEwLCJlbWFpbCI6ImJlbm5pZUBtY2N1bGxvdWdoLm5ldCJ9fQ.IxiwZvOsBgSYv02wKvmUw67c7fOE1lXeJf8-AfUzu55dcn2AYznmTVObYI_Qg4J9W6ElUjie4lMIGv4aXsUymQ",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "JaxLrnznyQnEiluP3CuzvN6BSY-jbWnQjqBoXqvIo6U",
-        "created_at": 1567702193
+        "refresh_token": "my_d5zzkofX6IvGt0RBLYn_6oa42lNU63yxdAq4TRZM",
+        "created_at": 1567772407,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
       },
       "code": 200,
       "show_in_doc": 0,
@@ -78,23 +113,25 @@
       ],
       "query": null,
       "request_data": {
-        "email": "alicia.waters@carroll.com",
+        "email": "gonzalo.sporer@harrishintz.biz",
         "password": "12345678",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MywianRpIjoiNDFiYTU3MTItOTdmNS00NGRkLTg2MmUtYWFhNzcxOTYxMjI0IiwidXNlciI6eyJpZCI6MzcwLCJlbWFpbCI6ImFsaWNpYS53YXRlcnNAY2Fycm9sbC5jb20ifX0.b51k0kBC1xW1E_Yw10HDLwDjF2KdHurxOyDHj8s-JKXl1n1HANJa1GPAr7O5kp8tlyeiKWledZMsrVPMm1CzWQ",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2Nzc3MjQwNywianRpIjoiZDk2ZDk1NGEtNDVlYS00NmU5LWEwZGQtZWYxOTIwM2EzOTg1IiwidXNlciI6eyJpZCI6ODExLCJlbWFpbCI6ImdvbnphbG8uc3BvcmVyQGhhcnJpc2hpbnR6LmJpeiJ9fQ.bFmS_gYux9TRrn6xmJYtRlbAEkTiuEFMtVciPLo9qQ6mvuIojtKf_ApDCYN55LPIgQmQzUSOvbnsRySaOW01XA",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "xuALo7aSo1BkO4tpLRs1WBo28Ip5YvELwj-AgfxQAUc",
-        "created_at": 1567702193
+        "refresh_token": "9ZykokHwXcdUsMXYlA0G9yejq5ORlnp9_yVqjfGgOHU",
+        "created_at": 1567772407,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
       },
       "code": 200,
       "show_in_doc": 0,
       "recorded": true
     }
   ],
-  "Sessions#refresh": [
+  "Tokens#refresh": [
     {
       "verb": "POST",
       "path": "/api/v1/refresh",
@@ -103,43 +140,20 @@
       ],
       "query": null,
       "request_data": {
-        "refresh_token": "xuALo7aSo1BkO4tpLRs1WBo28Ip5YvELwj-AgfxQAUc",
+        "refresh_token": "9ZykokHwXcdUsMXYlA0G9yejq5ORlnp9_yVqjfGgOHU",
         "grant_type": "refresh_token"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzcwMjE5MywianRpIjoiMWIyNWI4MDctYjYzMS00NGIxLWJhZDctNGYyNWEwYmEwNTRkIiwidXNlciI6eyJpZCI6MzcwLCJlbWFpbCI6ImFsaWNpYS53YXRlcnNAY2Fycm9sbC5jb20ifX0.hYeZDC-fa-028237gm1Sg6i3FmkVObbahYg7pgmWijGol4qXTvcmA3dHTEe_p8Ueq8fMpkK7ew7F5lsWqcKkEA",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2Nzc3MjQwNywianRpIjoiNmI5MGVhMDQtZDMzZS00ZWViLTljOTEtNzU2MzFmOTRmOTEyIiwidXNlciI6eyJpZCI6ODExLCJlbWFpbCI6ImdvbnphbG8uc3BvcmVyQGhhcnJpc2hpbnR6LmJpeiJ9fQ.IStaWr9KRu30yVdJVcK72UVqd3b3NaSXR8zveIuOtGLm3odQmceZ9VEvnjIeAAvkNVcnUL8-ECG88LZ7ODXYeA",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "mXaXW9n8XiQ0z7Z2BCLLn6z_nD1uWXB63GsPtH2JDEs",
-        "created_at": 1567702193
+        "refresh_token": "9YljrPzQ18Aph2kk8ghjNM7Ev3UFPcSts3_wvOYiW6o",
+        "created_at": 1567772407,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
       },
       "code": 200,
       "show_in_doc": 1,
-      "recorded": true
-    }
-  ],
-  "user_registrations#create": [
-    {
-      "verb": "POST",
-      "path": "/api/v1",
-      "versions": [
-
-      ],
-      "query": null,
-      "request_data": {
-        "user": {
-          "email": "test@test.com",
-          "password": "password"
-        }
-      },
-      "response_data": {
-        "id": 367,
-        "email": "test@test.com",
-        "created_at": "2019-09-05T16:49:52.916Z",
-        "updated_at": "2019-09-05T16:49:52.916Z"
-      },
-      "code": 201,
-      "show_in_doc": 0,
       "recorded": true
     }
   ]

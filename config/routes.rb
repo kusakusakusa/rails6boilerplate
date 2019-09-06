@@ -20,10 +20,11 @@ Rails.application.routes.draw do
       devise_for :users,
                  path: '',
                  path_names: {
-                   account_update: 'update'
+                  sign_up: 'register',
+                  account_update: 'update'
                  },
                  controllers: {
-                   registrations: 'user_registrations'
+                   registrations: 'api/v1/user_registrations'
                  },
                  defaults: { format: :json }
     end

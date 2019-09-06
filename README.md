@@ -31,7 +31,7 @@ Each API controller will inherit from `Api::BaseController` and their actions wi
 
 Run the command below to generate example responses and request using apipie and rspec
 ```
-APIPIE_RECORD=true rspec
+APIPIE_RECORD=examples rspec
 ```
 
 
