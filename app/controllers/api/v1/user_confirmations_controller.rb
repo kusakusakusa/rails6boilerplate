@@ -7,12 +7,37 @@ module Api
       before_action :add_default_response_keys
 
       resource_description do
-        name 'Accounts'
-        resource_id 'Accounts'
+        name 'Confirmations'
+        resource_id 'Confirmations'
         api_versions 'v1' # , 'v2'
       end
       respond_to :json
       skip_before_action :verify_authenticity_token
+
+      api :POST, '/confirm', 'resend email'
+      description 'Resend confirmation email'
+      param :email, URI::MailTo::EMAIL_REGEXP, required: true
+      def create
+        ### START overwrite ###
+        # self.resource = resource_class.send_confirmation_instructions(resource_params)
+        self.resource = resource_class.send_confirmation_instructions({ email: params[:email] })
+        ### END overwrite ###
+        yield resource if block_given?
+
+        if successfully_sent?(resource)
+          ### START overwrite ###
+          # respond_with({}, location: after_resending_confirmation_instructions_path_for(resource_name))
+          ### END overwrite ###
+          render status: 200
+        else
+          ### START overwrite ###
+          # respond_with(resource)
+          @response_code = 'custom.errors.devise.resend_confirmation_email'
+          @response_message = resource.errors.full_messages.to_sentence
+          ### END overwrite ###
+          render status: 400
+        end
+      end
 
       api :GET, '/confirm', 'Confirm user with token sent to their email'
       description 'Confirm user with token sent to their email'
@@ -26,8 +51,6 @@ module Api
           # set_flash_message!(:notice, :confirmed)
           # respond_with_navigational(resource){ redirect_to after_confirmation_path_for(resource_name, resource) }
           ### END overwrite ###
-          @response_code = 'custom.success.default'
-          @response_message = I18n.t(@response_code)
         else
           ### START overwrite ###
           # respond_with_navigational(resource.errors, status: :unprocessable_entity){ render :new }
@@ -37,6 +60,19 @@ module Api
           @response_message = resource.errors.full_messages.to_sentence
           render status: 400
         end
+      end
+
+      protected
+
+      def devise_parameter_sanitizer
+        # should not happen
+        return unless resource_class == User
+        params_copy = params.clone
+        params_copy.delete :user_registration
+        params_copy.delete :format
+
+        # modify the params to add the 'user' key for the ParameterSanitizer to use
+        User::ParameterSanitizer.new(User, :user, user: params_copy)
       end
 
       private

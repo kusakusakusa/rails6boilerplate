@@ -6,5 +6,5 @@ en:
       doorkeeper_unauthorized_nil: "Not authorized"
       default: "Error"
       devise:
-        regsitrations: ""
+        registrations: ""
         confirmations: ""

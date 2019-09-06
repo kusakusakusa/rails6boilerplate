@@ -33,7 +33,7 @@ en:
   activerecord:
     attributes:
       user:
-        email: "Your password"
+        password: "Your password"
         confirmation_token: "The token"
     errors:
       models:
