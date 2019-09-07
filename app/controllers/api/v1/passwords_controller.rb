@@ -40,9 +40,50 @@ module Api
         end
       end
 
-      api :GET, '/user/reset-password', 'Send reset passsword email'
-      description 'Send reset passsword email'
-      param :email, URI::MailTo::EMAIL_REGEXP, required: true
+      api :POST, '/user/reset-password', 'Reset user password'
+      description 'Reset user password'
+      param :reset_password_token, String, desc: 'Reset password token received from email', required: true
+      param :password, String, desc: 'New password', required: true
+      def update
+        ### START overwrite ###
+        # self.resource = resource_class.reset_password_by_token(resource_params)
+        self.resource = resource_class.reset_password_by_token({
+          reset_password_token: params[:reset_password_token],
+          password: params[:password],
+        })
+
+        # this is custom code as the security bug is mitigated with reconfirmable being false
+        resource.confirm
+        ### END overwrite ###
+        yield resource if block_given?
+
+        if resource.errors.empty?
+          resource.unlock_access! if unlockable?(resource)
+          if Devise.sign_in_after_reset_password
+            # set to false for this boilerplate, should not reach here
+            flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
+            set_flash_message!(:notice, flash_message)
+            resource.after_database_authentication
+            sign_in(resource_name, resource)
+          else
+            ### START overwrite ###
+            # set_flash_message!(:notice, :updated_not_active)
+            ### END overwrite ###
+          end
+          ### START overwrite ###
+          # respond_with resource, location: after_resetting_password_path_for(resource)
+          render status: 200
+          ### END overwrite ###
+        else
+          ### START overwrite ###
+          # set_minimum_password_length
+          # respond_with resource
+          @response_code = 'custom.errors.devise.passwords'
+          @response_message = resource.errors.full_messages.to_sentence
+          render status: 400
+          ### END overwrite ###
+        end
+      end
 
       private
 

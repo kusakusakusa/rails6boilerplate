@@ -14,8 +14,27 @@ module Api
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       param :password, String, desc: "Length #{Devise.password_length.to_a.first} to #{Devise.password_length.to_a.last}", required: true
       param :grant_type, %w[password], required: true
-      def create
-        super
+      def login
+        user = User.find_for_database_authentication(email: params[:email])
+
+        case
+        when user.nil? || !user.valid_password?(params[:password])
+          response_code = 'devise.failure.invalid'
+          render json: {
+            response_code: response_code,
+            response_message: I18n.t(response_code)
+          }, status: 400
+        when user&.inactive_message == :unconfirmed
+          response_code = 'devise.failure.unconfirmed'
+          render json: {
+            response_code: response_code,
+            response_message: I18n.t(response_code)
+          }, status: 400
+        when !user.active_for_authentication?
+          create
+        else
+          create
+        end
       end
 
       api :POST, '/refresh', 'Return JWT refresh_token'
@@ -41,7 +60,7 @@ module Doorkeeper
       # overwrite, do not use default error and error_description key
       def body
         {
-          response_code: name,
+          response_code: "doorkeeper.errors.messages.#{name}",
           response_message: description,
           state: state
         }

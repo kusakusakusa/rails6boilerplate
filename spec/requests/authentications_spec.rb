@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Authentications', type: :request do
   let!(:user) { create(:user) }
+  let(:unconfirmed_user) { create(:user, :unconfirmed) }
 
   describe 'POST /api/v1/login' do
     scenario 'should fail with wrong email' do
@@ -16,22 +17,39 @@ RSpec.describe 'Authentications', type: :request do
       post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
-      expect(response_body.response_code).to eq 'invalid_grant'
-      expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
+      expect(response_body.response_code).to eq 'devise.failure.invalid'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
     end
 
     scenario 'should fail with wrong password' do
       params = {
         email: user.email,
-        password: 'password',
+        password: 'wrong_password',
         grant_type: 'password'
       }
 
       post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
-      expect(response_body.response_code).to eq 'invalid_grant'
-      expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
+      expect(response_body.response_code).to eq 'devise.failure.invalid'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    end
+
+    scenario 'should fail with unconfirmed user' do
+      params = {
+        email: unconfirmed_user.email,
+        password: '12345678',
+        grant_type: 'password'
+      }
+
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+
+      expect(response.status).to eq 400
+      expect(response_body.response_code).to eq 'devise.failure.unconfirmed'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    end
+
+    scenario 'should fail with revoked token after logout' do
     end
 
     scenario 'should get token with correct credentials', :show_in_doc do
@@ -72,9 +90,11 @@ RSpec.describe 'Authentications', type: :request do
       post api_v1_refresh_path, params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
-      expect(response_body.response_code).to eq 'invalid_grant'
+      expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
       expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
     end
+
+    scenario 'should fail with revoked token after logout'
 
     scenario 'should return new access_token with valid refresh_token', :show_in_doc do
       params = {

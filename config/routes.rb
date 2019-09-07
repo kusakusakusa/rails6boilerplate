@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     namespace 'v1' do
       # duplicate paths to doorkeeper that is exposed on apipie
       # front end will use this for pretty purpose
-      post 'login', to: 'tokens#create'
+      post 'login', to: 'tokens#login'
       post 'refresh', to: 'tokens#refresh'
 
       as :user do
@@ -28,6 +28,7 @@ Rails.application.routes.draw do
         get 'user/confirm', to: 'confirmations#create'
         post 'user/confirm', to: 'confirmations#show'
         get 'user/forgot-password', to: 'passwords#create'
+        post 'user/reset-password', to: 'passwords#update'
       end
 
       resources :posts, only: [:index], defaults: { format: :json }
