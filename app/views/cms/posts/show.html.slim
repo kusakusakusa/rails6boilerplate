@@ -1,0 +1,19 @@
+.col-xl-12
+  .card.shadow.mb-4
+    /! Card Header
+    .card-header.py-3
+      h6.m-0.font-weight-bold.text-primary
+        | Post #{@cms_post.id}
+        .float-right
+          = link_to edit_cms_post_path(@cms_post) do
+            i.fas.fa-fw.fa-edit
+          = link_to cms_post_path(@cms_post), method: :delete, data: { confirm: 'Are you sure?' } do
+            i.fas.fa-fw.fa-trash-alt
+    /! Card Body
+    .card-body
+      h4.small.font-weight-bold ID
+      p= @cms_post.id
+      h4.small.font-weight-bold Title
+      p= @cms_post.title
+      h4.small.font-weight-bold Publish Date
+      p= @cms_post.publish_date.strftime('%b %d, %Y')

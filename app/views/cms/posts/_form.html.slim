@@ -1,0 +1,15 @@
+= form_with(model: cms_post, url: cms_post.new_record? ? cms_posts_path : cms_post_path(cms_post), local: true) do |form|
+  - if cms_post.errors.any?
+    .alert.alert-dismissible.alert-danger
+      h2
+        = pluralize(cms_post.errors.count, "error")
+        | prohibited this cms_post from being saved:
+      ul
+        - cms_post.errors.full_messages.each do |message|
+          li= message
+  .form-group
+    = form.text_field :title, placeholder: "Title", class: 'form-control'
+  .form-group
+    = form.text_field :publish_date, placeholder: "Publish Date", data: { behavior: "flatpickr" }, class: 'form-control'
+  .actions
+    = form.submit class: "btn btn-primary"

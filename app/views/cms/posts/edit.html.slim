@@ -1,0 +1,12 @@
+.col-xl-12
+  .card.shadow.mb-4
+    /! Card Header
+    .card-header.py-3
+      h6.m-0.font-weight-bold.text-primary
+        | Editing Post #{@cms_post.id}
+        .float-right
+          = link_to cms_post_path(@cms_post) do
+            i.fas.fa-fw.fa-info-circle
+    /! Card Body
+    .card-body
+      = render 'form', cms_post: @cms_post
