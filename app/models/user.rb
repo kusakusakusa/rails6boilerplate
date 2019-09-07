@@ -43,6 +43,20 @@ class User < ApplicationRecord
       self.confirmation_sent_at = Time.now.utc
     end
   end
+
+  # overwrite devise confirmation_token generation
+  # for users to receive simpler password reset code
+  def set_reset_password_token
+    ### START overwrite ###
+    # raw, enc = Devise.token_generator.generate(self.class, :reset_password_token)
+    raw, enc = Devise.token_generator.custom_generate(self.class, :reset_password_token)
+    ### END overwrite ###
+
+    self.reset_password_token   = enc
+    self.reset_password_sent_at = Time.now.utc
+    save(validate: false)
+    raw
+  end
 end
 
 class User::ParameterSanitizer < Devise::ParameterSanitizer

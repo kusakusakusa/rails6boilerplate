@@ -13,10 +13,8 @@ Doorkeeper.configure do
   # end
   resource_owner_from_credentials do |routes|
     user = User.find_for_database_authentication(email: params[:email])
-    if user&.valid_for_authentication? { user.valid_password?(params[:password]) } && user&.active_for_authentication?
-      request.env['warden'].set_user(user, scope: :user, store: false)
-      user
-    end
+    request.env['warden'].set_user(user, scope: :user, store: false)
+    user
   end
 
   # If you didn't skip applications controller from Doorkeeper routes in your application routes.rb
@@ -259,7 +257,7 @@ Doorkeeper.configure do
   #   Doorkeeper::Errors::TokenForbidden, Doorkeeper::Errors::TokenExpired,
   #   Doorkeeper::Errors::TokenRevoked, Doorkeeper::Errors::TokenUnknown
   #
-  # handle_auth_errors :raise
+  handle_auth_errors :raise
 
   # Customize token introspection response.
   # Allows to add your own fields to default one that are required by the OAuth spec

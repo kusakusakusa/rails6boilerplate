@@ -1,5 +1,24 @@
 # frozen_string_literal: true
 
+# custom `custom_generate` method in Devise Token generator
+# for creating reset_password_token with custom raw password reset code for user to verify with
+module Devise
+  class TokenGenerator
+    def custom_generate(klass, column)
+      key = key_for(column)
+
+      loop do
+        ### START overwrite ###
+        # raw = Devise.friendly_token
+        raw = SecureRandom.alphanumeric(Rails.configuration.confirmation_token_length)
+        ### END overwrite ###
+        enc = OpenSSL::HMAC.hexdigest(@digest, key, raw)
+        break [raw, enc] unless klass.to_adapter.find_first({ column => enc })
+      end
+    end
+  end
+end
+
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -145,7 +164,7 @@ Devise.setup do |config|
   # initial account confirmation) to be applied. Requires additional unconfirmed_email
   # db field (see migrations). Until confirmed, new email is stored in
   # unconfirmed_email column, and copied to email column on successful confirmation.
-  config.reconfirmable = true
+  config.reconfirmable = false
 
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [:email]
@@ -216,7 +235,7 @@ Devise.setup do |config|
 
   # When set to false, does not sign a user in automatically after their password is
   # reset. Defaults to true, so a user is signed in automatically after a reset.
-  # config.sign_in_after_reset_password = true
+  config.sign_in_after_reset_password = false
 
   # ==> Configuration for :encryptable
   # Allow you to use another hashing or encryption algorithm besides bcrypt (default).

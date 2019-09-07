@@ -2,7 +2,7 @@
 
 module Api
   module V1
-    class UserConfirmationsController < Devise::ConfirmationsController
+    class ConfirmationsController < Devise::ConfirmationsController
       # TODO add to all custom Devise controllers
       before_action :add_default_response_keys
 
@@ -14,7 +14,7 @@ module Api
       respond_to :json
       skip_before_action :verify_authenticity_token
 
-      api :POST, '/confirm', 'resend email'
+      api :POST, '/user/confirm', 'Resend email'
       description 'Resend confirmation email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       def create
@@ -27,19 +27,21 @@ module Api
         if successfully_sent?(resource)
           ### START overwrite ###
           # respond_with({}, location: after_resending_confirmation_instructions_path_for(resource_name))
-          ### END overwrite ###
+
           render status: 200
+          ### END overwrite ###
         else
           ### START overwrite ###
           # respond_with(resource)
-          @response_code = 'custom.errors.devise.resend_confirmation_email'
+
+          @response_code = 'custom.errors.devise.confirmations'
           @response_message = resource.errors.full_messages.to_sentence
-          ### END overwrite ###
           render status: 400
+          ### END overwrite ###
         end
       end
 
-      api :GET, '/confirm', 'Confirm user with token sent to their email'
+      api :GET, '/user/confirm', 'Confirm user with token sent to their email'
       description 'Confirm user with token sent to their email'
       param :confirmation_token, String, desc: 'Confirmation token sent to email', required: true
       def show

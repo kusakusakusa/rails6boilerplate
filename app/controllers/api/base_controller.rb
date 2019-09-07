@@ -3,6 +3,11 @@
 module Api
   class BaseController < ActionController::API
     before_action :add_default_response_keys
+    rescue_from Doorkeeper::Errors::InvalidToken, with: :handle_doorkeeper_errors
+    rescue_from Doorkeeper::Errors::TokenForbidden, with: :handle_doorkeeper_errors
+    rescue_from Doorkeeper::Errors::TokenExpired, with: :handle_doorkeeper_errors
+    rescue_from Doorkeeper::Errors::TokenRevoked, with: :handle_doorkeeper_errors
+    rescue_from Doorkeeper::Errors::TokenUnknown, with: :handle_doorkeeper_errors
 
     protected
 
@@ -37,6 +42,30 @@ module Api
     def add_default_response_keys
       @response_code ||= 'custom.success.default'
       @response_message ||= I18n.t('custom.success.default')
+    end
+
+    def handle_doorkeeper_errors exception
+      case exception
+      when Doorkeeper::Errors::TokenExpired
+        @response_code = 'doorkeeper.errors.messages.invalid_token.expired'
+        @response_message = I18n.t(@response_code)
+      when Doorkeeper::Errors::TokenRevoked
+        @response_code = 'doorkeeper.errors.messages.invalid_token.revoked'
+        @response_message = I18n.t(@response_code)
+      when Doorkeeper::Errors::TokenUnknown
+        @response_code = 'doorkeeper.errors.messages.invalid_token.unknown'
+        @response_message = I18n.t(@response_code)
+
+      # TODO how to handle these?
+      when Doorkeeper::Errors::InvalidToken, Doorkeeper::Errors::TokenForbidden
+        @response_code = 'doorkeeper.errors.messages.invalid_token.unknown'
+        @response_message = I18n.t(@response_code)
+      end
+
+      render json: {
+        response_code: @response_code,
+        response_message: @response_message
+      }, status: 401
     end
   end
 end
