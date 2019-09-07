@@ -24,14 +24,15 @@ RSpec.describe 'Posts', type: :request do
 
     scenario 'should fail if there is no access token' do
       get api_v1_posts_path
-      expect(response).to have_http_status(401)
+
+      expect(response.status).to eq 401
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.unknown'
       expect(response_body.response_message).to eq I18n.t response_body.response_code
     end
 
     scenario 'should fail if wrong access token used' do
       get api_v1_posts_path, headers: { 'Authorization': 'Bearer invalid' }
-      expect(response).to have_http_status(401)
+      expect(response.status).to eq 401
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.unknown'
       expect(response_body.response_message).to eq I18n.t response_body.response_code
     end
@@ -44,7 +45,7 @@ RSpec.describe 'Posts', type: :request do
     scenario 'should fail with expired access token used' do
       Timecop.freeze(Time.now + Doorkeeper.configuration.access_token_expires_in.seconds + 1.day) do
         get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
-        expect(response).to have_http_status(401)
+        expect(response.status).to eq 401
         expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.expired'
         expect(response_body.response_message).to eq I18n.t response_body.response_code
       end

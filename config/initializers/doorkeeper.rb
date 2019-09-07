@@ -257,7 +257,7 @@ Doorkeeper.configure do
   #   Doorkeeper::Errors::TokenForbidden, Doorkeeper::Errors::TokenExpired,
   #   Doorkeeper::Errors::TokenRevoked, Doorkeeper::Errors::TokenUnknown
   #
-  # handle_auth_errors :raise
+  handle_auth_errors :raise
 
   # Customize token introspection response.
   # Allows to add your own fields to default one that are required by the OAuth spec
