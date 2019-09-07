@@ -2,14 +2,14 @@
   "Accounts#create": [
     {
       "verb": "POST",
-      "path": "/api/v1/account",
+      "path": "/api/v1/user/account",
       "versions": [
         "v1"
       ],
       "query": null,
       "request_data": {
         "email": "test@test.com",
-        "password": "CiFdly"
+        "password": "BBlck4"
       },
       "response_data": {
         "response_code": "devise.confirmations.send_instructions",
@@ -40,15 +40,13 @@
   ],
   "Confirmations#create": [
     {
-      "verb": "POST",
-      "path": "/api/v1/confirmation",
+      "verb": "GET",
+      "path": "/api/v1/user/confirm",
       "versions": [
         "v1"
       ],
-      "query": null,
-      "request_data": {
-        "email": "luanne@hartmann.io"
-      },
+      "query": "email=stanley_schultz@stokesrunolfsdottir.com",
+      "request_data": null,
       "response_data": {
         "response_code": "custom.success.default",
         "response_message": "Success!"
@@ -60,18 +58,75 @@
   ],
   "Confirmations#show": [
     {
-      "verb": "GET",
-      "path": "/api/v1/confirmation",
+      "verb": "POST",
+      "path": "/api/v1/user/confirm",
       "versions": [
         "v1"
       ],
-      "query": "confirmation_token=pkniW4",
+      "query": null,
+      "request_data": {
+        "confirmation_token": "OTGsk0"
+      },
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "Passwords#create": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/user/forgot-password",
+      "versions": [
+        "v1"
+      ],
+      "query": "email=milly@kuhn.info",
       "request_data": null,
       "response_data": {
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
       "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/user/forgot-password",
+      "versions": [
+        "v1"
+      ],
+      "query": "email=cody@haley.io",
+      "request_data": null,
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    }
+  ],
+  "Passwords#update": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/user/reset-password",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "reset_password_token": "2mma2U",
+        "password": "new_password"
+      },
+      "response_data": {
+        "response_code": "custom.errors.devise.passwords",
+        "response_message": "Email was already confirmed, please try signing in"
+      },
+      "code": 400,
       "show_in_doc": 1,
       "recorded": true
     }
@@ -90,12 +145,12 @@
         "response_message": "Success!",
         "data": [
           {
-            "id": 31,
-            "user_id": 320,
-            "title": "I love you.",
-            "publish_date": "2018-07-14",
-            "created_at": "2019-09-06T18:34:23.334Z",
-            "updated_at": "2019-09-06T18:34:23.334Z"
+            "id": 35,
+            "user_id": 557,
+            "title": "I regret that I should leave this world without again beholding him.",
+            "publish_date": "2018-06-23",
+            "created_at": "2019-09-07T00:36:58.021Z",
+            "updated_at": "2019-09-07T00:36:58.021Z"
           }
         ]
       },
@@ -107,7 +162,7 @@
   "Tokens#create": [
     {
       "verb": "POST",
-      "path": "/api/v1/login",
+      "path": "/api/v1/user/login",
       "versions": [
         "v1"
       ],
@@ -132,7 +187,7 @@
     },
     {
       "verb": "POST",
-      "path": "/api/v1/login",
+      "path": "/api/v1/user/login",
       "versions": [
         "v1"
       ],
@@ -157,7 +212,7 @@
     },
     {
       "verb": "POST",
-      "path": "/api/v1/login",
+      "path": "/api/v1/user/login",
       "versions": [
         "v1"
       ],
@@ -181,24 +236,126 @@
       "recorded": true
     }
   ],
-  "Tokens#refresh": [
+  "Tokens#login": [
     {
       "verb": "POST",
-      "path": "/api/v1/refresh",
+      "path": "/api/v1/user/login",
       "versions": [
         "v1"
       ],
       "query": null,
       "request_data": {
-        "refresh_token": "WnH6GeXy7N-zbgm1ps4GPcl4Tz6CO6_mMgC7jx7i37U",
+        "email": "tristan@jakubowski.net",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzgxNjYxOCwianRpIjoiY2YzY2FlYTEtN2MzZi00ZmQ0LTgxNzctMzZiOGRjODQ4ODRmIiwidXNlciI6eyJpZCI6NTU3LCJlbWFpbCI6InRyaXN0YW5AamFrdWJvd3NraS5uZXQifX0.Yrsp5lJwe0dfw9znzNDMmISWBztPduRrRrSJK-LvhizpaWfqA1-inB8y6F36gCydEjEa3W1rlA8P1wUldgyIrA",
+        "token_type": "Bearer",
+        "expires_in": 7200,
+        "refresh_token": "hM2FBZw3_WjuTUy4E8JXQVnlgDKp-5tMZD3Eusnubho",
+        "created_at": 1567816618,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/user/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "herb_tremblay@spinka.net",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzgxNjYxOCwianRpIjoiMTBmYTFiZjQtMzUzNy00ODlkLWEzZTUtYzc0NWI2MmE3NDA0IiwidXNlciI6eyJpZCI6NTU5LCJlbWFpbCI6ImhlcmJfdHJlbWJsYXlAc3BpbmthLm5ldCJ9fQ.M7sEPgPfp6PmiQ0XtAUjja_Q-cSEKvZQTT9CErTxS0adpxTEoAOjaayJYkqvameO5SP1QX78s7NUGTKrR_8png",
+        "token_type": "Bearer",
+        "expires_in": 7200,
+        "refresh_token": "wMgr-0xVSJclGNK2M0FVrPourQurRI3bgB7R5wzMQMU",
+        "created_at": 1567816618,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/user/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "keila@ledner.net",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzgxNjYxOCwianRpIjoiYWQ5OWI5YjktMzRiZi00MmZhLThjZjYtY2U4NGYzYmZiNGY1IiwidXNlciI6eyJpZCI6NTYwLCJlbWFpbCI6ImtlaWxhQGxlZG5lci5uZXQifX0.DFr2KFFmtvf2eCFRrk2qv988oxBgk1g2yo4xnweE_RjQN0Unlr6kH9nyi9NFPCG__Lc3iVxEfRuLwmB6692kFg",
+        "token_type": "Bearer",
+        "expires_in": 7200,
+        "refresh_token": "ktkmC6mgDEN0utDT6-xgXp5bsw5yD-whhzNeumEkJEE",
+        "created_at": 1567816618,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/user/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "cody@haley.io",
+        "password": "new_password",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzgxNjYxOCwianRpIjoiNTMwMTU3YTgtNWU0Ny00NWUwLTlhOTctYWEyY2IzMjQ4NjJiIiwidXNlciI6eyJpZCI6NTY2LCJlbWFpbCI6ImNvZHlAaGFsZXkuaW8ifX0.9UGJAqX5Q2yVUahLMHo5dUQgs8ysj4GBlBkY6-PSFTDlnU9c4d726pnG6q2aU-KM0vI1F1UFCRoDNanrXoiF6w",
+        "token_type": "Bearer",
+        "expires_in": 7199,
+        "refresh_token": "KtAEK19oB1E_8s-tgahU01cFqQUvY0NiGPYGYdD6QbQ",
+        "created_at": 1567816618,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    }
+  ],
+  "Tokens#refresh": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/user/refresh",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "refresh_token": "ktkmC6mgDEN0utDT6-xgXp5bsw5yD-whhzNeumEkJEE",
         "grant_type": "refresh_token"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2Nzc5NDg2MywianRpIjoiMTVjNGUzZDMtMTM5MC00MmFlLThiOWUtMzhmYmQyYTcyMDc2IiwidXNlciI6eyJpZCI6MzIzLCJlbWFpbCI6ImFsdG9uQG9rZWVmZXNpbW9uaXMubmV0In19.m7kdx7bBtN0ajYTk2Uiknjf_wM96MBIYtCM4-M7yg4qZANY4gW2Y9x9rs0tROo-1nFyhjoIqoT1jjfcbA77TjQ",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2NzgxNjYxOCwianRpIjoiOTMzMGNjZDUtYzNjYi00NGExLWJkOTAtNTgwOGJjZjFkNzBkIiwidXNlciI6eyJpZCI6NTYwLCJlbWFpbCI6ImtlaWxhQGxlZG5lci5uZXQifX0.PZrsTakwRffedt2YJEmTBngvptqwUCAoONlw1RPNGQM1BduJDO-FyYZnBgHoWECJf7h0gMgUeyv8bpPjAYtZWg",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "-e74D4Qgnl7WBsF50CgkGwzlh-BdUjo5-a9XvM8QsVk",
-        "created_at": 1567794863,
+        "refresh_token": "Z14LCqI-4D2N0rAxm9Gmp6jFmzXjIB8GT4RycXnIOEs",
+        "created_at": 1567816618,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },

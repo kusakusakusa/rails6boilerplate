@@ -6,7 +6,7 @@ RSpec.describe 'Authentications', type: :request do
   let!(:user) { create(:user) }
   let(:unconfirmed_user) { create(:user, :unconfirmed) }
 
-  describe 'POST /api/v1/login' do
+  describe 'POST /api/v1/user/login' do
     scenario 'should fail with wrong email' do
       params = {
         email: 'wrong@email.com',
@@ -14,7 +14,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.invalid'
@@ -28,7 +28,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.invalid'
@@ -42,15 +42,14 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.unconfirmed'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
     end
 
-    scenario 'should fail with revoked token after logout' do
-    end
+    scenario 'should fail with revoked token after logout'
 
     scenario 'should get token with correct credentials', :show_in_doc do
       params = {
@@ -59,7 +58,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response_body.access_token).to be_present
       expect(response_body.response_code).to eq 'custom.success.default'
@@ -67,7 +66,7 @@ RSpec.describe 'Authentications', type: :request do
     end
   end
 
-  describe 'POST /api/v1/refresh' do
+  describe 'POST /api/v1/user/refresh' do
     before :each do
       params = {
         email: user.email,
@@ -75,7 +74,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       @access_token = response_body['access_token']
       @refresh_token = response_body['refresh_token']
@@ -87,7 +86,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'refresh_token'
       }
 
-      post api_v1_refresh_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
@@ -102,7 +101,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'refresh_token'
       }
 
-      post api_v1_refresh_path, params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
 

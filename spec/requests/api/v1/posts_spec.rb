@@ -16,7 +16,7 @@ RSpec.describe 'Posts', type: :request do
         grant_type: 'password'
       }
 
-      post api_v1_login_path, params: login_params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/user/login', params: login_params.to_json, headers: DEFAULT_HEADERS
 
       @access_token = response_body['access_token']
       @refresh_token = response_body['refresh_token']

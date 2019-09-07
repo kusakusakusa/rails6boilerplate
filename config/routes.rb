@@ -20,8 +20,8 @@ Rails.application.routes.draw do
     namespace 'v1' do
       # duplicate paths to doorkeeper that is exposed on apipie
       # front end will use this for pretty purpose
-      post 'login', to: 'tokens#login'
-      post 'refresh', to: 'tokens#refresh'
+      post 'user/login', to: 'tokens#login'
+      post 'user/refresh', to: 'tokens#refresh'
 
       as :user do
         post 'user/account', to: 'accounts#create'
