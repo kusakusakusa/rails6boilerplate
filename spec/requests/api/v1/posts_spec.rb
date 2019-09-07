@@ -51,6 +51,34 @@ RSpec.describe 'Posts', type: :request do
       end
     end
 
+    scenario 'should fail with revoked refresh token used' do
+      params = {
+        token: @refresh_token
+      }
+
+      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+      get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+
+      expect(response.status).to eq 401
+      expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.revoked'
+      expect(response_body.response_message).to eq I18n.t response_body.response_code
+    end
+
+    scenario 'should fail with revoked access token used' do
+      params = {
+        token: @refresh_token
+      }
+
+      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+      get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+
+      expect(response.status).to eq 401
+      expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.revoked'
+      expect(response_body.response_message).to eq I18n.t response_body.response_code
+    end
+
     scenario "should pass the user's posts", :show_in_doc do
       post1 # lazyload
       post2 # lazyload
