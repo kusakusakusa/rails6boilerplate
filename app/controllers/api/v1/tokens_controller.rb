@@ -48,7 +48,18 @@ module Api
         create
       end
 
-      
+      api :POST, '/user/logout', 'Revokes tokens. Should always pass whatever the token'
+      description 'Revokes token. Should always pass whatever the token'
+      param :token, String, desc: 'refresh_token or access_token', required: true
+      def revoke
+        # Follow doorkeeper-5.1.0 method, different from the latest code on the repo on 6 Sept 2019
+        revoke_token if authorized?
+        response_code = 'custom.success.default'
+        render json: {
+          response_code: response_code,
+          response_message: I18n.t(response_code)
+        }, status: 200
+      end
     end
   end
 end

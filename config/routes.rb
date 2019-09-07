@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       # front end will use this for pretty purpose
       post 'user/login', to: 'tokens#login'
       post 'user/refresh', to: 'tokens#refresh'
+      post 'user/logout', to: 'tokens#revoke'
 
       as :user do
         post 'user/account', to: 'accounts#create'

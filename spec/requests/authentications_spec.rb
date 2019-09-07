@@ -49,8 +49,6 @@ RSpec.describe 'Authentications', type: :request do
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
     end
 
-    scenario 'should fail with revoked token after logout'
-
     scenario 'should get token with correct credentials', :show_in_doc do
       params = {
         email: user.email,
@@ -93,7 +91,43 @@ RSpec.describe 'Authentications', type: :request do
       expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
     end
 
-    scenario 'should fail with revoked token after logout'
+    scenario 'should fail with revoked refresh_token (after logout)' do
+      params = {
+        token: @refresh_token
+      }
+
+      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+      params = {
+        refresh_token: @refresh_token,
+        grant_type: 'refresh_token'
+      }
+
+      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
+
+      expect(response.status).to eq 400
+      expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    end
+
+    scenario 'should fail with revoked access_token (after logout)' do
+      params = {
+        token: @access_token
+      }
+
+      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+      params = {
+        refresh_token: @refresh_token,
+        grant_type: 'refresh_token'
+      }
+
+      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
+
+      expect(response.status).to eq 400
+      expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    end
 
     scenario 'should return new access_token with valid refresh_token', :show_in_doc do
       params = {
@@ -111,6 +145,61 @@ RSpec.describe 'Authentications', type: :request do
       expect(response_body.refresh_token).not_to eq @refresh_token
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t('custom.success.default')
+    end
+  end
+
+  describe 'POST /api/v1/user/logout' do
+    describe 'with invalid token' do
+      scenario 'should pass for doorkeeper-5.1.0' do
+        params = {
+          token: 'invalid_token'
+        }
+
+        post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+        expect(response.status).to eq 200
+        expect(response_body.response_code).to eq 'custom.success.default'
+        expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      end
+    end
+
+    describe 'with valid' do
+      before :each do
+        params = {
+          email: user.email,
+          password: '12345678',
+          grant_type: 'password'
+        }
+
+        post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+
+        @access_token = response_body['access_token']
+        @refresh_token = response_body['refresh_token']
+      end
+
+      scenario 'refresh_token should pass for doorkeeper-5.1.0' do
+        params = {
+          token: @refresh_token
+        }
+
+        post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+        expect(response.status).to eq 200
+        expect(response_body.response_code).to eq 'custom.success.default'
+        expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      end
+
+      scenario 'access_token should pass for doorkeeper-5.1.0' do
+        params = {
+          token: @access_token
+        }
+
+        post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+
+        expect(response.status).to eq 200
+        expect(response_body.response_code).to eq 'custom.success.default'
+        expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      end
     end
   end
 end
