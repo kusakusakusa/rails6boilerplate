@@ -34,7 +34,6 @@ Run the command below to generate example responses and request using apipie and
 APIPIE_RECORD=examples rspec
 ```
 
-
 ## Models
 
 ### User
@@ -78,6 +77,16 @@ With reference to [this guide](https://naturaily.com/blog/api-authentication-dev
 In the `config/routes.rb` file, `token_info` controller is skipped.
 
 [API mode](https://doorkeeper.gitbook.io/guides/ruby-on-rails/api-mode) is established and authorization request are removed and `doorkeeper` applications views are not rendered.
+
+This setup will remove the authorization server that is doorkeeper, leaving only the refresh token and access token mechanism still in place.
+
+The `Api::V1::TokensController` controller inherits from `Doorkeeper::TokensController`.
+
+`refresh` route will handle the refresh mechanism while the `login` route will handle the login mechanism. Both share the parent controller's `create` method by the methodology of `doorkeeper`.
+
+`login` routes will use `application/json` `content-type` instead of `application/x-www-form-urlencoded` according to [spec](https://tools.ietf.org/html/rfc6749).
+
+Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `posts` APIs. `handle_auth_errors` is set to `:raise` in `doorkeeper.rb`, so the `Doorkeeper::Errors` will be triggered via the `before_action :doorkeeper_authorize!` in the `API::BaseController`, which should be inherited by most of, if not all, the custom controllers. Each of the `Doorkeeper::Errors` will return their specific errors.
 
 ### Models
 
