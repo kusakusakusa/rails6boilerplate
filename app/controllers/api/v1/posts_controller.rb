@@ -9,8 +9,6 @@ module Api
         api_versions 'v1' # , 'v2'
       end
 
-      before_action :doorkeeper_authorize!
-
       api :GET, '/posts', "Returns all of user's posts"
       description "Returns all of user's posts"
       header 'Authorization', 'Bearer [your_access_token]', required: true

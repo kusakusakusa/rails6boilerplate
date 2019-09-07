@@ -2,6 +2,7 @@
 
 module Api
   class BaseController < ActionController::API
+    before_action :doorkeeper_authorize!
     before_action :add_default_response_keys
     rescue_from Doorkeeper::Errors::InvalidToken, with: :handle_doorkeeper_errors
     rescue_from Doorkeeper::Errors::TokenForbidden, with: :handle_doorkeeper_errors
