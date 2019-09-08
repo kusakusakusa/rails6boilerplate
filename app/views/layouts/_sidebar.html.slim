@@ -72,6 +72,15 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
       i.fas.fa-fw.fa-table
       span Tables
   /! Divider
+  hr.sidebar-divider/
+  /! Heading
+  .sidebar-heading
+    | Account
+  li.nav-item
+    = link_to edit_admin_user_registration_path, class: 'nav-link' do
+      i.fas.fa-fw.fa-lock
+      span Password
+  /! Divider
   hr.sidebar-divider.d-none.d-md-block/
   /! Sidebar Toggler (Sidebar)
   .text-center.d-none.d-md-inline
