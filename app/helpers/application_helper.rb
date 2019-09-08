@@ -3,10 +3,12 @@
 module ApplicationHelper
   def flash_class(key)
     case key
+    # from devise
+    when 'notice'
+      'alert-success'
     when 'alert'
       'alert-danger'
-    when 'notice'
-      'alert-info'
+    # custom
     else
       "alert-#{key}"
     end

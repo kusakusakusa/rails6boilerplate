@@ -8,11 +8,17 @@ Rails.application.routes.draw do
     resources :posts
   end
 
-  devise_for :admin_users,
-             path: '',
-             path_names: {
-               sign_in: 'cms/login'
-             }
+  devise_scope :admin_users do
+    scope 'cms' do
+      devise_for :admin_users,
+               path: ''
+      as :admin_user do
+        get 'admin_user' => 'admin_users_devise/registrations#edit'
+        get 'admin_user/edit' => 'admin_users_devise/registrations#edit', as: 'edit_admin_user_registration'
+        patch 'admin_user' => 'admin_users_devise/registrations#update', as: 'admin_user_registration'
+      end
+    end
+  end
 
   devise_for :users, skip: :all
 
