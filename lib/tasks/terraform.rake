@@ -31,7 +31,8 @@ namespace :terraform do
       end
 
       puts 'Create setup.tf file for staging'
-      setup_script = <<~MSG
+      file = File.open(Rails.root.join('terraform', 'staging', 'setup.tf'), 'w')
+      file.puts <<~MSG
         # download all necessary plugins for terraform
         # set versions
         terraform {
@@ -46,14 +47,12 @@ namespace :terraform do
         provider "null" {
           version = "~> 2.1"
         }
-
       MSG
-      file = File.open(Rails.root.join('terraform', 'staging', 'setup.tf'), 'w')
-      file.puts setup_script
       file.close
 
       puts 'Create variables.tf file for staging'
-      variables_script = <<~MSG
+      file = File.open(Rails.root.join('terraform', 'staging', 'variables.tf'), 'w')
+      file.puts <<~MSG
         variable "project_name" {
           type = string
           default = "#{Rails.application.class.module_parent_name}"
@@ -69,12 +68,11 @@ namespace :terraform do
           default = "staging"
         }
       MSG
-      file = File.open(Rails.root.join('terraform', 'staging', 'variables.tf'), 'w')
-      file.puts variables_script
       file.close
 
       puts 'Create ec2.tf file for staging'
-      ec2_script = <<~MSG
+      file = File.open(Rails.root.join('terraform', 'staging', 'ec2.tf'), 'w')
+      file.puts <<~MSG
         resource "aws_key_pair" "this" {
           key_name   = var.project_name
           public_key = file("${path.module}/${var.project_name}-${var.env}.pub")
@@ -149,8 +147,6 @@ namespace :terraform do
           }
         }
       MSG
-      file = File.open(Rails.root.join('terraform', 'staging', 'ec2.tf'), 'w')
-      file.puts ec2_script
       file.close
 
       puts 'Create deploy.sh file for staging'
@@ -160,7 +156,8 @@ namespace :terraform do
       # temporary; use terraform backend
       `touch #{Rails.root.join('terraform', 'staging', 'terraform.tfstate')}`
 
-      deploy_script = <<~MSG
+      file = File.open(Rails.root.join('terraform', 'staging', 'deploy.sh'), 'w')
+      file.puts <<~MSG
         #!/usr/bin/env bash
 
         AWS_DEFAULT_REGION="#{REGION}"
@@ -176,12 +173,11 @@ namespace :terraform do
           #{Rails.application.class.module_parent_name.downcase}-staging \
           apply
       MSG
-      file = File.open(Rails.root.join('terraform', 'staging', 'deploy.sh'), 'w')
-      file.puts deploy_script
       file.close
       `chmod +x #{Rails.root.join('terraform', 'staging', 'deploy.sh')}`
 
-      destroy_script = <<~MSG
+      file = File.open(Rails.root.join('terraform', 'staging', 'destroy.sh'), 'w')
+      file.puts <<~MSG
         #!/usr/bin/env bash
 
         AWS_DEFAULT_REGION="#{REGION}"
@@ -195,8 +191,6 @@ namespace :terraform do
           #{Rails.application.class.module_parent_name.downcase}-staging \
           destroy
       MSG
-      file = File.open(Rails.root.join('terraform', 'staging', 'destroy.sh'), 'w')
-      file.puts destroy_script
       file.close
       `chmod +x #{Rails.root.join('terraform', 'staging', 'destroy.sh')}`
     end
