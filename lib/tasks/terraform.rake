@@ -106,6 +106,64 @@ namespace :terraform do
           key = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}.pub"
           source = "#{PRIVATE_KEY_FILE_NAME}.pub"
         }
+
+        # with reference to https://stackoverflow.com/a/52868251/2667545
+
+        data "aws_iam_policy_document" "secrets_bucket" {
+          statement {
+            actions = ["sts:AssumeRole"]
+
+            principals {
+              type        = "Service"
+              identifiers = ["ec2.amazonaws.com"]
+            }
+          }
+        }
+
+        resource "aws_iam_policy" "secrets_bucket" {
+          name = "${module.secrets_bucket.id}-secrets_bucket_iam_policy"
+          description = "Allow reading from the S3 bucket"
+
+          policy = <<EOF
+        {
+          "Version":"2012-10-17",
+          "Statement":[
+            {
+              "Effect":"Allow",
+              "Action":[
+                "s3:GetObject"
+              ],
+              "Resource":[
+                "${module.secrets_bucket.arn}",
+                "${module.secrets_bucket.arn}/*"
+              ]
+            },
+            {
+              "Effect":"Allow",
+              "Action":[
+                "s3:ListAllMyBuckets"
+              ],
+              "Resource":"*"
+            }
+          ]
+        }
+        EOF
+        }
+
+        resource "aws_iam_role" "secrets_bucket" {
+          name = "${module.secrets_bucket.id}-iam_role"
+          assume_role_policy = data.aws_iam_policy_document.secrets_bucket.json
+        }
+
+        resource "aws_iam_role_policy_attachment" "secrets_bucket" {
+          role = aws_iam_role.secrets_bucket.name
+          policy_arn = aws_iam_policy.secrets_bucket.arn
+        }
+
+        resource "aws_iam_instance_profile" "secrets_bucket" {
+          name = "${module.secrets_bucket.id}-iam_instance_profile"
+          role = aws_iam_role.secrets_bucket.name
+        }
       MSG
       file.close
 
@@ -179,6 +237,8 @@ namespace :terraform do
           security_groups = [
             aws_security_group.this.name
           ]
+
+          iam_instance_profile = aws_iam_instance_profile.secrets_bucket.name
 
           tags = {
             Name = var.project_name
