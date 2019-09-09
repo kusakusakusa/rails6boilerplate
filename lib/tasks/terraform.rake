@@ -55,7 +55,7 @@ namespace :terraform do
       file.puts <<~MSG
         variable "project_name" {
           type = string
-          default = "#{Rails.application.class.module_parent_name}"
+          default = "#{Rails.application.class.module_parent_name.downcase}"
         }
 
         variable "region" {
@@ -70,12 +70,51 @@ namespace :terraform do
       MSG
       file.close
 
+      puts 'Create secrets_bucket.tf file for staging to upload private and public keys'
+      file = File.open(Rails.root.join('terraform', 'staging', 'secrets_bucket.tf'), 'w')
+      file.puts <<~MSG
+        module "secrets_bucket" {
+          source = "trussworks/s3-private-bucket/aws"
+          version = "~> 1.7.2"
+          bucket = "${var.project_name}-secrets-bucket"
+          logging_bucket = aws_s3_bucket.secrets_log_bucket.id
+
+          tags = {
+            Name = var.project_name
+            Env = var.env
+          }
+        }
+
+        resource "aws_s3_bucket" "secrets_log_bucket" {
+          bucket = "${var.project_name}-secrets-log-bucket"
+          acl = "log-delivery-write"
+
+          tags = {
+            Name = var.project_name
+            Env = var.env
+          }
+        }
+
+        resource "aws_s3_bucket_object" "private_key" {
+          bucket = module.secrets_bucket.id
+          key = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}"
+          source = "#{PRIVATE_KEY_FILE_NAME}"
+        }
+
+        resource "aws_s3_bucket_object" "public_key" {
+          bucket = module.secrets_bucket.id
+          key = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}.pub"
+          source = "#{PRIVATE_KEY_FILE_NAME}.pub"
+        }
+      MSG
+      file.close
+
       puts 'Create ec2.tf file for staging'
       file = File.open(Rails.root.join('terraform', 'staging', 'ec2.tf'), 'w')
       file.puts <<~MSG
         resource "aws_key_pair" "this" {
           key_name   = var.project_name
-          public_key = file("${path.module}/${var.project_name}-${var.env}.pub")
+          public_key = file("${path.module}/#{PRIVATE_KEY_FILE_NAME}.pub")
         }
 
         resource "aws_security_group" "this" {
