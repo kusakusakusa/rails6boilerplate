@@ -14,24 +14,26 @@ namespace :terraform do
       if AWS_SECRET_ACCESS_KEY.blank?
         abort('Please check your AWS named profile in ~/.aws/credentials file')
       end
+      AWS_ACCOUNT_ID = `aws sts get-caller-identity --profile tgp | jq -r '.Account'`
 
       puts "AWS_ACCESS_KEY_ID is #{AWS_ACCESS_KEY_ID}"
       puts "AWS_SECRET_ACCESS_KEY is #{AWS_SECRET_ACCESS_KEY}"
+      puts "AWS_ACCOUNT_ID is #{AWS_ACCOUNT_ID}"
 
       # constants
       PROJECT_NAME = Rails.application.class.module_parent_name.downcase
       REGION = 'us-east-1'
       PRIVATE_KEY_FILE_NAME = "#{Rails.application.class.module_parent_name}-staging"
-      TFSTATE_BUCKET = "#{PROJECT_NAME}-tfstate"
+      TFSTATE_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-tfstate"
       TFSTATE_KEY = 'staging/terraform.tfstate'
-      LOGS_BUCKET = "#{PROJECT_NAME}-logs-bucket"
+      LOGS_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-logs-bucket"
 
       puts ''
       puts '######################'
       puts ''
 
       # create terraform backend s3 bucket via aws-cli
-      # which is assumed to be present on local machine
+      # aws-cli is assumed to be present on local machine
       tfstate_bucket = `aws s3 --profile #{aws_profile} ls | grep " #{TFSTATE_BUCKET}$"`.chomp
       if tfstate_bucket.blank?
         puts "Creating Terraform state bucket (#{TFSTATE_BUCKET})"
@@ -48,11 +50,11 @@ namespace :terraform do
         puts "Terraform state bucket (#{TFSTATE_BUCKET}) already created!"
       end
 
-      puts 'Enabling versioning'
+      puts "Enabling versioning for #{TFSTATE_BUCKET}"
       `aws s3api put-bucket-versioning --bucket #{TFSTATE_BUCKET} --profile #{aws_profile} --versioning-configuration Status=Enabled`
 
       tmp_versioning_filepath = Rails.root.join('tmp/tf_state_encryption_rule.json')
-      puts 'Enabling encryption'
+      puts "Enabling encryption for #{TFSTATE_BUCKET}"
       file = File.open(tmp_versioning_filepath, 'w')
       file.puts <<~MSG
         {
@@ -69,7 +71,7 @@ namespace :terraform do
       `aws s3api put-bucket-encryption --bucket #{TFSTATE_BUCKET} --profile #{aws_profile} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
       File.delete(tmp_versioning_filepath)
 
-      puts 'Enabling lifecycle'
+      puts "Enabling lifecycle for #{TFSTATE_BUCKET}"
       tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
       file = File.open(tmp_lifecycle_filepath, 'w')
       file.puts <<~MSG
