@@ -10,5 +10,6 @@ RUN terraform init
 COPY ./secrets_bucket.tf .
 RUN terraform init
 
-# copy scripts for terraform to run
+# copy scripts and ssh_keys files for terraform to run
 COPY . .
+COPY ./ssh_keys .

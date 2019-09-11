@@ -1,60 +1,32 @@
 # frozen_string_literal: true
 
 namespace :terraform do
-  namespace :staging do
-    desc 'Setup terraform for default staging env'
-    task init: :environment do
-      puts 'Enter your AWS named profile:'
-      aws_profile = STDIN.gets.chomp
-      AWS_ACCESS_KEY_ID = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
-      if AWS_ACCESS_KEY_ID.blank?
-        abort('Please check your AWS named profile in ~/.aws/credentials file')
-      end
-      AWS_SECRET_ACCESS_KEY = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
-      if AWS_SECRET_ACCESS_KEY.blank?
-        abort('Please check your AWS named profile in ~/.aws/credentials file')
-      end
-      AWS_ACCOUNT_ID = `aws sts get-caller-identity --profile tgp | jq -r '.Account'`
-
-      puts "AWS_ACCESS_KEY_ID is #{AWS_ACCESS_KEY_ID}"
-      puts "AWS_SECRET_ACCESS_KEY is #{AWS_SECRET_ACCESS_KEY}"
-      puts "AWS_ACCOUNT_ID is #{AWS_ACCOUNT_ID}"
-
-      # constants
-      PROJECT_NAME = Rails.application.class.module_parent_name.downcase
-      REGION = 'us-east-1'
-      PRIVATE_KEY_FILE_NAME = "#{Rails.application.class.module_parent_name}-staging"
-      TFSTATE_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-tfstate"
-      TFSTATE_KEY = 'staging/terraform.tfstate'
-      LOGS_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-logs-bucket"
-
-      puts ''
-      puts '######################'
-      puts ''
-
+  namespace :shared do
+    desc 'Create tfstate backend of s3 for all environments'
+    task :create_tf_state_bucket, [:aws_profile, :TFSTATE_BUCKET, :REGION] => :environment do |task, args|
       # create terraform backend s3 bucket via aws-cli
       # aws-cli is assumed to be present on local machine
-      tfstate_bucket = `aws s3 --profile #{aws_profile} ls | grep " #{TFSTATE_BUCKET}$"`.chomp
+      tfstate_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{args[:TFSTATE_BUCKET]}$"`.chomp
       if tfstate_bucket.blank?
-        puts "Creating Terraform state bucket (#{TFSTATE_BUCKET})"
-        `aws s3api create-bucket --bucket #{TFSTATE_BUCKET} --region #{REGION} --profile #{aws_profile}`
+        puts "Creating Terraform state bucket (#{args[:TFSTATE_BUCKET]})"
+        `aws s3api create-bucket --bucket #{args[:TFSTATE_BUCKET]} --region #{REGION} --profile #{args[:aws_profile]}`
 
         sleep 2
 
         puts 'Uploading empty tfstate file'
         blank_filepath = Rails.root.join('tmp/tfstate')
         `touch #{blank_filepath}`
-        `aws s3 cp #{blank_filepath} s3://#{TFSTATE_BUCKET}/#{TFSTATE_KEY} --profile #{aws_profile}`
+        `aws s3 cp #{blank_filepath} s3://#{args[:TFSTATE_BUCKET]}/#{TFSTATE_KEY} --profile #{args[:aws_profile]}`
         File.delete(blank_filepath)
       else
-        puts "Terraform state bucket (#{TFSTATE_BUCKET}) already created!"
+        puts "Terraform state bucket (#{args[:TFSTATE_BUCKET]}) already created!"
       end
 
-      puts "Enabling versioning for #{TFSTATE_BUCKET}"
-      `aws s3api put-bucket-versioning --bucket #{TFSTATE_BUCKET} --profile #{aws_profile} --versioning-configuration Status=Enabled`
+      puts "Enabling/overwriting versioning for #{args[:TFSTATE_BUCKET]}"
+      `aws s3api put-bucket-versioning --bucket #{args[:TFSTATE_BUCKET]} --profile #{args[:aws_profile]} --versioning-configuration Status=Enabled`
 
       tmp_versioning_filepath = Rails.root.join('tmp/tf_state_encryption_rule.json')
-      puts "Enabling encryption for #{TFSTATE_BUCKET}"
+      puts "Enabling/overwriting encryption for #{args[:TFSTATE_BUCKET]}"
       file = File.open(tmp_versioning_filepath, 'w')
       file.puts <<~MSG
         {
@@ -68,10 +40,10 @@ namespace :terraform do
         }
       MSG
       file.close
-      `aws s3api put-bucket-encryption --bucket #{TFSTATE_BUCKET} --profile #{aws_profile} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
+      `aws s3api put-bucket-encryption --bucket #{args[:TFSTATE_BUCKET]} --profile #{args[:aws_profile]} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
       File.delete(tmp_versioning_filepath)
 
-      puts "Enabling lifecycle for #{TFSTATE_BUCKET}"
+      puts "Enabling/overwriting lifecycle for #{args[:TFSTATE_BUCKET]}"
       tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
       file = File.open(tmp_lifecycle_filepath, 'w')
       file.puts <<~MSG
@@ -89,21 +61,21 @@ namespace :terraform do
         }
       MSG
       file.close
-      `aws s3api put-bucket-lifecycle-configuration --bucket #{TFSTATE_BUCKET} --profile #{aws_profile} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
+      `aws s3api put-bucket-lifecycle-configuration --bucket #{args[:TFSTATE_BUCKET]} --profile #{args[:aws_profile]} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
       File.delete(tmp_lifecycle_filepath)
+    end
 
-      puts ''
-      puts '######################'
-      puts ''
-
-      create logs s3 bucket via aws-cli
-      logs_bucket = `aws s3 --profile #{aws_profile} ls | grep " #{LOGS_BUCKET}$"`.chomp
+    desc 'Create logs bucket for all environments'
+    task :create_logs_bucket, [:aws_profile, :LOGS_BUCKET] => :environment do |task, args|
+      logs_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{args[:LOGS_BUCKET]}$"`.chomp
       if logs_bucket.blank?
-        puts "Creating logs bucket (#{LOGS_BUCKET})"
-        `aws s3api create-bucket --bucket #{LOGS_BUCKET} --region #{REGION} --profile #{aws_profile}`
-        puts "Enabling log-delivery-write acl for logs bucket (#{LOGS_BUCKET})"
-        `aws s3api put-bucket-acl --bucket #{LOGS_BUCKET} --region #{REGION} --profile #{aws_profile} --acl log-delivery-write`
-        puts "Enabling lifecycle logs bucket (#{LOGS_BUCKET})"
+        puts "Creating logs bucket (#{args[:LOGS_BUCKET]})"
+        `aws s3api create-bucket --bucket #{args[:LOGS_BUCKET]} --region #{REGION} --profile #{args[:aws_profile]}`
+
+        puts "Enabling/overwriting log-delivery-write acl for logs bucket (#{args[:LOGS_BUCKET]})"
+        `aws s3api put-bucket-acl --bucket #{args[:LOGS_BUCKET]} --region #{REGION} --profile #{args[:aws_profile]} --acl log-delivery-write`
+
+        puts "Enabling/overwriting lifecycle logs bucket (#{args[:LOGS_BUCKET]})"
         tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
         file = File.open(tmp_lifecycle_filepath, 'w')
         file.puts <<~MSG
@@ -121,27 +93,74 @@ namespace :terraform do
           }
         MSG
         file.close
-        `aws s3api put-bucket-lifecycle-configuration --bucket #{LOGS_BUCKET} --profile #{aws_profile} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
+        `aws s3api put-bucket-lifecycle-configuration --bucket #{args[:LOGS_BUCKET]} --profile #{args[:aws_profile]} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
         File.delete(tmp_lifecycle_filepath)
-
       else
-        puts "Logs bucket (#{LOGS_BUCKET}) already created!"
+        puts "Logs bucket (#{args[:LOGS_BUCKET]}) already created!"
       end
+    end
+
+    desc 'Generate private/public key'
+    task :generate_ssh_keys, [:PRIVATE_KEY_FILE_NAME, :SSH_KEYS_DIR] => :environment do |task, args|
+      # these keys will be used for:
+      # 1. generating aws keypair
+      # 2. authentication key for private git repository
+      filepath = "#{args[:SSH_KEYS_DIR]}/#{args[:PRIVATE_KEY_FILE_NAME]}"
+      if File.exist? filepath
+        puts 'Private key already created'
+      else
+        puts 'Create private key file for staging'
+        `ssh-keygen -t rsa -f #{filepath} -C #{args[:PRIVATE_KEY_FILE_NAME]}`
+        `chmod +r #{filepath}`
+      end
+    end
+  end
+
+  namespace :staging do
+    desc 'Setup terraform for default staging env'
+    task init: :environment do
+      puts 'Enter your AWS named profile:'
+      aws_profile = STDIN.gets.chomp
+      AWS_ACCESS_KEY_ID = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
+      if AWS_ACCESS_KEY_ID.blank?
+        abort('Please check your AWS named profile in ~/.aws/credentials file')
+      end
+      AWS_SECRET_ACCESS_KEY = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
+      if AWS_SECRET_ACCESS_KEY.blank?
+        abort('Please check your AWS named profile in ~/.aws/credentials file')
+      end
+      AWS_ACCOUNT_ID = `aws sts get-caller-identity --profile tgp | jq -r '.Account'`.chomp
+
+      puts "AWS_ACCESS_KEY_ID is #{AWS_ACCESS_KEY_ID}"
+      puts "AWS_SECRET_ACCESS_KEY is #{AWS_SECRET_ACCESS_KEY}"
+      puts "AWS_ACCOUNT_ID is #{AWS_ACCOUNT_ID}"
+
+      # constants
+      PROJECT_NAME = Rails.application.class.module_parent_name.downcase
+      REGION = 'us-east-1'
+      PRIVATE_KEY_FILE_NAME = "#{Rails.application.class.module_parent_name}-staging"
+      TFSTATE_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-tfstate"
+      TFSTATE_KEY = 'staging/terraform.tfstate'
+      LOGS_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-logs-bucket"
+      SSH_KEYS_DIR = Rails.root.join('terraform', 'staging', 'ssh_keys')
 
       puts ''
       puts '######################'
       puts ''
 
-      # generate private/public key
-      # these keys will be used for:
-      # 1. generating aws keypair
-      # 2. authentication key for private git repository
-      if File.exist? "#{Rails.root.join('terraform', 'staging')}/#{PRIVATE_KEY_FILE_NAME}"
-        puts 'Private key already created'
-      else
-        puts 'Create private key file for staging'
-        sh "ssh-keygen -t rsa -f #{Rails.root.join('terraform', 'staging')}/#{PRIVATE_KEY_FILE_NAME} -C #{PRIVATE_KEY_FILE_NAME}"
-      end
+      Rake::Task['terraform:shared:create_tf_state_bucket'].invoke(aws_profile, TFSTATE_BUCKET)
+
+      puts ''
+      puts '######################'
+      puts ''
+
+      Rake::Task['terraform:shared:create_logs_bucket'].invoke(aws_profile, LOGS_BUCKET)
+
+      puts ''
+      puts '######################'
+      puts ''
+
+      Rake::Task['terraform:shared:generate_ssh_keys'].invoke(PRIVATE_KEY_FILE_NAME, SSH_KEYS_DIR)
 
       puts ''
       puts '######################'
@@ -166,8 +185,6 @@ namespace :terraform do
             bucket = "#{TFSTATE_BUCKET}"
             key = "#{TFSTATE_KEY}"
             region = "#{REGION}"
-            access_key = "#{AWS_ACCESS_KEY_ID}"
-            secret_key = "#{AWS_SECRET_ACCESS_KEY}"
           }
         }
 
@@ -215,7 +232,7 @@ namespace :terraform do
         resource "aws_s3_bucket_object" "private_key" {
           bucket = module.secrets_bucket.id
           key = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}"
-          source = "#{PRIVATE_KEY_FILE_NAME}"
+          source = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}"
 
           tags = {
             Name = var.project_name
@@ -298,7 +315,7 @@ namespace :terraform do
       file = File.open(Rails.root.join('terraform', 'staging', 'ec2.tf'), 'w')
       file.puts <<~MSG
         resource "aws_key_pair" "this" {
-          key_name   = var.project_name
+          key_name = var.project_name
           public_key = file("${path.module}/#{PRIVATE_KEY_FILE_NAME}.pub")
         }
 

@@ -79,5 +79,5 @@ yarn-debug.log*
 startbootstrap-sb-admin-2-gh-pages/
 
 # Ignore terraform
-terraform/staging/*
-!terraform/staging/Dockerfile
+terraform/staging/ssh_keys/*
+!terraform/shared/ssh_keys/.gitkeep
