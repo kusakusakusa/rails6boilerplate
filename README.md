@@ -98,6 +98,39 @@ rails d scaffold cms::posts
 rails d scaffold_controller api::v1::posts
 ```
 
+## Terraform
+
+## Staging
+
+An AWS s3 backend will hold the `tfstate` file for `Terraform`. The s3 bucket is created via a rake task.
+
+Requirements to use the rake task:
+1. `aws-cli` installed on your local machine with at least a version of `1.16.234`
+2. AWS named profile to be setup
+3. IAM user with admin access permissions # TODO make sense to restrict?
+
+To run the rake task, enter the command in the root directory and follow the instructions:
+```
+rake terraform:staging:init
+```
+
+This will create a number of terraform configuration and script files in `terraform/staging` folder. These files are not gitignore and left to your jurisdiction whether to store it in the repository or not. There are no sensitive information stored in the terraform config files itself. Storing the files in the repo gives it version control.
+
+This will create `deploy.sh` and `destroy.sh` scripts. The former will deploy the resources, the latter will destroy them. To run these scripts,
+```
+rake terraform:staging:deploy
+# AND
+rake terraform:staging:destroy
+```
+
+It will also create the private and public key meant for
+1. creating the `aws_key_pair` for your ec2 instance(s)
+2. ssh key for your private git repository
+
+## Production
+
+TODO?
+
 
 ## Notes
 
