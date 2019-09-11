@@ -94,12 +94,34 @@ namespace :terraform do
       puts '######################'
       puts ''
 
-      # create logs s3 bucket via aws-cli
+      create logs s3 bucket via aws-cli
       logs_bucket = `aws s3 --profile #{aws_profile} ls | grep " #{LOGS_BUCKET}$"`.chomp
       if logs_bucket.blank?
-        puts "Creating Logs bucket (#{LOGS_BUCKET})"
+        puts "Creating logs bucket (#{LOGS_BUCKET})"
         `aws s3api create-bucket --bucket #{LOGS_BUCKET} --region #{REGION} --profile #{aws_profile}`
+        puts "Enabling log-delivery-write acl for logs bucket (#{LOGS_BUCKET})"
         `aws s3api put-bucket-acl --bucket #{LOGS_BUCKET} --region #{REGION} --profile #{aws_profile} --acl log-delivery-write`
+        puts "Enabling lifecycle logs bucket (#{LOGS_BUCKET})"
+        tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
+        file = File.open(tmp_lifecycle_filepath, 'w')
+        file.puts <<~MSG
+          {
+              "Rules": [
+                  {
+                      "ID": "Remove all log files after 90 days",
+                      "Status": "Enabled",
+                      "Prefix": "",
+                      "Expiration": {
+                          "Days": 90
+                      }
+                  }
+              ]
+          }
+        MSG
+        file.close
+        `aws s3api put-bucket-lifecycle-configuration --bucket #{LOGS_BUCKET} --profile #{aws_profile} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
+        File.delete(tmp_lifecycle_filepath)
+
       else
         puts "Logs bucket (#{LOGS_BUCKET}) already created!"
       end
