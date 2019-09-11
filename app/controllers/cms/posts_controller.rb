@@ -62,7 +62,8 @@ class Cms::PostsController < Cms::BaseController
     params.require(:post).permit(
       :title,
       :publish_date,
-      :content
+      :content,
+      :cover_image
     )
   end
 end
