@@ -59,6 +59,10 @@ class Cms::PostsController < Cms::BaseController
   end
 
   def cms_post_params
-    params.require(:post).permit(:title, :publish_date)
+    params.require(:post).permit(
+      :title,
+      :publish_date,
+      :content
+    )
   end
 end
