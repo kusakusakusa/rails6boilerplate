@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Confirmations', type: :request do
-  describe 'POST /api/v1/user/confirm' do
+  describe 'POST /api/v1/confirm' do
     let(:user1) { create(:user, :unconfirmed) }
     let(:user2) { create(:user, :unconfirmed) }
 
@@ -14,7 +14,7 @@ RSpec.describe 'Confirmations', type: :request do
         confirmation_token: 'invalid_code'
       }
 
-      post '/api/v1/user/confirm', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/confirm', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.confirmations'
@@ -30,7 +30,7 @@ RSpec.describe 'Confirmations', type: :request do
         confirmation_token: user1.confirmation_token
       }
 
-      post '/api/v1/user/confirm', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/confirm', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
@@ -41,12 +41,15 @@ RSpec.describe 'Confirmations', type: :request do
     end
   end
 
-  describe 'GET /api/v1/user/confirm' do
+  describe 'POST /api/v1/resend-confirmation' do
     let(:user) { create(:user, :unconfirmed) }
     let(:confirmed_user) { create(:user) }
 
     scenario 'should fail if email does not exist' do
-      get '/api/v1/user/confirm?email=some@email.com', headers: DEFAULT_HEADERS
+      params = {
+        email: 'some@email.com'
+      }
+      post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.confirmations'
@@ -54,7 +57,10 @@ RSpec.describe 'Confirmations', type: :request do
     end
 
     scenario 'should fail if user already confirmed' do
-      get "/api/v1/user/confirm?email=#{confirmed_user.email}", headers: DEFAULT_HEADERS
+      params = {
+        email: confirmed_user.email
+      }
+      post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.confirmations'
@@ -64,8 +70,10 @@ RSpec.describe 'Confirmations', type: :request do
     scenario 'should not change confirmation_token' do
       expect(user.confirmed?).to eq false
       initial_confirmation_token = user.confirmation_token
-
-      get "/api/v1/user/confirm?email=#{user.email}", headers: DEFAULT_HEADERS
+      params = {
+        email: user.email
+      }
+      post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
@@ -74,7 +82,10 @@ RSpec.describe 'Confirmations', type: :request do
     end
 
     scenario 'should pass when return on unconfirmed user', :show_in_doc do
-      get "/api/v1/user/confirm?email=#{user.email}", headers: DEFAULT_HEADERS
+      params = {
+        email: user.email
+      }
+      post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'

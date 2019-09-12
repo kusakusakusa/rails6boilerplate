@@ -2,14 +2,21 @@
   - if cms_post.errors.any?
     .alert.alert-dismissible.alert-danger
       h2
-        = pluralize(cms_post.errors.count, "error")
+        = pluralize(cms_post.errors.count, 'error')
         | prohibited this cms_post from being saved:
       ul
         - cms_post.errors.full_messages.each do |message|
           li= message
   .form-group
-    = form.text_field :title, placeholder: "Title", class: 'form-control'
+    = form.text_field :title, placeholder: 'Title', class: 'form-control'
   .form-group
-    = form.text_field :publish_date, placeholder: "Publish Date", data: { behavior: "flatpickr" }, class: 'form-control'
+    = form.text_field :publish_date, placeholder: 'Publish Date', data: { behavior: 'flatpickr' }, class: 'form-control'
+  .form-group
+    = form.cktext_area :content, placeholder: 'Write something'
+  .form-group
+    img.image-input-preview src="#{form.object.cover_image.attachment ? rails_blob_url(form.object.cover_image) : '#'}" alt=''
+    = form.file_field :cover_image, class: 'image-input form-control-file', hidden: ''
+    = form.label :cover_image, 'Browse', class: 'btn btn-secondary'
+
   .actions
-    = form.submit class: "btn btn-primary"
+    = form.submit class: 'btn btn-primary'

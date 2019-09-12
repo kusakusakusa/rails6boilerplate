@@ -64,10 +64,11 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
-# authentication
 gem 'apipie-rails', '~> 0.5.16'
 gem 'devise', '~> 4.7.0'
 gem 'doorkeeper', '~> 5.1.0'
 gem 'doorkeeper-jwt', '~> 0.3.0'
+gem 'ckeditor', '~> 5.0.0'
+gem 'mini_magick', '~> 4.9.5'
 gem 'rack-cors', '~> 1.0.3'
 gem 'slim-rails', '~> 3.2.0'

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  mount Ckeditor::Engine => '/ckeditor'
   apipie
 
   namespace :cms do
@@ -26,16 +27,16 @@ Rails.application.routes.draw do
     namespace 'v1' do
       # duplicate paths to doorkeeper that is exposed on apipie
       # front end will use this for pretty purpose
-      post 'user/login', to: 'tokens#login'
-      post 'user/refresh', to: 'tokens#refresh'
-      post 'user/logout', to: 'tokens#revoke'
+      post 'login', to: 'tokens#login'
+      post 'refresh', to: 'tokens#refresh'
+      post 'logout', to: 'tokens#revoke'
 
       as :user do
-        post 'user/account', to: 'accounts#create'
-        get 'user/confirm', to: 'confirmations#create'
-        post 'user/confirm', to: 'confirmations#show'
-        get 'user/forgot-password', to: 'passwords#create'
-        post 'user/reset-password', to: 'passwords#update'
+        post 'register', to: 'accounts#create'
+        post 'resend-confirmation', to: 'confirmations#create'
+        post 'confirm', to: 'confirmations#show'
+        get 'forgot-password', to: 'passwords#create'
+        post 'reset-password', to: 'passwords#update'
       end
 
       resources :posts, only: [:index], defaults: { format: :json }

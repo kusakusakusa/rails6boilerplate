@@ -12,6 +12,7 @@ require("chart.js")
 require("bootstrap")
 require("jquery.easing")
 require("./scss/bootstrap.scss")
+require("./scss/fields.sass")
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
@@ -28,5 +29,18 @@ document.addEventListener("turbolinks:load", () => {
     altInput: true,
     altFormat: 'F j, Y',
     dateFormat: 'Y-m-d'
+  });
+
+  $('.image-input').on('change', function() {
+    const element = this;
+    if (element.files && element.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        element.previousSibling.src = e.target.result
+      }
+      
+      reader.readAsDataURL(element.files[0]);
+    }
   });
 });

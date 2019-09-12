@@ -6,7 +6,7 @@ RSpec.describe 'Authentications', type: :request do
   let!(:user) { create(:user) }
   let(:unconfirmed_user) { create(:user, :unconfirmed) }
 
-  describe 'POST /api/v1/user/login' do
+  describe 'POST /api/v1/login' do
     scenario 'should fail with wrong email' do
       params = {
         email: 'wrong@email.com',
@@ -14,7 +14,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.invalid'
@@ -28,7 +28,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.invalid'
@@ -42,7 +42,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.unconfirmed'
@@ -56,7 +56,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response_body.access_token).to be_present
       expect(response_body.response_code).to eq 'custom.success.default'
@@ -64,7 +64,7 @@ RSpec.describe 'Authentications', type: :request do
     end
   end
 
-  describe 'POST /api/v1/user/refresh' do
+  describe 'POST /api/v1/refresh' do
     before :each do
       params = {
         email: user.email,
@@ -72,7 +72,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
       @access_token = response_body['access_token']
       @refresh_token = response_body['refresh_token']
@@ -84,7 +84,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'refresh_token'
       }
 
-      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
@@ -96,14 +96,14 @@ RSpec.describe 'Authentications', type: :request do
         token: @refresh_token
       }
 
-      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
       params = {
         refresh_token: @refresh_token,
         grant_type: 'refresh_token'
       }
 
-      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
@@ -115,14 +115,14 @@ RSpec.describe 'Authentications', type: :request do
         token: @access_token
       }
 
-      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
       params = {
         refresh_token: @refresh_token,
         grant_type: 'refresh_token'
       }
 
-      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
@@ -135,7 +135,7 @@ RSpec.describe 'Authentications', type: :request do
         grant_type: 'refresh_token'
       }
 
-      post '/api/v1/user/refresh', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
 
@@ -148,14 +148,14 @@ RSpec.describe 'Authentications', type: :request do
     end
   end
 
-  describe 'POST /api/v1/user/logout' do
+  describe 'POST /api/v1/logout' do
     describe 'with invalid token' do
       scenario 'should pass for doorkeeper-5.1.0' do
         params = {
           token: 'invalid_token'
         }
 
-        post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+        post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
         expect(response.status).to eq 200
         expect(response_body.response_code).to eq 'custom.success.default'
@@ -171,7 +171,7 @@ RSpec.describe 'Authentications', type: :request do
           grant_type: 'password'
         }
 
-        post '/api/v1/user/login', params: params.to_json, headers: DEFAULT_HEADERS
+        post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
         @access_token = response_body['access_token']
         @refresh_token = response_body['refresh_token']
@@ -182,7 +182,7 @@ RSpec.describe 'Authentications', type: :request do
           token: @refresh_token
         }
 
-        post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+        post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
         expect(response.status).to eq 200
         expect(response_body.response_code).to eq 'custom.success.default'
@@ -194,7 +194,7 @@ RSpec.describe 'Authentications', type: :request do
           token: @access_token
         }
 
-        post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+        post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
         expect(response.status).to eq 200
         expect(response_body.response_code).to eq 'custom.success.default'

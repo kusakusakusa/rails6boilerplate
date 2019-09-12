@@ -16,7 +16,7 @@ RSpec.describe 'Posts', type: :request do
         grant_type: 'password'
       }
 
-      post '/api/v1/user/login', params: login_params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: login_params.to_json, headers: DEFAULT_HEADERS
 
       @access_token = response_body['access_token']
       @refresh_token = response_body['refresh_token']
@@ -56,7 +56,7 @@ RSpec.describe 'Posts', type: :request do
         token: @refresh_token
       }
 
-      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
       get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
 
@@ -70,7 +70,7 @@ RSpec.describe 'Posts', type: :request do
         token: @refresh_token
       }
 
-      post '/api/v1/user/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
       get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
 

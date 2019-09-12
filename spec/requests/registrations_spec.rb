@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Registrations', type: :request do
-  describe 'POST /api/v1/user/account' do
+  describe 'POST /api/v1/register' do
     scenario 'should fail with too short a password' do
       expect(User.count).to eq 0
       params = {
@@ -11,7 +11,7 @@ RSpec.describe 'Registrations', type: :request do
         password: SecureRandom.alphanumeric(Devise.password_length.to_a.first - 1)
       }
 
-      post '/api/v1/user/account', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.registrations'
@@ -26,7 +26,7 @@ RSpec.describe 'Registrations', type: :request do
         password: SecureRandom.alphanumeric(Devise.password_length.to_a.first)
       }
 
-      post '/api/v1/user/account', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'devise.confirmations.send_instructions'

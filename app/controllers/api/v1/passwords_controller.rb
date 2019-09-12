@@ -13,7 +13,7 @@ module Api
       respond_to :json
       skip_before_action :verify_authenticity_token
 
-      api :GET, '/user/forgot-password', 'Send reset passsword email'
+      api :GET, '/forgot-password', 'Send reset passsword email'
       description 'Send reset passsword email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       def create
@@ -40,7 +40,7 @@ module Api
         end
       end
 
-      api :POST, '/user/reset-password', 'Reset user password'
+      api :POST, '/reset-password', 'Reset user password'
       description 'Reset user password'
       param :reset_password_token, String, desc: 'Reset password token received from email', required: true
       param :password, String, desc: 'New password', required: true

@@ -14,7 +14,7 @@ module Api
       respond_to :json
       skip_before_action :verify_authenticity_token
 
-      api :POST, '/user/confirm', 'Resend email'
+      api :POST, '/resend-confirmation', 'Resend email'
       description 'Resend confirmation email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       def create
@@ -41,7 +41,7 @@ module Api
         end
       end
 
-      api :GET, '/user/confirm', 'Confirm user with token sent to their email'
+      api :POST, '/confirm', 'Confirm user with token sent to their email'
       description 'Confirm user with token sent to their email'
       param :confirmation_token, String, desc: 'Confirmation token sent to email', required: true
       def show
