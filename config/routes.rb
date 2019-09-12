@@ -35,7 +35,7 @@ Rails.application.routes.draw do
         post 'register', to: 'accounts#create'
         post 'resend-confirmation', to: 'confirmations#create'
         post 'confirm', to: 'confirmations#show'
-        get 'forgot-password', to: 'passwords#create'
+        post 'forgot-password', to: 'passwords#create'
         post 'reset-password', to: 'passwords#update'
       end
 

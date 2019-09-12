@@ -13,7 +13,7 @@ module Api
       respond_to :json
       skip_before_action :verify_authenticity_token
 
-      api :GET, '/forgot-password', 'Send reset passsword email'
+      api :POST, '/forgot-password', 'Send reset passsword email'
       description 'Send reset passsword email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       def create
