@@ -9,7 +9,7 @@ module Api
         api_versions 'v1' # , 'v2'
       end
 
-      api :POST, '/user/login', 'Return JWT access_token and refresh_token'
+      api :POST, '/login', 'Return JWT access_token and refresh_token'
       description 'Returns JWT access_token and refresh_token'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       param :password, String, desc: "Length #{Devise.password_length.to_a.first} to #{Devise.password_length.to_a.last}", required: true
@@ -37,7 +37,7 @@ module Api
         end
       end
 
-      api :POST, '/user/refresh', 'Gets JWT refresh_token'
+      api :POST, '/refresh', 'Gets JWT refresh_token'
       description 'Gets JWT refresh_token'
       param :refresh_token, String, desc: 'refresh_token to get new access_token'
       param :refresh_token, String, desc: 'refresh_token to get new access_token'
@@ -48,7 +48,7 @@ module Api
         create
       end
 
-      api :POST, '/user/logout', 'Revokes tokens. Should always pass whatever the token'
+      api :POST, '/logout', 'Revokes tokens. Should always pass whatever the token'
       description 'Revokes token. Should always pass whatever the token'
       param :token, String, desc: 'refresh_token or access_token', required: true
       def revoke

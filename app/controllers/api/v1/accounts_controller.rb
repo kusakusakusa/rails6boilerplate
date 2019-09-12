@@ -13,7 +13,7 @@ module Api
       respond_to :json
       skip_before_action :verify_authenticity_token
 
-      api :POST, '/user/account', 'Create account and register. Sends confirmation email'
+      api :POST, '/register', 'Create account and register. Sends confirmation email'
       description 'Create account and register. Sends confirmation email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       param :password, String, desc: "Length #{Devise.password_length.to_a.first} to #{Devise.password_length.to_a.last}", required: true
