@@ -62,5 +62,6 @@ end
 class User::ParameterSanitizer < Devise::ParameterSanitizer
   def initialize(*)
     super
+    permit(:account_update, keys: [:first_name, :last_name])
   end
 end

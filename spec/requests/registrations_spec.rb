@@ -35,7 +35,4 @@ RSpec.describe 'Registrations', type: :request do
       expect(User.first.confirmed?).to eq false
     end
   end
-
-  describe 'POST /api/v1/user/update-account' do
-  end
 end

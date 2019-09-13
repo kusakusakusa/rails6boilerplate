@@ -32,6 +32,14 @@ module Api
 
     private
 
+    def current_user
+      @current_user ||= if doorkeeper_token
+                          User.find(doorkeeper_token.resource_owner_id)
+                        else
+                          warden.authenticate(scope: :user)
+                        end
+    end
+
     def doorkeeper_unauthorized_default_message
       if Rails.env.production?
         I18n.t('custom.errors.doorkeeper_unauthorized_nil')

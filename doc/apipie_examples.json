@@ -9,7 +9,7 @@
       "query": null,
       "request_data": {
         "email": "test@test.com",
-        "password": "dpJYfl"
+        "password": "cvrjOM"
       },
       "response_data": {
         "response_code": "devise.confirmations.send_instructions",
@@ -47,7 +47,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "ashley@keebler.info"
+        "email": "donovan_schimmel@cremin.co"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -67,7 +67,7 @@
       ],
       "query": null,
       "request_data": {
-        "confirmation_token": "c72NO9"
+        "confirmation_token": "9pSMOp"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -80,13 +80,15 @@
   ],
   "Passwords#create": [
     {
-      "verb": "GET",
+      "verb": "POST",
       "path": "/api/v1/forgot-password",
       "versions": [
         "v1"
       ],
-      "query": "email=isaac.jakubowski@kreiger.io",
-      "request_data": null,
+      "query": null,
+      "request_data": {
+        "email": "scotty@faheyrodriguez.biz"
+      },
       "response_data": {
         "response_code": "custom.success.default",
         "response_message": "Success!"
@@ -96,13 +98,15 @@
       "recorded": true
     },
     {
-      "verb": "GET",
+      "verb": "POST",
       "path": "/api/v1/forgot-password",
       "versions": [
         "v1"
       ],
-      "query": "email=julienne@zulauf.info",
-      "request_data": null,
+      "query": null,
+      "request_data": {
+        "email": "toney_corwin@braunchristiansen.info"
+      },
       "response_data": {
         "response_code": "custom.success.default",
         "response_message": "Success!"
@@ -121,7 +125,7 @@
       ],
       "query": null,
       "request_data": {
-        "reset_password_token": "m4fXEQ",
+        "reset_password_token": "Rxcfhi",
         "password": "new_password"
       },
       "response_data": {
@@ -147,13 +151,13 @@
         "response_message": "Success!",
         "data": [
           {
-            "id": 5,
-            "user_id": 75,
-            "title": "I love you.",
-            "publish_date": "2018-11-15",
+            "id": 1,
+            "user_id": 1,
+            "title": "Do you want me to come with you?",
+            "publish_date": "2019-07-14",
             "content": null,
-            "created_at": "2019-09-12T02:49:07.758Z",
-            "updated_at": "2019-09-12T02:49:07.758Z"
+            "created_at": "2019-09-13T11:39:51.660Z",
+            "updated_at": "2019-09-13T11:39:51.660Z"
           }
         ]
       },
@@ -248,16 +252,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "jason@bahringer.org",
+        "email": "salvatore.murazik@hilll.com",
         "password": "12345678",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODI1NjU0NywianRpIjoiYzg4ZGJkZjUtYzgwYi00NWNkLWI0YTYtN2E1YjA4OTY3YTY5IiwidXNlciI6eyJpZCI6NzUsImVtYWlsIjoiamFzb25AYmFocmluZ2VyLm9yZyJ9fQ.ELOgG6UolqmTS2WDB8DBPEGE2SsiPVKjQcPOLTtmEiu1vxM7c16KTlvDwIuYpl6_vnLkMCIumsaWV6EgbF6yig",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODM3NDc5MSwianRpIjoiNTliOWQ3OTQtMTc4OS00NDgzLWJlMjEtYjQzN2JkYjQ4YjFhIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJzYWx2YXRvcmUubXVyYXppa0BoaWxsbC5jb20ifX0.NqzTVz36y5bc5byuwaBDmy0wLrDZWM1cnl8lSQAKASvubCiTNPksdUFzmAuOXvkmUckrMRjdPZjWem3PPqcmug",
         "token_type": "Bearer",
         "expires_in": 7199,
-        "refresh_token": "BP2Tabay-c8SBeNLm_jAusX3nAlfirLulbEloWx9dpY",
-        "created_at": 1568256547,
+        "refresh_token": "PmwhJ1_mCidr8CdiBlCgr5pEPBgLrbuBitDgBRk13zk",
+        "created_at": 1568374791,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -273,16 +277,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "tracey_ernser@jonesboehm.biz",
+        "email": "stasia@abshire.org",
         "password": "12345678",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODI1NjU0NywianRpIjoiZTQ1Y2M3NzQtOTRhMy00NzIzLThhYWUtZGUzYjk3MzllZTE2IiwidXNlciI6eyJpZCI6NzcsImVtYWlsIjoidHJhY2V5X2VybnNlckBqb25lc2JvZWhtLmJpeiJ9fQ._OXGmD_LjaqqeREm-Ke-dArEXaTj7-s1MsbUdvSF5h7_ZJCaTcHt_dysero-44AOq5ySAvKOHNcl7dVfOvarlA",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODM3NDc5MSwianRpIjoiOTE5MzcwMjYtMDUwYi00YzBkLTgwZTktMmQxMjg1ZWRlZWM3IiwidXNlciI6eyJpZCI6MywiZW1haWwiOiJzdGFzaWFAYWJzaGlyZS5vcmcifX0.fEY7pcQVEhNGOFuXwAuSax1onPAX6i9yEitdkdWTNPvvh1h7scdZeNo-HEB_7DKtRaiL4WoL3QB2JNhzi9Ye5A",
         "token_type": "Bearer",
         "expires_in": 7199,
-        "refresh_token": "vZjPkpz8-9g6_GJhphWswfbV0uLSexB1Z4QkmVCNGgk",
-        "created_at": 1568256547,
+        "refresh_token": "LZBWsoG5HCE9shWxHOXSbTOvbrE5SAxYvajTtro5Fks",
+        "created_at": 1568374791,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -298,16 +302,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "denis_satterfield@prosacco.io",
+        "email": "jules.heel@schimmel.name",
         "password": "12345678",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODI1NjU0NywianRpIjoiMmMzZWM5YTYtZWM3MC00MDE5LTk5NWQtYTcxNTQ5MmE4MDg1IiwidXNlciI6eyJpZCI6NzgsImVtYWlsIjoiZGVuaXNfc2F0dGVyZmllbGRAcHJvc2FjY28uaW8ifX0.lE-L39xqy0Tcz9rgExLjy50VMOganG9Thsp3E9i81DAMPX1utTgeEsrVBAx7_Fgh_pX9yeaC97zcCO6v05a3_g",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODM3NDc5MSwianRpIjoiZTQ3M2Q5ODMtYmU0MS00MWVjLThmODEtM2I2YjFhMDRkNDcwIiwidXNlciI6eyJpZCI6NCwiZW1haWwiOiJqdWxlcy5oZWVsQHNjaGltbWVsLm5hbWUifX0.iyd3_HB4qbgYm_hRWQSTnlSwl7kNd3m2F8I8jjl8FEJmRHQLqlyvCC2xEd2O6HF_lzTM0dP1qjv-8OiVxDR5rQ",
         "token_type": "Bearer",
         "expires_in": 7199,
-        "refresh_token": "QAqN85l30r1J5-8xKKUQ2peMIWuJYdNbT16N4r-T9TU",
-        "created_at": 1568256547,
+        "refresh_token": "anbmOB1BNIz9IKa8WWcPOX24P2ADBCbT4cJDlCdw3BQ",
+        "created_at": 1568374791,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -323,16 +327,41 @@
       ],
       "query": null,
       "request_data": {
-        "email": "julienne@zulauf.info",
+        "email": "shirl@breitenbergmayer.net",
+        "password": "12345678",
+        "grant_type": "password"
+      },
+      "response_data": {
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODM3NDc5MSwianRpIjoiZDZhZjQ3Y2QtYzMzYi00N2EzLWI4YWUtNTJlYWEyNTJiY2Q1IiwidXNlciI6eyJpZCI6NSwiZW1haWwiOiJzaGlybEBicmVpdGVuYmVyZ21heWVyLm5ldCJ9fQ.igB6X5vsoU35g95CL4Z8K3hCzgX_DTtb6EzPcuhT_PPhIQNLcW9SN9OIzdgRBVaMz1vqY6i3xLG_G_jO2VdfBQ",
+        "token_type": "Bearer",
+        "expires_in": 7199,
+        "refresh_token": "TkCNIyKyUe8Sgb6eh2bC7tKoZ6_rivMvG74jIT2bVZI",
+        "created_at": 1568374791,
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 0,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/login",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "email": "toney_corwin@braunchristiansen.info",
         "password": "new_password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODI1NjU0OCwianRpIjoiNDA4ZTY1ZDItZTY5Zi00NGU1LTk2ZDUtY2MzZjlkMmMxOThhIiwidXNlciI6eyJpZCI6ODQsImVtYWlsIjoianVsaWVubmVAenVsYXVmLmluZm8ifX0.zOnXiI4S0TG_kk51maZrrwF1JkNBj8SGmPSRESe3hNpUqMAtWEd55uAAXFiEzGb0hbL_tev_swVADQ-f9s2d1w",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODM3NDc5MiwianRpIjoiYWEyNmEyMDAtMTk3MC00NTM2LTljNTAtNDVlOTk2YTBjNjRiIiwidXNlciI6eyJpZCI6MTEsImVtYWlsIjoidG9uZXlfY29yd2luQGJyYXVuY2hyaXN0aWFuc2VuLmluZm8ifX0.KJRepzXOAkJ7Nf2P_jxWYgRiab8J2sqMwCisykSBp2EnrKImLKx6bfHE3Bxp4BVa11ZpgCZ8EfX0_2TcYLWcuA",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "5YbpI8FheNdh_joZeLwUYPNPxO5aIvEt2vNg8uRfhw8",
-        "created_at": 1568256548,
+        "refresh_token": "4-_UZtzaBHiWML3xROohDX0JD3OD9xzfB2Cyft847ME",
+        "created_at": 1568374792,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -350,17 +379,53 @@
       ],
       "query": null,
       "request_data": {
-        "refresh_token": "QAqN85l30r1J5-8xKKUQ2peMIWuJYdNbT16N4r-T9TU",
+        "refresh_token": "TkCNIyKyUe8Sgb6eh2bC7tKoZ6_rivMvG74jIT2bVZI",
         "grant_type": "refresh_token"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODI1NjU0NywianRpIjoiZGZlZjQzZTItZDUwNS00NGIwLTk4OGYtZWY2YTU5MjFhZGQ2IiwidXNlciI6eyJpZCI6NzgsImVtYWlsIjoiZGVuaXNfc2F0dGVyZmllbGRAcHJvc2FjY28uaW8ifX0.O2mJalU1S-KoGTjzmfDEpgnEI-3iziR0wvEKNb385uIJ1O3ujnN84l4CvCBcXGt62q8mWFbkJnTyMN4p3pi55w",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2ODM3NDc5MSwianRpIjoiZjc3NzZmYzItODY5OC00Y2E5LThhZmQtMDBmZWQ2YzJkZjVlIiwidXNlciI6eyJpZCI6NSwiZW1haWwiOiJzaGlybEBicmVpdGVuYmVyZ21heWVyLm5ldCJ9fQ.OkBFSryLFAnFZpSiwYzpVgC7D_3D_wAQAI5FXZuSUEu_6agzUSmqbXXInPEu0OT24B6-ozzQDV2Zr24yTBvywg",
         "token_type": "Bearer",
         "expires_in": 7199,
-        "refresh_token": "t3Zk8XWma-CqBMHZcDnhpP1oAMw7eZidgzWUM4U3sw4",
-        "created_at": 1568256547,
+        "refresh_token": "WAClvx-T6KmdVdeSN7-lJRwZ9qZkSA7s4o-nov8rYbM",
+        "created_at": 1568374791,
         "response_code": "custom.success.default",
         "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "Users#update_profile": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-profile",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "first_name": "newFirstName",
+        "last_name": "newLastName"
+      },
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "user": {
+          "first_name": "newFirstName",
+          "last_name": "newLastName",
+          "id": 3,
+          "email": "stasia@abshire.org",
+          "encrypted_password": "$2a$04$Wt9RMqX4SQg9RVqsoMGP9uXbhaWTUcDRGU.sQlRbol9BkwBjyW2RK",
+          "reset_password_token": null,
+          "reset_password_sent_at": null,
+          "remember_created_at": null,
+          "confirmation_token": null,
+          "confirmed_at": "2019-09-13T11:39:51.000Z",
+          "confirmation_sent_at": null,
+          "created_at": "2019-09-13T11:39:51.697Z",
+          "updated_at": "2019-09-13T11:39:51.751Z"
+        }
       },
       "code": 200,
       "show_in_doc": 1,

@@ -40,6 +40,9 @@ Rails.application.routes.draw do
       end
 
       resources :posts, only: [:index], defaults: { format: :json }
+
+      # users
+      post 'update-profile', to: 'users#update_profile'
     end
   end
 

@@ -9,3 +9,5 @@ en:
         registrations: ""
         confirmations: ""
         passwords: ""
+      users:
+        update_profile: ""

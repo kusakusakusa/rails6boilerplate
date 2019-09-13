@@ -15,16 +15,6 @@ module Api
       def index
         @posts = current_user.posts
       end
-
-      private
-
-      def current_user
-        @current_user ||= if doorkeeper_token
-                            User.find(doorkeeper_token.resource_owner_id)
-                          else
-                            warden.authenticate(scope: :user)
-                          end
-      end
     end
   end
 end
