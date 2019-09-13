@@ -189,7 +189,7 @@ RSpec.describe 'Authentications', type: :request do
         expect(response_body.response_message).to eq I18n.t(response_body.response_code)
       end
 
-      scenario 'access_token should pass for doorkeeper-5.1.0' do
+      scenario 'access_token should pass for doorkeeper-5.1.0', :show_in_doc do
         params = {
           token: @access_token
         }

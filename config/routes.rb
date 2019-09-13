@@ -32,11 +32,11 @@ Rails.application.routes.draw do
       post 'logout', to: 'tokens#revoke'
 
       as :user do
-        post 'register', to: 'accounts#create'
-        post 'resend-confirmation', to: 'confirmations#create'
-        post 'confirm', to: 'confirmations#show'
-        post 'forgot-password', to: 'passwords#create'
-        post 'reset-password', to: 'passwords#update'
+        post 'register', to: 'accounts#register'
+        post 'resend-confirmation', to: 'confirmations#resend_confirmation'
+        post 'confirm', to: 'confirmations#confirm'
+        post 'forgot-password', to: 'passwords#forgot_password'
+        post 'reset-password', to: 'passwords#reset_password'
       end
 
       resources :posts, only: [:index], defaults: { format: :json }

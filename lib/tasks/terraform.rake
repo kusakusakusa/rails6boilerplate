@@ -401,43 +401,6 @@ namespace :terraform do
       puts '######################'
       puts ''
 
-      puts 'Create git_clone script to be run in ec2 on startup, assuming staging is main branch'
-      file = File.open(Rails.root.join('terraform', 'staging', 'git_clone.sh'), 'w')
-      file.puts <<~MSG
-        #!/usr/bin/env bash
-
-        echo "Creating /#{PROJECT_NAME} and changing permissions"
-        sudo mkdir -p /#{PROJECT_NAME}
-        sudo chmod -R 775 /#{PROJECT_NAME}
-        sudo chown -R $(whoami) /#{PROJECT_NAME}
-        sudo chgrp -R $(whoami) /#{PROJECT_NAME}
-
-        echo 'Getting ssh_key from #{SECRETS_BUCKET}'
-        aws s3 cp s3://#{SECRETS_BUCKET}/ssh_key /#{PROJECT_NAME}/ssh_key
-        chmod 400 /#{PROJECT_NAME}/ssh_key
-
-        echo Cloning repository from $2
-        # with reference to https://stackoverflow.com/a/43287779/2667545
-        cd /#{PROJECT_NAME}
-
-        # Running git init in an existing repository is safe. It will not overwrite things that are already there. The primary reason for rerunning git init is to pick up newly added templates.
-        git init
-
-        if [[ $(git show-ref  --heads refs/heads/master) == "" ]]
-        then
-          git remote add origin $2
-          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ssh_key" git fetch
-          GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ssh_key" git checkout -t origin/master -f
-        else
-          echo "Git initialized and cloned before"
-        fi
-      MSG
-      file.close
-
-      puts ''
-      puts '######################'
-      puts ''
-
       puts 'Create deploy.sh file for staging'
       file = File.open(Rails.root.join('terraform', 'staging', 'deploy.sh'), 'w')
       file.puts <<~MSG

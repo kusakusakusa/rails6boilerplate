@@ -6,8 +6,8 @@ module Api
       before_action :add_default_response_keys
 
       resource_description do
-        name 'Accounts'
-        resource_id 'Accounts'
+        name 'Authentication-registrations'
+        resource_id 'Authentication-registrations'
         api_versions 'v1' # , 'v2'
       end
       respond_to :json
@@ -17,7 +17,8 @@ module Api
       description 'Create account and register. Sends confirmation email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       param :password, String, desc: "Length #{Devise.password_length.to_a.first} to #{Devise.password_length.to_a.last}", required: true
-      def create
+      # overwrite devise/registrations#create
+      def register
         build_resource(sign_up_params)
         resource.save
         yield resource if block_given?

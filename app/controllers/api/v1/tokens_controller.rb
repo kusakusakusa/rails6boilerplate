@@ -4,8 +4,8 @@ module Api
   module V1
     class TokensController < Doorkeeper::TokensController
       resource_description do
-        name 'Tokens'
-        resource_id 'Tokens'
+        name 'Authentication-tokens'
+        resource_id 'Authentication-tokens'
         api_versions 'v1' # , 'v2'
       end
 
@@ -48,8 +48,8 @@ module Api
         create
       end
 
-      api :POST, '/logout', 'Revokes tokens. Should always pass whatever the token'
-      description 'Revokes token. Should always pass whatever the token'
+      api :POST, '/logout', 'Revokes tokens.'
+      description 'Revokes tokens.'
       param :token, String, desc: 'refresh_token or access_token', required: true
       def revoke
         # Follow doorkeeper-5.1.0 method, different from the latest code on the repo on 6 Sept 2019

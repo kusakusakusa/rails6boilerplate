@@ -164,6 +164,8 @@ Devise.setup do |config|
   # initial account confirmation) to be applied. Requires additional unconfirmed_email
   # db field (see migrations). Until confirmed, new email is stored in
   # unconfirmed_email column, and copied to email column on successful confirmation.
+  # refer to Api::V1::PasswordsController#reset_password
+  # resource is confirmed on successful reset password
   config.reconfirmable = false
 
   # Defines which key will be used when confirming an account

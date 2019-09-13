@@ -12,7 +12,7 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: 'some@email.com'
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response_body.response_code).to eq 'custom.errors.devise.passwords'
       expect(response_body.response_message).to eq 'Email not found'
@@ -22,7 +22,7 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: unconfirmed_user.email
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
@@ -34,12 +34,12 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: user1.email
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       reset_password_token = user1.reload.reset_password_token
       expect(reset_password_token).not_to eq nil
 
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       new_reset_password_token = user1.reload.reset_password_token
       expect(reset_password_token).not_to eq new_reset_password_token
@@ -51,7 +51,7 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: user1.email
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       expect(user1.reload.reset_password_token).not_to eq nil
       expect(user2.reload.reset_password_token).to eq nil
@@ -64,7 +64,7 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: user1.email
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
       expect(ActionMailer::Base.deliveries.count).to eq 1
       email = ActionMailer::Base.deliveries.last
       expect(email.to).to include user1.email
@@ -78,7 +78,7 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: unconfirmed_user.email
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       # get reset_password_token
       expect(ActionMailer::Base.deliveries.count).to eq 1
@@ -100,7 +100,7 @@ RSpec.describe 'Passwords', type: :request do
       params = {
         email: user1.email
       }
-      post '/api/v1/forgot-password?', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
 
       # get reset_password_token
       expect(ActionMailer::Base.deliveries.count).to eq 1

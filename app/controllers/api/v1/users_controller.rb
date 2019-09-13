@@ -11,7 +11,7 @@ module Api
         api_versions 'v1' # , 'v2'
       end
 
-      api :GET, '/update-profile', 'Update profile'
+      api :POST, '/update-profile', 'Update profile'
       description 'Update profile'
       header 'Authorization', 'Bearer [your_access_token]', required: true
       param :first_name, String

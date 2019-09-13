@@ -7,8 +7,8 @@ module Api
       before_action :add_default_response_keys
 
       resource_description do
-        name 'Confirmations'
-        resource_id 'Confirmations'
+        name 'Authentication-confirmations'
+        resource_id 'Authentication-confirmations'
         api_versions 'v1' # , 'v2'
       end
       respond_to :json
@@ -17,7 +17,8 @@ module Api
       api :POST, '/resend-confirmation', 'Resend email'
       description 'Resend confirmation email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
-      def create
+      # overwrite devise/confirmations#create
+      def resend_confirmation
         ### START overwrite ###
         # self.resource = resource_class.send_confirmation_instructions(resource_params)
         self.resource = resource_class.send_confirmation_instructions({ email: params[:email] })
@@ -44,7 +45,8 @@ module Api
       api :POST, '/confirm', 'Confirm user with token sent to their email'
       description 'Confirm user with token sent to their email'
       param :confirmation_token, String, desc: 'Confirmation token sent to email', required: true
-      def show
+      # overwrite devise/confirmations#show
+      def confirm
         self.resource = resource_class.confirm_by_token(params[:confirmation_token])
         yield resource if block_given?
 

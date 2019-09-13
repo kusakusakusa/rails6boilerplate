@@ -6,8 +6,8 @@ module Api
       before_action :add_default_response_keys
 
       resource_description do
-        name 'Passwords'
-        resource_id 'Passwords'
+        name 'Authentication-passwords'
+        resource_id 'Authentication-passwords'
         api_versions 'v1' # , 'v2'
       end
       respond_to :json
@@ -16,7 +16,8 @@ module Api
       api :POST, '/forgot-password', 'Send reset passsword email'
       description 'Send reset passsword email'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
-      def create
+      # overwrite devise/passwords#create
+      def forgot_password
         ### START overwrite ###
         # self.resource = resource_class.send_reset_password_instructions(resource_params)
         self.resource = resource_class.send_reset_password_instructions({ email: params[:email] })
@@ -44,12 +45,13 @@ module Api
       description 'Reset user password'
       param :reset_password_token, String, desc: 'Reset password token received from email', required: true
       param :password, String, desc: 'New password', required: true
-      def update
+      # overwrite devise/passwords#update
+      def reset_password
         ### START overwrite ###
         # self.resource = resource_class.reset_password_by_token(resource_params)
         self.resource = resource_class.reset_password_by_token({
           reset_password_token: params[:reset_password_token],
-          password: params[:password],
+          password: params[:password]
         })
 
         # this is custom code as the security bug is mitigated with reconfirmable being false
