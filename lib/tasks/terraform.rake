@@ -369,6 +369,10 @@ namespace :terraform do
           # }
         }
 
+        output "staging-eip" {
+          value = aws_eip.this.public_ip
+        }
+
         resource "aws_eip_association" "this" {
           instance_id   = "${aws_instance.this.id}"
           allocation_id = "${aws_eip.this.id}"
