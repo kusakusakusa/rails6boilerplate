@@ -252,6 +252,17 @@ namespace :terraform do
           }
         }
 
+        resource "aws_s3_bucket_object" "master_key" {
+          bucket = module.secrets_bucket.id
+          key = "application_keys/master.key"
+          source = "config/master.key"
+
+          tags = {
+            Name = var.project_name
+            Env = var.env
+          }
+        }
+
         # with reference to https://stackoverflow.com/a/52868251/2667545
 
         data "aws_iam_policy_document" "secrets_bucket" {
