@@ -31,20 +31,20 @@ RSpec.describe 'Posts', type: :request do
     end
 
     scenario 'should fail if wrong access token used' do
-      get api_v1_posts_path, headers: { 'Authorization': 'Bearer invalid' }
+      get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': 'Bearer invalid')
       expect(response.status).to eq 401
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.unknown'
       expect(response_body.response_message).to eq I18n.t response_body.response_code
     end
 
     scenario 'should pass with correct access token used' do
-      get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+      get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
       expect(response).to have_http_status(200)
     end
 
     scenario 'should fail with expired access token used' do
       Timecop.freeze(Time.now + Doorkeeper.configuration.access_token_expires_in.seconds + 1.day) do
-        get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+        get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
         expect(response.status).to eq 401
         expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.expired'
         expect(response_body.response_message).to eq I18n.t response_body.response_code
@@ -58,7 +58,7 @@ RSpec.describe 'Posts', type: :request do
 
       post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
-      get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+      get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       expect(response.status).to eq 401
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.revoked'
@@ -72,7 +72,7 @@ RSpec.describe 'Posts', type: :request do
 
       post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
 
-      get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+      get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       expect(response.status).to eq 401
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.revoked'
@@ -83,7 +83,7 @@ RSpec.describe 'Posts', type: :request do
       post1 # lazyload
       post2 # lazyload
 
-      get api_v1_posts_path, headers: { 'Authorization': "Bearer #{@access_token}" }
+      get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t response_body.response_code
