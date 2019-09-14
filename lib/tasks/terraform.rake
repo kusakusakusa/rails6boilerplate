@@ -308,7 +308,7 @@ namespace :terraform do
         }
 
         resource "aws_iam_role" "secrets_bucket" {
-          name = "${module.secrets_bucket.id}-iam_role"
+          name = "secrets_bucket-iam_role"
           assume_role_policy = data.aws_iam_policy_document.secrets_bucket.json
         }
 
@@ -318,7 +318,7 @@ namespace :terraform do
         }
 
         resource "aws_iam_instance_profile" "secrets_bucket" {
-          name = "${module.secrets_bucket.id}-iam_instance_profile"
+          name = "secrets_bucket-iam_instance_profile"
           role = aws_iam_role.secrets_bucket.name
         }
       MSG
