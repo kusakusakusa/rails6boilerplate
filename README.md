@@ -137,3 +137,5 @@ TODO?
 ### datatables
 
 Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6d6e74e95#file-jquery-datatables-webpack).
+## TODO
+* check if better way to find relative path of master.key

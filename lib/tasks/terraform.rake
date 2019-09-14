@@ -255,7 +255,8 @@ namespace :terraform do
         resource "aws_s3_bucket_object" "master_key" {
           bucket = module.secrets_bucket.id
           key = "application_keys/master.key"
-          source = "config/master.key"
+          # TODO check if better way to find relative path of master.key
+          source = "../../config/master.key"
 
           tags = {
             Name = var.project_name
