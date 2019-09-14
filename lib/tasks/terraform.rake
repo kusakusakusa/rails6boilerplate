@@ -252,11 +252,11 @@ namespace :terraform do
           }
         }
 
+        # copy master.key to s3 for storage purpose
         resource "aws_s3_bucket_object" "master_key" {
           bucket = module.secrets_bucket.id
           key = "application_keys/master.key"
-          # TODO check if better way to find relative path of master.key
-          source = "../../config/master.key"
+          source = "master.key"
 
           tags = {
             Name = var.project_name
@@ -420,6 +420,7 @@ namespace :terraform do
 
         AWS_DEFAULT_REGION="#{REGION}"
 
+        cp #{Rails.root.join('config')}/master.key #{Rails.root.join('terraform', 'staging')}
         docker build \
           -t #{PROJECT_NAME}-staging:latest \
           --build-arg AWS_ACCESS_KEY_ID=#{AWS_ACCESS_KEY_ID} \
@@ -433,6 +434,8 @@ namespace :terraform do
           --env AWS_SECRET_ACCESS_KEY=#{AWS_SECRET_ACCESS_KEY} \
           #{PROJECT_NAME}-staging \
           apply
+
+        rm #{Rails.root.join('terraform', 'staging')}/master.key
       MSG
       file.close
       `chmod +x #{Rails.root.join('terraform', 'staging', 'deploy.sh')}`
