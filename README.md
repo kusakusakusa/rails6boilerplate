@@ -34,6 +34,16 @@ Run the command below to generate example responses and request using apipie and
 APIPIE_RECORD=examples rspec
 ```
 
+## CMS
+
+All cms controllers should inherit from a `Cms::BaseController` following the design as the API portion.
+
+Cms controllers will render html views like a original Ruby on Rails app. The `Cms::BaseController` set the default layout for all cms routes to the `cms.html.slim` template.
+
+For admin users' devise related views and controllers, the views follow the path of the original devise controllers, scoped under `admin_users`. The individual views still `yield` from the `devise.html.slim` template, which is tweaked to fit the single pages in the SB2 Admin template. Only the `registrations` pages will be under the `cms.html.slim` template as they occur within an authenticated session and should be viewing the pages inside the cms panel.
+
+`after_sign_in_path_for` and `after_sign_out_path_for` are set in `ApplicationController` and they will affect the behavior for devise controller on `admin_users` only.
+
 ## Models
 
 ### User
@@ -59,16 +69,26 @@ Admin user will authenticate without using `devise-jwt`. The only interaction ad
 
 ## Usage
 
+### Gemset
+
+Change the gemset name and ruby version to be used in `.ruby-version` file.
+
+Run `bundle` to install the files.
+
 ### Credentials
 
 Add password to `database.yml` for your root user to authenticate with the database.
 
-Run `EDITOR=vim rails credentials:edit` to generate `config/master.key` file and `config/credentials.yml.enc` file too. Make sure to add the key:
+Run `EDITOR=vim rails credentials:edit` to generate `config/master.key` file and `config/credentials.yml.enc` file. Make sure to add the key:
 ```
 jwt:
   secret: <MY_VALUE>
 ```
 The `jwt[:secret]` is used to create secrets.
+
+### Rename project
+
+Run `rails g rename:into <YOUR_PROJECT_NAME` to rename the application. Note that this will rename the repository you are in as well. You will need to run `cd` commands to switch directories.
 
 ### Doorkeeper
 
@@ -137,5 +157,8 @@ TODO?
 ### datatables
 
 Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6d6e74e95#file-jquery-datatables-webpack).
+
 ## TODO
+* use https://registry.terraform.io/modules/trussworks/logs/aws/3.0.0 to add logs bucket instead of aws cli
 * check if better way to find relative path of master.key
+* dockerignore file
