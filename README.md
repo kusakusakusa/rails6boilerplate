@@ -57,12 +57,6 @@ These are the steps taken:
 3. Follow this [guide](https://doorkeeper.gitbook.io/guides/ruby-on-rails/getting-started) to setup doorkeeper with devise
 4. Follow this [guide](https://github.com/doorkeeper-gem/doorkeeper-jwt) to add the jwt support for doorkeeper
 
-
-
-3. Add `:jwt_authenticatable` and `jwt_revocation_strategy: JwtBlacklist` to model file
-4. Run `rails g model jwt_blacklist jti:string:index exp:datetime`
-5. Add `include Devise::JWT::RevocationStrategies::Blacklist` and `self.table_name = 'jwt_blacklists'` to `JwtBlacklist` model file.
-
 ### Admin User
 
 Admin user will authenticate without using `devise-jwt`. The only interaction admin users will have with this app is via a browser to work on the CMS. That implies the use of cookies instead of jwt.
