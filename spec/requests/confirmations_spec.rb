@@ -77,7 +77,7 @@ RSpec.describe 'Confirmations', type: :request do
 
       expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
-      expect(response_body.response_message).to eq I18n.t('custom.success.default')
+      expect(response_body.response_message).to eq I18n.t('devise.confirmations.send_instructions')
       expect(user.reload.confirmation_token).to eq initial_confirmation_token
     end
 
@@ -89,7 +89,7 @@ RSpec.describe 'Confirmations', type: :request do
 
       expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
-      expect(response_body.response_message).to eq I18n.t('custom.success.default')
+      expect(response_body.response_message).to eq I18n.t('devise.confirmations.send_instructions')
     end
   end
 end

@@ -10,6 +10,13 @@ module Api
     rescue_from Doorkeeper::Errors::TokenRevoked, with: :handle_doorkeeper_errors
     rescue_from Doorkeeper::Errors::TokenUnknown, with: :handle_doorkeeper_errors
 
+    rescue_from Apipie::ParamMissing do |e|
+      render json: {
+        response_code: 'custom.errors.apipie.missing_params',
+        response_message: e.message
+      }
+    end
+
     protected
 
     def doorkeeper_unauthorized_render_options(error: nil)

@@ -1,479 +1,500 @@
 # frozen_string_literal: true
 
 namespace :terraform do
-  namespace :shared do
-    desc 'Create tfstate backend of s3 for all environments'
-    task :create_tf_state_bucket, [:aws_profile, :TFSTATE_BUCKET, :REGION] => :environment do |task, args|
-      # create terraform backend s3 bucket via aws-cli
-      # aws-cli is assumed to be present on local machine
-      tfstate_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{args[:TFSTATE_BUCKET]}$"`.chomp
-      if tfstate_bucket.blank?
-        puts "Creating Terraform state bucket (#{args[:TFSTATE_BUCKET]})"
-        `aws s3api create-bucket --bucket #{args[:TFSTATE_BUCKET]} --region #{REGION} --profile #{args[:aws_profile]}`
-
-        sleep 2
-
-        puts 'Uploading empty tfstate file'
-        blank_filepath = Rails.root.join('tmp/tfstate')
-        `touch #{blank_filepath}`
-        `aws s3 cp #{blank_filepath} s3://#{args[:TFSTATE_BUCKET]}/#{TFSTATE_KEY} --profile #{args[:aws_profile]}`
-        File.delete(blank_filepath)
-      else
-        puts "Terraform state bucket (#{args[:TFSTATE_BUCKET]}) already created!"
-      end
-
-      puts "Enabling/overwriting versioning for #{args[:TFSTATE_BUCKET]}"
-      `aws s3api put-bucket-versioning --bucket #{args[:TFSTATE_BUCKET]} --profile #{args[:aws_profile]} --versioning-configuration Status=Enabled`
-
-      tmp_versioning_filepath = Rails.root.join('tmp/tf_state_encryption_rule.json')
-      puts "Enabling/overwriting encryption for #{args[:TFSTATE_BUCKET]}"
-      file = File.open(tmp_versioning_filepath, 'w')
-      file.puts <<~MSG
-        {
-          "Rules": [
-            {
-              "ApplyServerSideEncryptionByDefault": {
-                "SSEAlgorithm": "AES256"
-              }
-            }
-          ]
-        }
-      MSG
-      file.close
-      `aws s3api put-bucket-encryption --bucket #{args[:TFSTATE_BUCKET]} --profile #{args[:aws_profile]} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
-      File.delete(tmp_versioning_filepath)
-
-      puts "Enabling/overwriting lifecycle for #{args[:TFSTATE_BUCKET]}"
-      tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
-      file = File.open(tmp_lifecycle_filepath, 'w')
-      file.puts <<~MSG
-        {
-            "Rules": [
-                {
-                    "ID": "Remove non current version tfstate files",
-                    "Status": "Enabled",
-                    "Prefix": "",
-                    "NoncurrentVersionExpiration": {
-                        "NoncurrentDays": 30
-                    }
-                }
-            ]
-        }
-      MSG
-      file.close
-      `aws s3api put-bucket-lifecycle-configuration --bucket #{args[:TFSTATE_BUCKET]} --profile #{args[:aws_profile]} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
-      File.delete(tmp_lifecycle_filepath)
-    end
-
-    desc 'Create logs bucket for all environments'
-    task :create_logs_bucket, [:aws_profile, :LOGS_BUCKET] => :environment do |task, args|
-      logs_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{args[:LOGS_BUCKET]}$"`.chomp
-      if logs_bucket.blank?
-        puts "Creating logs bucket (#{args[:LOGS_BUCKET]})"
-        `aws s3api create-bucket --bucket #{args[:LOGS_BUCKET]} --region #{REGION} --profile #{args[:aws_profile]}`
-
-        puts "Enabling/overwriting log-delivery-write acl for logs bucket (#{args[:LOGS_BUCKET]})"
-        `aws s3api put-bucket-acl --bucket #{args[:LOGS_BUCKET]} --region #{REGION} --profile #{args[:aws_profile]} --acl log-delivery-write`
-
-        puts "Enabling/overwriting lifecycle logs bucket (#{args[:LOGS_BUCKET]})"
-        tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
-        file = File.open(tmp_lifecycle_filepath, 'w')
-        file.puts <<~MSG
-          {
-              "Rules": [
-                  {
-                      "ID": "Remove all log files after 90 days",
-                      "Status": "Enabled",
-                      "Prefix": "",
-                      "Expiration": {
-                          "Days": 90
-                      }
-                  }
-              ]
-          }
-        MSG
-        file.close
-        `aws s3api put-bucket-lifecycle-configuration --bucket #{args[:LOGS_BUCKET]} --profile #{args[:aws_profile]} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
-        File.delete(tmp_lifecycle_filepath)
-      else
-        puts "Logs bucket (#{args[:LOGS_BUCKET]}) already created!"
-      end
-    end
-
-    desc 'Generate private/public key'
-    task :generate_ssh_keys, [:PRIVATE_KEY_FILE_NAME, :SSH_KEYS_DIR] => :environment do |task, args|
-      # these keys will be used for:
-      # 1. generating aws keypair
-      # 2. authentication key for private git repository
-      filepath = "#{args[:SSH_KEYS_DIR]}/#{args[:PRIVATE_KEY_FILE_NAME]}"
-      if File.exist? filepath
-        puts 'Private key already created'
-      else
-        puts 'Create private key file for staging'
-        `ssh-keygen -t rsa -f #{filepath} -C #{args[:PRIVATE_KEY_FILE_NAME]}`
-        `chmod +r #{filepath}`
-      end
-    end
+  desc 'Checks before proceeding'
+  task :checks, [:env, :aws_profile, :region] => :environment do |task, args|
+    puts 'START - Checks necessary conditions before proceeding'
+    abort('awscli not installed!') if `type -a aws`.blank?
+    abort('~/.aws/credentials does not exist!') unless File.exist?("#{ENV['HOME']}/.aws/credentials")
+    abort("#{args[:aws_profile]} does not have aws_access_key_id properly setup!") if `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp.blank?
+    abort("#{args[:aws_profile]} does not have aws_secret_access_key properly setup!") if `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp.blank?
+    abort("Opt-in region #{args[:region]} are not supported!") if %w[
+      me-south-1
+      ap-east-1
+    ].include? args[:region]
+    abort('Invalid aws region!') unless %w[
+      us-east-1
+      us-east-2
+      us-west-1
+      us-west-2
+      ca-central-1
+      eu-central-1
+      eu-west-1
+      eu-west-2
+      eu-west-3
+      eu-north-1
+      ap-northeast-1
+      ap-northeast-2
+      ap-northeast-3
+      ap-southeast-1
+      ap-southeast-2
+      ap-south-1
+      sa-east-1
+    ].include? args[:region]
+    abort("No database password in credentials file for #{args[:env]} environment") unless Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
+    puts 'END - Checks necessary conditions before proceeding'
   end
 
-  namespace :staging do
-    desc 'Setup terraform for default staging env'
-    task init: :environment do
-      puts 'Enter your AWS named profile:'
+  desc 'Create env folder'
+  task :create_env_folders, [:env] => :environment do |task, args|
+    puts "START - Create #{args[:env]} folders in terraform"
+    FileUtils.mkdir_p "#{Rails.root.join('terraform', args[:env])}"
+    FileUtils.mkdir_p "#{Rails.root.join('terraform', args[:env], 'ssh_keys')}"
+    FileUtils.mkdir_p "#{Rails.root.join('terraform', args[:env], 'scripts')}"
+    puts "END - Create #{args[:env]} folders in terraform"
+  end
+
+  desc 'Generate private/public key'
+  task :generate_ssh_keys, [:env] => :environment do |task, args|
+    # these keys will be used for:
+    # 1. generating aws keypair
+    # 2. authentication key for private git repository
+    private_key_file_name = "#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}"
+    filepath = "#{Rails.root.join('terraform', args[:env], 'ssh_keys')}/#{private_key_file_name}"
+    puts "START - Create private/public keys for #{args[:env]}"
+
+    if File.exist? filepath
+      puts 'Private key already created'
+    else
+      `ssh-keygen -t rsa -f #{filepath} -C #{private_key_file_name}`
+      puts "chmod 400 private and public keys for #{args[:env]}"
+      `chmod 400 #{filepath}`
+      `chmod 400 #{filepath}.pub`
+    end
+
+    puts "END - Create private/public keys for #{args[:env]}"
+  end
+
+  desc 'Copy template files'
+  task :copy_template_files, [:env] => :environment do |task, args|
+    puts "START - Copy files in `templates` folder into #{args[:env]} folder in terraform"
+    FileUtils.cp_r "#{Rails.root.join('terraform', 'templates')}/.", Rails.root.join('terraform', args[:env])
+    puts "END - Copy files in `templates` folder into #{args[:env]} folder in terraform"
+  end
+
+  desc 'Create tfstate_bucket'
+  task :create_tfstate_bucket, [:env, :aws_profile, :region] => :environment do |task, args|
+    # create terraform backend s3 bucket via aws-cli
+    # aws-cli is assumed to be present on local machine
+
+    tfstate_bucket_name = "#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-tfstate"
+    tfstate_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{tfstate_bucket_name}$"`.chomp
+    if tfstate_bucket.blank?
+      puts "Creating Terraform state bucket (#{tfstate_bucket_name})"
+      `aws s3api create-bucket --bucket #{tfstate_bucket_name} --region #{args[:region]} --profile #{args[:aws_profile]} --create-bucket-configuration LocationConstraint=#{args[:region]}`
+
+      sleep 2
+
+      puts 'Uploading empty tfstate file'
+      blank_filepath = Rails.root.join('tmp/tfstate')
+      `touch #{blank_filepath}`
+      `aws s3 cp #{blank_filepath} s3://#{tfstate_bucket_name}/terraform.tfstate --profile #{args[:aws_profile]}`
+      File.delete(blank_filepath)
+    else
+      puts "Terraform state bucket (#{tfstate_bucket_name}) already created!"
+    end
+
+    puts "Enabling/overwriting versioning for #{tfstate_bucket_name}"
+    `aws s3api put-bucket-versioning --bucket #{tfstate_bucket_name} --profile #{args[:aws_profile]} --versioning-configuration Status=Enabled`
+
+    tmp_versioning_filepath = Rails.root.join('tmp/tf_state_encryption_rule.json')
+    puts "Enabling/overwriting encryption for #{tfstate_bucket_name}"
+    file = File.open(tmp_versioning_filepath, 'w')
+    file.puts <<~MSG
+      {
+        "Rules": [
+          {
+            "ApplyServerSideEncryptionByDefault": {
+              "SSEAlgorithm": "AES256"
+            }
+          }
+        ]
+      }
+    MSG
+    file.close
+    `aws s3api put-bucket-encryption --bucket #{tfstate_bucket_name} --profile #{args[:aws_profile]} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
+    File.delete(tmp_versioning_filepath)
+
+    puts "Enabling/overwriting lifecycle for #{tfstate_bucket_name}"
+    tmp_lifecycle_filepath = Rails.root.join('tmp/tf_state_lifecycle_rule.json')
+    file = File.open(tmp_lifecycle_filepath, 'w')
+    file.puts <<~MSG
+      {
+          "Rules": [
+              {
+                  "ID": "Remove non current version tfstate files",
+                  "Status": "Enabled",
+                  "Prefix": "",
+                  "NoncurrentVersionExpiration": {
+                      "NoncurrentDays": 30
+                  }
+              }
+          ]
+      }
+    MSG
+    file.close
+    `aws s3api put-bucket-lifecycle-configuration --bucket #{tfstate_bucket_name} --profile #{args[:aws_profile]} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
+    File.delete(tmp_lifecycle_filepath)
+  end
+
+  desc 'Create setup.tf'
+  task :create_setup_tf, [:env, :region] => :environment do |task, args|
+    puts "START - Create setup.tf for #{args[:env]}"
+    file = File.open(Rails.root.join('terraform', args[:env], 'setup.tf'), 'w')
+    file.puts <<~MSG
+      # download all necessary plugins for terraform
+      # set versions
+      provider "aws" {
+        version = "~> 2.24"
+        region = "#{args[:region]}"
+        # shared_credentials_file and profile NOT WORKING
+        # need to pass AWS_SHARED_CREDENTIALS_FILE
+        # and AWS_PROFILE
+      }
+
+      terraform {
+        required_version = "~> 0.12.0"
+        backend "s3" {
+          bucket = "#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-tfstate"
+          key = "terraform.tfstate"
+          region = "#{args[:region]}"
+        }
+      }
+
+      provider "null" {
+        version = "~> 2.1"
+      }
+
+    MSG
+    file.close
+    puts "END - Create setup.tf for #{args[:env]}"
+  end
+
+  desc 'Create variables.tf'
+  task :create_variables_tf, [:env, :region] => :environment do |task, args|
+    puts "START - Create variables.tf for #{args[:env]}"
+    file = File.open(Rails.root.join('terraform', args[:env], 'variables.tf'), 'w')
+    file.puts <<~MSG
+      variable "project_name" {
+        type = string
+        default = "#{Rails.application.class.module_parent_name.downcase}"
+      }
+
+      variable "region" {
+        type = string
+        default = "#{args[:region]}"
+      }
+
+      variable "env" {
+        type = string
+        default = "#{args[:env]}"
+      }
+    MSG
+    file.close
+    puts "END - Create variables.tf for #{args[:env]}"
+  end
+
+  # for pushing terraform errored.tfstate in the event of
+  # losing internet connection during deployment
+  # with a remote backend
+  desc 'Create push_error_state.sh'
+  task :create_push_error_state_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create push_error_state.sh for #{args[:env]}"
+    filepath = Rails.root.join('terraform', args[:env], 'push_error_state.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      SCRIPT_PATH=$(dirname `which $0`)
+
+      echo $SCRIPT_PATH
+
+      cp $SCRIPT_PATH/../../config/master.key $SCRIPT_PATH/master.key
+      cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
+
+      docker build \
+        -t \
+        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]}:latest \
+        $SCRIPT_PATH
+
+      echo 'terraform push error.tfstate'
+      docker run \
+        -it \
+        --rm \
+        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
+        --env AWS_PROFILE=#{args[:aws_profile]} \
+        -v $SCRIPT_PATH:/workspace \
+        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        state push errored.tfstate
+
+      rm $SCRIPT_PATH/master.key
+      rm $SCRIPT_PATH/awscredentials
+    MSG
+    file.close
+    system("chmod +x #{filepath}")
+    puts "END - Create push_error_state.sh for #{args[:env]}"
+  end
+
+  desc 'Create startup.sh'
+  task :create_startup_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create startup.sh for #{args[:env]}"
+    db_password = Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
+    filepath = Rails.root.join('terraform', args[:env], 'startup.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      # install packages
+      sudo apt-get -y update
+      sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install nginx gnupg2 nodejs build-essential mysql-server libmysqlclient-dev awscli npm sendmail -y
+
+      # copy keys files
+      aws s3 cp s3://#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-secrets/#{Rails.application.class.module_parent_name.downcase}-#{args[:env]} /home/ubuntu/.ssh/id_rsa
+      if [ $? -eq 0 ]
+      then
+        echo 'Successfully copied private key'
+      else
+        echo 'Fail to copy private key'
+        exit 1
+      fi
+
+      aws s3 cp s3://#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-secrets/#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}.pub /home/ubuntu/.ssh/id_rsa.pub
+      if [ $? -eq 0 ]
+      then
+        echo 'Successfully copied public key'
+      else
+        echo 'Fail to copy public key'
+        exit 1
+      fi
+      chmod 400 /home/ubuntu/.ssh/id_rsa
+      chmod 400 /home/ubuntu/.ssh/id_rsa.pub
+
+      echo 'Install rvm'
+      echo 'gem: --no-document' > .gemrc # remove documentation
+      gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+      \curl -sSL https://get.rvm.io | bash # download rvm
+      source /home/ubuntu/.rvm/scripts/rvm # make rvm available in current session
+
+      echo 'Install ruby-2.6.4'
+      rvm install 2.6.4 # install the ruby version
+
+      echo 'Set ruby-2.6.4 as default'
+      rvm default use 2.6.4
+
+      echo 'Install bundler'
+      gem install bundler # install bundler
+
+      echo 'Install yarn via npm'
+      sudo npm install -g yarn
+      if [ $? -ne 0 ]
+      then
+        echo 'Fail to install npm'
+        exit 1
+      fi
+
+      echo 'Enable swap for assets compilation'
+      # https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-16-04
+      sudo fallocate -l 1G /swapfile
+      sudo chmod 600 /swapfile
+      sudo mkswap /swapfile
+      sudo swapon /swapfile
+      sudo cp /etc/fstab /etc/fstab.bak
+      echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+      echo 'Overwrite nginx default available site'
+      sudo chgrp $(whoami) /etc/nginx/sites-available/default
+      sudo chown $(whoami) /etc/nginx/sites-available/default
+      sudo chmod +w /etc/nginx/sites-available/default
+      cat > /etc/nginx/sites-available/default <<EOF
+      upstream backend {
+        server unix:///home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/shared/tmp/sockets/puma.sock fail_timeout=0;
+      }
+
+      # no server_name, routes to default this default server directive
+      server {
+        listen 80;
+        client_max_body_size 10m;
+
+        location / {
+          proxy_pass http://backend;
+          proxy_redirect off;
+          proxy_set_header   Host             \$host;
+          proxy_set_header   X-Real-IP        \$remote_addr;
+          proxy_set_header   X-Forwarded-For  \$proxy_add_x_forwarded_for;
+          proxy_pass_request_headers      on;
+        }
+
+        location ~ ^/(assets|packs)/ {
+          root /home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/current/public;
+          expires max;
+          add_header Cache-Control public;
+          gzip_static on;
+          #add_header ETag "";
+          break;
+        }
+      }
+      EOF
+
+      echo 'Installing mysql'
+      echo 'Set password for root user'
+      sudo mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('#{db_password}');FLUSH PRIVILEGES;"
+
+      echo 'Delete anonymous users'
+      sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
+
+      echo 'Ensure the root user can not log in remotely'
+      sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+
+      echo 'Remove the test database'
+      sudo mysql -e "DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
+
+      echo 'Create curent user to remove sudo requirement'
+      sudo mysql -u root -p#{db_password} -e "CREATE USER 'ubuntu'@'localhost' IDENTIFIED BY '#{db_password}';GRANT ALL PRIVILEGES ON *.* TO 'ubuntu'@'localhost';FLUSH PRIVILEGES;"
+
+      echo 'Setup logrotate'
+      sudo touch /etc/logrotate.d/#{Rails.application.class.module_parent_name.downcase}
+      sudo tee /etc/logrotate.d/#{Rails.application.class.module_parent_name.downcase} > /dev/null <<EOF
+      /home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/shared/log/*.log {
+        daily
+        missingok
+        rotate 1
+        compress
+        notifempty
+        copytruncate
+        su ubuntu ubuntu
+      }
+      EOF
+      sudo logrotate /etc/logrotate.d/#{Rails.application.class.module_parent_name.downcase}
+    MSG
+    file.close
+    system("chmod +x #{filepath}")
+    puts "END - Create startup.sh for #{args[:env]}"
+  end
+
+  desc 'Create deploy.sh'
+  task :create_deploy_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create deploy.sh for #{args[:env]}"
+    filepath = Rails.root.join('terraform', args[:env], 'deploy.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      SCRIPT_PATH=$(dirname `which $0`)
+
+      cp $SCRIPT_PATH/../../config/master.key $SCRIPT_PATH/master.key
+      cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
+
+      docker build \
+        -t \
+        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]}:latest \
+        $SCRIPT_PATH
+
+      echo 'terraform init'
+      docker run \
+        -it \
+        --rm \
+        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
+        --env AWS_PROFILE=#{args[:aws_profile]} \
+        -v $SCRIPT_PATH:/workspace \
+        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        init
+
+      echo 'terraform apply'
+      docker run \
+        -it \
+        --rm \
+        --env TF_LOG=ERROR \
+        --env TF_LOG_PATH=tf_log \
+        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
+        --env AWS_PROFILE=#{args[:aws_profile]} \
+        -v $SCRIPT_PATH:/workspace \
+        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        apply
+
+      rm $SCRIPT_PATH/master.key
+      rm $SCRIPT_PATH/awscredentials
+    MSG
+    system("chmod +x #{filepath}")
+    file.close
+    puts "END - Create deploy.sh for #{args[:env]}"
+  end
+
+  desc 'Create destroy.sh'
+  task :create_destroy_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create destroy.sh for #{args[:env]}"
+    filepath = Rails.root.join('terraform', args[:env], 'destroy.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      SCRIPT_PATH=$(dirname `which $0`)
+
+      cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
+
+      docker run \
+        -it \
+        --rm \
+        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
+        --env AWS_PROFILE=#{args[:aws_profile]} \
+        -v $SCRIPT_PATH:/workspace \
+        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        destroy
+
+      rm $SCRIPT_PATH/awscredentials
+
+    MSG
+    file.close
+    system("chmod +x #{filepath}")
+    puts "END - Create destroy.sh for #{args[:env]}"
+  end
+
+  desc 'Create the terraform files'
+  task init: :environment do
+    env = aws_profile = region = ''
+    loop do
+      puts 'Enter environment:'
+      env = STDIN.gets.chomp
+
+      break unless env.blank?
+
+      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    end
+
+    loop do
+      puts 'Enter region:'
+      region = STDIN.gets.chomp
+
+      break unless region.blank?
+
+      puts 'Nothing entered. Please enter an region (eg us-east-1)'
+    end
+
+    loop do
+      puts 'Enter your desired aws profile for this project:'
       aws_profile = STDIN.gets.chomp
-      AWS_ACCESS_KEY_ID = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
-      if AWS_ACCESS_KEY_ID.blank?
-        abort('Please check your AWS named profile in ~/.aws/credentials file')
-      end
-      AWS_SECRET_ACCESS_KEY = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
-      if AWS_SECRET_ACCESS_KEY.blank?
-        abort('Please check your AWS named profile in ~/.aws/credentials file')
-      end
-      AWS_ACCOUNT_ID = `aws sts get-caller-identity --profile tgp | jq -r '.Account'`.chomp
 
-      puts "AWS_ACCESS_KEY_ID is #{AWS_ACCESS_KEY_ID}"
-      puts "AWS_SECRET_ACCESS_KEY is #{AWS_SECRET_ACCESS_KEY}"
-      puts "AWS_ACCOUNT_ID is #{AWS_ACCOUNT_ID}"
+      break unless aws_profile.blank?
 
-      # constants
-      PROJECT_NAME = Rails.application.class.module_parent_name.downcase
-      REGION = 'us-east-1'
-      PRIVATE_KEY_FILE_NAME = "#{Rails.application.class.module_parent_name}-staging"
-      TFSTATE_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-tfstate"
-      TFSTATE_KEY = 'staging/terraform.tfstate'
-      LOGS_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-logs-bucket"
-      SECRETS_BUCKET = "#{AWS_ACCOUNT_ID}-#{PROJECT_NAME}-secrets-bucket"
-      SSH_KEYS_DIR = Rails.root.join('terraform', 'staging', 'ssh_keys')
-
-      puts ''
-      puts '######################'
-      puts ''
-
-      Rake::Task['terraform:shared:create_tf_state_bucket'].invoke(aws_profile, TFSTATE_BUCKET)
-
-      puts ''
-      puts '######################'
-      puts ''
-
-      Rake::Task['terraform:shared:create_logs_bucket'].invoke(aws_profile, LOGS_BUCKET)
-
-      puts ''
-      puts '######################'
-      puts ''
-
-      Rake::Task['terraform:shared:generate_ssh_keys'].invoke(PRIVATE_KEY_FILE_NAME, SSH_KEYS_DIR)
-
-      puts ''
-      puts '######################'
-      puts ''
-
-      # create terraform provisioning files
-      puts "AWS REGION used is #{REGION}"
-
-      puts 'Create setup.tf file for staging'
-      file = File.open(Rails.root.join('terraform', 'staging', 'setup.tf'), 'w')
-      file.puts <<~MSG
-        # download all necessary plugins for terraform
-        # set versions
-        provider "aws" {
-          version = "~> 2.24"
-          region = "#{REGION}"
-        }
-
-        terraform {
-          required_version = "~> 0.12.0"
-          backend "s3" {
-            bucket = "#{TFSTATE_BUCKET}"
-            key = "#{TFSTATE_KEY}"
-            region = "#{REGION}"
-          }
-        }
-
-        provider "null" {
-          version = "~> 2.1"
-        }
-      MSG
-      file.close
-
-      puts 'Create variables.tf file for staging'
-      file = File.open(Rails.root.join('terraform', 'staging', 'variables.tf'), 'w')
-      file.puts <<~MSG
-        variable "project_name" {
-          type = string
-          default = "#{PROJECT_NAME}"
-        }
-
-        variable "region" {
-          type = string
-          default = "#{REGION}"
-        }
-
-        variable "env" {
-          type = string
-          default = "staging"
-        }
-      MSG
-      file.close
-
-      puts 'Create secrets_bucket.tf file for staging to upload private and public keys'
-      file = File.open(Rails.root.join('terraform', 'staging', 'secrets_bucket.tf'), 'w')
-      file.puts <<~MSG
-        module "secrets_bucket" {
-          source = "trussworks/s3-private-bucket/aws"
-          version = "~> 1.7.2"
-          bucket = "#{SECRETS_BUCKET}"
-          logging_bucket = "#{LOGS_BUCKET}"
-
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-        }
-
-        resource "aws_s3_bucket_object" "private_key" {
-          bucket = module.secrets_bucket.id
-          key = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}"
-          source = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}"
-
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-        }
-
-        resource "aws_s3_bucket_object" "public_key" {
-          bucket = module.secrets_bucket.id
-          key = "ssh_keys/#{PRIVATE_KEY_FILE_NAME}.pub"
-          source = "#{PRIVATE_KEY_FILE_NAME}.pub"
-
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-        }
-
-        resource "aws_s3_bucket_object" "master_key" {
-          bucket = module.secrets_bucket.id
-          key = "application_keys/master.key"
-          source = "config/master.key"
-
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-        }
-
-        # with reference to https://stackoverflow.com/a/52868251/2667545
-
-        data "aws_iam_policy_document" "secrets_bucket" {
-          statement {
-            actions = ["sts:AssumeRole"]
-
-            principals {
-              type        = "Service"
-              identifiers = ["ec2.amazonaws.com"]
-            }
-          }
-        }
-
-        resource "aws_iam_policy" "secrets_bucket" {
-          name = "${module.secrets_bucket.id}-secrets_bucket_iam_policy"
-          description = "Allow reading from the S3 bucket"
-
-          policy = <<EOF
-        {
-          "Version":"2012-10-17",
-          "Statement":[
-            {
-              "Effect":"Allow",
-              "Action":[
-                "s3:GetObject"
-              ],
-              "Resource":[
-                "${module.secrets_bucket.arn}",
-                "${module.secrets_bucket.arn}/*"
-              ]
-            },
-            {
-              "Effect":"Allow",
-              "Action":[
-                "s3:ListAllMyBuckets"
-              ],
-              "Resource":"*"
-            }
-          ]
-        }
-        EOF
-        }
-
-        resource "aws_iam_role" "secrets_bucket" {
-          name = "${module.secrets_bucket.id}-iam_role"
-          assume_role_policy = data.aws_iam_policy_document.secrets_bucket.json
-        }
-
-        resource "aws_iam_role_policy_attachment" "secrets_bucket" {
-          role = aws_iam_role.secrets_bucket.name
-          policy_arn = aws_iam_policy.secrets_bucket.arn
-        }
-
-        resource "aws_iam_instance_profile" "secrets_bucket" {
-          name = "${module.secrets_bucket.id}-iam_instance_profile"
-          role = aws_iam_role.secrets_bucket.name
-        }
-      MSG
-      file.close
-
-      puts 'Create ec2.tf file for staging'
-      file = File.open(Rails.root.join('terraform', 'staging', 'ec2.tf'), 'w')
-      file.puts <<~MSG
-        resource "aws_key_pair" "this" {
-          key_name = var.project_name
-          public_key = file("${path.module}/#{PRIVATE_KEY_FILE_NAME}.pub")
-        }
-
-        resource "aws_security_group" "this" {
-          name = var.project_name
-          description = "Security group for ${var.project_name} project"
-          ingress {
-            from_port = 80
-            to_port = 80
-            protocol = "tcp"
-            cidr_blocks = [
-              "0.0.0.0/0"
-            ]
-          }
-
-          ingress {
-            from_port = 22
-            to_port = 22
-            protocol = "tcp"
-            cidr_blocks = [
-              "0.0.0.0/0"
-            ]
-          }
-
-          egress {
-            from_port = 0
-            to_port = 0
-            protocol = "-1"
-            cidr_blocks = [
-              "0.0.0.0/0"
-            ]
-          }
-
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-        }
-
-        resource "aws_eip" "this" {
-          vpc = true
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-
-          # needs to persist?
-          # lifecycle {
-          #   prevent_destroy = true
-          # }
-        }
-
-        output "staging-eip" {
-          value = aws_eip.this.public_ip
-        }
-
-        resource "aws_eip_association" "this" {
-          instance_id   = "${aws_instance.this.id}"
-          allocation_id = "${aws_eip.this.id}"
-        }
-
-        resource "aws_instance" "this" {
-          ami = "ami-035b3c7efe6d061d5" # Amazon Linux 2018
-          instance_type = "t2.nano"
-          availability_zone = "${var.region}a"
-          key_name = aws_key_pair.this.key_name
-          security_groups = [
-            aws_security_group.this.name
-          ]
-
-          iam_instance_profile = aws_iam_instance_profile.secrets_bucket.name
-
-          tags = {
-            Name = var.project_name
-            Env = var.env
-          }
-        }
-      MSG
-      file.close
-
-      puts ''
-      puts '######################'
-      puts ''
-
-      puts 'Create deploy.sh file for staging'
-      file = File.open(Rails.root.join('terraform', 'staging', 'deploy.sh'), 'w')
-      file.puts <<~MSG
-        #!/usr/bin/env bash
-
-        AWS_DEFAULT_REGION="#{REGION}"
-
-        docker build \
-          -t #{PROJECT_NAME}-staging:latest \
-          --build-arg AWS_ACCESS_KEY_ID=#{AWS_ACCESS_KEY_ID} \
-          --build-arg AWS_SECRET_ACCESS_KEY=#{AWS_SECRET_ACCESS_KEY} \
-          #{Rails.root.join('terraform', 'staging')}
-
-        docker run \
-          --rm \
-          -it \
-          --env AWS_ACCESS_KEY_ID=#{AWS_ACCESS_KEY_ID} \
-          --env AWS_SECRET_ACCESS_KEY=#{AWS_SECRET_ACCESS_KEY} \
-          #{PROJECT_NAME}-staging \
-          apply
-      MSG
-      file.close
-      `chmod +x #{Rails.root.join('terraform', 'staging', 'deploy.sh')}`
-
-      file = File.open(Rails.root.join('terraform', 'staging', 'destroy.sh'), 'w')
-      file.puts <<~MSG
-        #!/usr/bin/env bash
-
-        AWS_DEFAULT_REGION="#{REGION}"
-
-        docker run \
-          --rm \
-          -it \
-          --env AWS_ACCESS_KEY_ID=#{AWS_ACCESS_KEY_ID} \
-          --env AWS_SECRET_ACCESS_KEY=#{AWS_SECRET_ACCESS_KEY} \
-          #{PROJECT_NAME}-staging \
-          destroy
-      MSG
-      file.close
-      `chmod +x #{Rails.root.join('terraform', 'staging', 'destroy.sh')}`
+      puts 'Nothing entered. Please enter your desired aws profile for this project.'
     end
 
-    desc 'Deploy resources'
-    task deploy: :environment do
-      filepath = Rails.root.join('terraform', 'staging', 'deploy.sh').to_s
-      if File.exist? filepath
-        puts 'Initializing Terraform deploy script for staging environment'
-        system(filepath)
-      else
-        abort("~/terraform/staging/deploy.sh script not present\nMake sure you run `rake terraform:staging:init`")
-      end
-    end
+    Rake::Task['terraform:checks'].invoke(env, aws_profile, region)
+    Rake::Task['terraform:create_tfstate_bucket'].invoke(env, aws_profile, region)
+    Rake::Task['terraform:create_env_folders'].invoke(env)
+    Rake::Task['terraform:generate_ssh_keys'].invoke(env)
+    Rake::Task['terraform:copy_template_files'].invoke(env)
+    Rake::Task['terraform:create_variables_tf'].invoke(env, region)
+    Rake::Task['terraform:create_setup_tf'].invoke(env, region)
+    Rake::Task['terraform:create_push_error_state_sh'].invoke(env, aws_profile)
+    Rake::Task['terraform:create_startup_sh'].invoke(env, aws_profile)
+    Rake::Task['terraform:create_deploy_sh'].invoke(env, aws_profile)
+    Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
+    Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
 
-    desc 'Destroy resources'
-    task destroy: :environment do
-      filepath = Rails.root.join('terraform', 'staging', 'destroy.sh').to_s
-      if File.exist? filepath
-        puts 'Initializing Terraform destroy script for staging environment'
-        system(filepath)
-      else
-        abort("~/terraform/staging/destroy.sh script not present\nMake sure you run `rake terraform:staging:init`")
-      end
-    end
+    puts ''
+    puts 'Terraform files created!'
+    puts "Make sure you have your config/environments/#{region}.rb file setup!"
+    puts "Make sure you have your config/deploy.rb file setup for deploying via mina on #{env} too!"
+    puts "Run `source #{Rails.root.join('terraform', env, 'deploy.sh')}` to deploy your infrastructure now!"
   end
 end

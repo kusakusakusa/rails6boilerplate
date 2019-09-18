@@ -25,19 +25,18 @@ Rails.application.routes.draw do
 
   namespace 'api' do
     namespace 'v1' do
+      # devise related
+      post 'register', to: 'users#register'
+      post 'resend-confirmation', to: 'users#resend_confirmation'
+      post 'confirm', to: 'users#confirm'
+      post 'forgot-password', to: 'users#forgot_password'
+      post 'reset-password', to: 'users#reset_password'
+
       # duplicate paths to doorkeeper that is exposed on apipie
       # front end will use this for pretty purpose
       post 'login', to: 'tokens#login'
       post 'refresh', to: 'tokens#refresh'
       post 'logout', to: 'tokens#revoke'
-
-      as :user do
-        post 'register', to: 'accounts#register'
-        post 'resend-confirmation', to: 'confirmations#resend_confirmation'
-        post 'confirm', to: 'confirmations#confirm'
-        post 'forgot-password', to: 'passwords#forgot_password'
-        post 'reset-password', to: 'passwords#reset_password'
-      end
 
       resources :posts, only: [:index], defaults: { format: :json }
 
