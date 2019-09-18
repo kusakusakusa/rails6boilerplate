@@ -19,7 +19,6 @@
 #  last_name              :string(255)
 #
 
-
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
@@ -41,6 +40,18 @@ class User < ApplicationRecord
            dependent: :delete_all # or :destroy if you need callbacks
 
   has_many :posts
+
+  def json_attributes
+    custom_attributes = attributes.clone
+    custom_attributes.delete 'encrypted_password'
+    custom_attributes.delete 'reset_password_token'
+    custom_attributes.delete 'reset_password_sent_at'
+    custom_attributes.delete 'remember_created_at'
+    custom_attributes.delete 'confirmation_token'
+    custom_attributes.delete 'confirmed_at'
+    custom_attributes.delete 'confirmation_sent_at'
+    custom_attributes
+  end
 
   protected
 

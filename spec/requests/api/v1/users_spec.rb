@@ -3,9 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Users', type: :request do
+  let(:user) { create(:user) }
   describe 'POST /api/v1/update-profile' do
-    let(:user) { create(:user) }
-
     before :each do
       login_params = {
         email: user.email,
@@ -42,6 +41,36 @@ RSpec.describe 'Users', type: :request do
       expect(response.status).to eq 200
       expect(user.reload.first_name).to eq 'newFirstName'
       expect(user.reload.last_name).to eq 'newLastName'
+    end
+
+    describe '.json_attributes' do
+      scenario 'should not contain encrypted_password' do
+        expect(user.json_attributes.key?('encrypted_password')).to eq false
+      end
+
+      scenario 'should not contain reset_password_token' do
+        expect(user.json_attributes.key?('reset_password_token')).to eq false
+      end
+
+      scenario 'should not contain reset_password_sent_at' do
+        expect(user.json_attributes.key?('reset_password_sent_at')).to eq false
+      end
+
+      scenario 'should not contain remember_created_at' do
+        expect(user.json_attributes.key?('remember_created_at')).to eq false
+      end
+
+      scenario 'should not contain confirmation_token' do
+        expect(user.json_attributes.key?('confirmation_token')).to eq false
+      end
+
+      scenario 'should not contain confirmed_at' do
+        expect(user.json_attributes.key?('confirmed_at')).to eq false
+      end
+
+      scenario 'should not contain confirmation_sent_at' do
+        expect(user.json_attributes.key?('confirmation_sent_at')).to eq false
+      end
     end
   end
 end

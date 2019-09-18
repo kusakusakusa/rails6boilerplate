@@ -77,7 +77,3 @@ yarn-debug.log*
 
 # Ignore startbootstrap-sb-admin-2-gh-pages folder, but not the zip file
 startbootstrap-sb-admin-2-gh-pages/
-
-# Ignore terraform
-terraform/staging/ssh_keys/*
-!terraform/staging/ssh_keys/.gitkeep

@@ -3,6 +3,8 @@ en:
     success:
       default: "Success!"
     errors:
+      apipie:
+        missing_params: "Missing parameters"
       doorkeeper_unauthorized_nil: "Not authorized"
       default: "Error"
       devise:
