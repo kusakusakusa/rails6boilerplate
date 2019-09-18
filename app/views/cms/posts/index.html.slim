@@ -46,5 +46,5 @@
                   = link_to cms_post_path(cms_post), method: :delete, data: { confirm: 'Are you sure?' } do
                     i.fas.fa-fw.fa-trash-alt
 /! End of Page Content
-- content_for :javascript do
-  = javascript_pack_tag 'custom/datatables-demo', 'data-turbolinks-track': 'reload'
+- content_for :javascript_in_head do
+  = javascript_pack_tag 'custom/datatables', 'data-turbolinks-track': 'reload'
