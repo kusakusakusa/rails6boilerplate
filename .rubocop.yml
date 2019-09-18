@@ -4,3 +4,6 @@ Metrics/BlockLength:
   Max: 9999
 Metrics/MethodLength:
   Max: 9999
+AllCops:
+  Exclude:
+    - *.slim
