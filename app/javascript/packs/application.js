@@ -11,7 +11,8 @@ require("jquery")
 require("chart.js")
 require("bootstrap")
 require("jquery.easing")
-require("./scss/bootstrap.scss")
+
+// custom
 require("./scss/fields.sass")
 
 // Uncomment to copy all static images under ../images to the output folder and reference
