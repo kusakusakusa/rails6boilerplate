@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+PROJECT_NAME=Rails.application.class.module_parent_name.downcase
+
 namespace :terraform do
   desc 'Checks before proceeding'
   task :checks, [:env, :aws_profile, :region] => :environment do |task, args|
@@ -49,7 +51,7 @@ namespace :terraform do
     # these keys will be used for:
     # 1. generating aws keypair
     # 2. authentication key for private git repository
-    private_key_file_name = "#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}"
+    private_key_file_name = "#{PROJECT_NAME}-#{args[:env]}"
     filepath = "#{Rails.root.join('terraform', args[:env], 'ssh_keys')}/#{private_key_file_name}"
     puts "START - Create private/public keys for #{args[:env]}"
 
@@ -77,7 +79,7 @@ namespace :terraform do
     # create terraform backend s3 bucket via aws-cli
     # aws-cli is assumed to be present on local machine
 
-    tfstate_bucket_name = "#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-tfstate"
+    tfstate_bucket_name = "#{PROJECT_NAME}-#{args[:env]}-tfstate"
     tfstate_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{tfstate_bucket_name}$"`.chomp
     if tfstate_bucket.blank?
       puts "Creating Terraform state bucket (#{tfstate_bucket_name})"
@@ -155,7 +157,7 @@ namespace :terraform do
       terraform {
         required_version = "~> 0.12.0"
         backend "s3" {
-          bucket = "#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-tfstate"
+          bucket = "#{PROJECT_NAME}-#{args[:env]}-tfstate"
           key = "terraform.tfstate"
           region = "#{args[:region]}"
         }
@@ -177,7 +179,7 @@ namespace :terraform do
     file.puts <<~MSG
       variable "project_name" {
         type = string
-        default = "#{Rails.application.class.module_parent_name.downcase}"
+        default = "#{PROJECT_NAME}"
       }
 
       variable "region" {
@@ -214,7 +216,7 @@ namespace :terraform do
 
       docker build \
         -t \
-        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]}:latest \
+        #{PROJECT_NAME}-#{args[:env]}:latest \
         $SCRIPT_PATH
 
       echo 'terraform push error.tfstate'
@@ -224,7 +226,7 @@ namespace :terraform do
         --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
         --env AWS_PROFILE=#{args[:aws_profile]} \
         -v $SCRIPT_PATH:/workspace \
-        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        #{PROJECT_NAME}-#{args[:env]} \
         state push errored.tfstate
 
       rm $SCRIPT_PATH/master.key
@@ -249,7 +251,7 @@ namespace :terraform do
       sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install nginx gnupg2 nodejs build-essential mysql-server libmysqlclient-dev awscli npm sendmail -y
 
       # copy keys files
-      aws s3 cp s3://#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-secrets/#{Rails.application.class.module_parent_name.downcase}-#{args[:env]} /home/ubuntu/.ssh/id_rsa
+      aws s3 cp s3://#{PROJECT_NAME}-#{args[:env]}-secrets/#{PROJECT_NAME}-#{args[:env]} /home/ubuntu/.ssh/id_rsa
       if [ $? -eq 0 ]
       then
         echo 'Successfully copied private key'
@@ -258,7 +260,7 @@ namespace :terraform do
         exit 1
       fi
 
-      aws s3 cp s3://#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}-secrets/#{Rails.application.class.module_parent_name.downcase}-#{args[:env]}.pub /home/ubuntu/.ssh/id_rsa.pub
+      aws s3 cp s3://#{PROJECT_NAME}-#{args[:env]}-secrets/#{PROJECT_NAME}-#{args[:env]}.pub /home/ubuntu/.ssh/id_rsa.pub
       if [ $? -eq 0 ]
       then
         echo 'Successfully copied public key'
@@ -318,9 +320,9 @@ namespace :terraform do
       sudo mysql -u root -p#{db_password} -e "CREATE USER 'ubuntu'@'localhost' IDENTIFIED BY '#{db_password}';GRANT ALL PRIVILEGES ON *.* TO 'ubuntu'@'localhost';FLUSH PRIVILEGES;"
 
       echo 'Setup logrotate'
-      sudo touch /etc/logrotate.d/#{Rails.application.class.module_parent_name.downcase}
-      sudo tee /etc/logrotate.d/#{Rails.application.class.module_parent_name.downcase} > /dev/null <<EOF
-      /home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/shared/log/*.log {
+      sudo touch /etc/logrotate.d/#{PROJECT_NAME}
+      sudo tee /etc/logrotate.d/#{PROJECT_NAME} > /dev/null <<EOF
+      /home/ubuntu/#{PROJECT_NAME}/shared/log/*.log {
         daily
         missingok
         rotate 1
@@ -330,7 +332,7 @@ namespace :terraform do
         su ubuntu ubuntu
       }
       EOF
-      sudo logrotate /etc/logrotate.d/#{Rails.application.class.module_parent_name.downcase}
+      sudo logrotate /etc/logrotate.d/#{PROJECT_NAME}
     MSG
     file.close
     system("chmod +x #{filepath}")
@@ -351,7 +353,7 @@ namespace :terraform do
       sudo chmod +w /etc/nginx/sites-available/default
       cat > /etc/nginx/sites-available/default <<EOF
       upstream backend {
-        server unix:///home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/shared/tmp/sockets/puma.sock fail_timeout=0;
+        server unix:///home/ubuntu/#{PROJECT_NAME}/shared/tmp/sockets/puma.sock fail_timeout=0;
       }
 
       # no server_name, routes to default this default server directive
@@ -369,7 +371,7 @@ namespace :terraform do
         }
 
         location ~ ^/(assets|packs)/ {
-          root /home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/current/public;
+          root /home/ubuntu/#{PROJECT_NAME}/current/public;
           expires max;
           add_header Cache-Control public;
           gzip_static on;
@@ -398,7 +400,7 @@ namespace :terraform do
 
       docker build \
         -t \
-        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]}:latest \
+        #{PROJECT_NAME}-#{args[:env]}:latest \
         $SCRIPT_PATH
 
       echo 'terraform init'
@@ -408,7 +410,7 @@ namespace :terraform do
         --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
         --env AWS_PROFILE=#{args[:aws_profile]} \
         -v $SCRIPT_PATH:/workspace \
-        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        #{PROJECT_NAME}-#{args[:env]} \
         init
 
       echo 'terraform apply'
@@ -420,7 +422,7 @@ namespace :terraform do
         --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
         --env AWS_PROFILE=#{args[:aws_profile]} \
         -v $SCRIPT_PATH:/workspace \
-        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        #{PROJECT_NAME}-#{args[:env]} \
         apply
 
       rm $SCRIPT_PATH/master.key
@@ -449,7 +451,7 @@ namespace :terraform do
         --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
         --env AWS_PROFILE=#{args[:aws_profile]} \
         -v $SCRIPT_PATH:/workspace \
-        #{Rails.application.class.module_parent_name.downcase}-#{args[:env]} \
+        #{PROJECT_NAME}-#{args[:env]} \
         destroy
 
       rm $SCRIPT_PATH/awscredentials
