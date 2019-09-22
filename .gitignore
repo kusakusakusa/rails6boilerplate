@@ -77,3 +77,7 @@ yarn-debug.log*
 
 # Ignore startbootstrap-sb-admin-2-gh-pages folder, but not the zip file
 startbootstrap-sb-admin-2-gh-pages/
+
+# Terraform
+terraform/*
+!terraform/templates/*

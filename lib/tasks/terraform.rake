@@ -239,7 +239,7 @@ namespace :terraform do
   task :create_startup_sh, [:env, :aws_profile] => :environment do |task, args|
     puts "START - Create startup.sh for #{args[:env]}"
     db_password = Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
-    filepath = Rails.root.join('terraform', args[:env], 'startup.sh')
+    filepath = Rails.root.join('terraform', args[:env], 'scripts', 'startup.sh')
     file = File.open(filepath, 'w')
     file.puts <<~MSG
       #!/usr/bin/env bash
@@ -301,40 +301,6 @@ namespace :terraform do
       sudo cp /etc/fstab /etc/fstab.bak
       echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
-      echo 'Overwrite nginx default available site'
-      sudo chgrp $(whoami) /etc/nginx/sites-available/default
-      sudo chown $(whoami) /etc/nginx/sites-available/default
-      sudo chmod +w /etc/nginx/sites-available/default
-      cat > /etc/nginx/sites-available/default <<EOF
-      upstream backend {
-        server unix:///home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/shared/tmp/sockets/puma.sock fail_timeout=0;
-      }
-
-      # no server_name, routes to default this default server directive
-      server {
-        listen 80;
-        client_max_body_size 10m;
-
-        location / {
-          proxy_pass http://backend;
-          proxy_redirect off;
-          proxy_set_header   Host             \$host;
-          proxy_set_header   X-Real-IP        \$remote_addr;
-          proxy_set_header   X-Forwarded-For  \$proxy_add_x_forwarded_for;
-          proxy_pass_request_headers      on;
-        }
-
-        location ~ ^/(assets|packs)/ {
-          root /home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/current/public;
-          expires max;
-          add_header Cache-Control public;
-          gzip_static on;
-          #add_header ETag "";
-          break;
-        }
-      }
-      EOF
-
       echo 'Installing mysql'
       echo 'Set password for root user'
       sudo mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('#{db_password}');FLUSH PRIVILEGES;"
@@ -369,6 +335,52 @@ namespace :terraform do
     file.close
     system("chmod +x #{filepath}")
     puts "END - Create startup.sh for #{args[:env]}"
+  end
+
+  desc 'Create app.sh'
+  task :create_app_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create app.sh for #{args[:env]}"
+    filepath = Rails.root.join('terraform', args[:env], 'scripts/' 'app.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      echo 'Overwrite nginx default available site'
+      sudo chgrp $(whoami) /etc/nginx/sites-available/default
+      sudo chown $(whoami) /etc/nginx/sites-available/default
+      sudo chmod +w /etc/nginx/sites-available/default
+      cat > /etc/nginx/sites-available/default <<EOF
+      upstream backend {
+        server unix:///home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/shared/tmp/sockets/puma.sock fail_timeout=0;
+      }
+
+      # no server_name, routes to default this default server directive
+      server {
+        listen 80;
+        client_max_body_size 10m;
+
+        location / {
+          proxy_pass http://backend;
+          proxy_redirect off;
+          proxy_set_header   Host             \$host;
+          proxy_set_header   X-Real-IP        \$remote_addr;
+          proxy_set_header   X-Forwarded-For  \$proxy_add_x_forwarded_for;
+          proxy_pass_request_headers      on;
+        }
+
+        location ~ ^/(assets|packs)/ {
+          root /home/ubuntu/#{Rails.application.class.module_parent_name.downcase}/current/public;
+          expires max;
+          add_header Cache-Control public;
+          gzip_static on;
+          #add_header ETag "";
+          break;
+        }
+      }
+      EOF
+    MSG
+    file.close
+    puts "END - Create app.sh for #{args[:env]}"
   end
 
   desc 'Create deploy.sh'
@@ -487,6 +499,7 @@ namespace :terraform do
     Rake::Task['terraform:create_setup_tf'].invoke(env, region)
     Rake::Task['terraform:create_push_error_state_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_startup_sh'].invoke(env, aws_profile)
+    Rake::Task['terraform:create_app_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_deploy_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
@@ -496,5 +509,33 @@ namespace :terraform do
     puts "Make sure you have your config/environments/#{region}.rb file setup!"
     puts "Make sure you have your config/deploy.rb file setup for deploying via mina on #{env} too!"
     puts "Run `source #{Rails.root.join('terraform', env, 'deploy.sh')}` to deploy your infrastructure now!"
+  end
+
+  desc 'Deploy resources'
+  task deploy: :environment do
+    env = ''
+    loop do
+      puts 'Enter environment:'
+      env = STDIN.gets.chomp
+
+      break unless env.blank?
+
+      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    end
+    system("sh #{Rails.root.join('terraform', 'staging', 'deploy.sh').to_s}")
+  end
+
+  desc 'Destroy resources'
+  task destroy: :environment do
+    env = ''
+    loop do
+      puts 'Enter environment:'
+      env = STDIN.gets.chomp
+
+      break unless env.blank?
+
+      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    end
+    system("sh #{Rails.root.join('terraform', env, 'destroy.sh').to_s}")
   end
 end

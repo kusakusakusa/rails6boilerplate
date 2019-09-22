@@ -154,5 +154,7 @@ Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6
 
 ## TODO
 * use https://registry.terraform.io/modules/trussworks/logs/aws/3.0.0 to add logs bucket instead of aws cli
-* check if better way to find relative path of master.key
 * dockerignore file
+* read ec2 ubuntu ami id based on region
+* find out how to NOT redownload providers in terraform or copy whole context into dockerfile by copy or mounting volume in correct order
+* deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
