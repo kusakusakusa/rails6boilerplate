@@ -215,8 +215,9 @@ namespace :terraform do
       cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
 
       docker build \
-        -t \
-        #{PROJECT_NAME}-#{args[:env]}:latest \
+        -t #{PROJECT_NAME}-#{args[:env]}:latest \
+        --build-arg AWS_SHARED_CREDENTIALS_FILE_BUILD_ARG=awscredentials \
+        --build-arg AWS_PROFILE_BUILD_ARG=#{args[:aws_profile]} \
         $SCRIPT_PATH
 
       echo 'terraform push error.tfstate'
@@ -399,8 +400,9 @@ namespace :terraform do
       cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
 
       docker build \
-        -t \
-        #{PROJECT_NAME}-#{args[:env]}:latest \
+        -t #{PROJECT_NAME}-#{args[:env]}:latest \
+        --build-arg AWS_SHARED_CREDENTIALS_FILE_BUILD_ARG=awscredentials \
+        --build-arg AWS_PROFILE_BUILD_ARG=#{args[:aws_profile]} \
         $SCRIPT_PATH
 
       echo 'terraform init'
@@ -510,7 +512,7 @@ namespace :terraform do
     puts 'Terraform files created!'
     puts "Make sure you have your config/environments/#{region}.rb file setup!"
     puts "Make sure you have your config/deploy.rb file setup for deploying via mina on #{env} too!"
-    puts "Run `source #{Rails.root.join('terraform', env, 'deploy.sh')}` to deploy your infrastructure now!"
+    puts "Run `rake terraform:deploy` to deploy your infrastructure now!"
   end
 
   desc 'Deploy resources'
