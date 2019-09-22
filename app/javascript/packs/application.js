@@ -44,4 +44,9 @@ document.addEventListener("turbolinks:load", () => {
       reader.readAsDataURL(element.files[0]);
     }
   });
+
+  $('.image-delete').on('click', function() {
+    $("input[name='" + $(this).data('field-name') + "']").val('')
+    $(".image-input-preview[data-field-name='" + $(this).data('field-name') + "']").prop('src', '')
+  });
 });

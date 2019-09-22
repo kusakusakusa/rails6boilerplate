@@ -19,11 +19,20 @@
     - unless cms_post.new_record?
       = form.label :content, class: 'small font-weight-bold'
     = form.cktext_area :content, placeholder: 'Write something'
-  .form-group
-    = form.label :cover_image, class: 'small font-weight-bold'
-    img.image-input-preview src="#{form.object.cover_image.attachment ? rails_blob_url(form.object.cover_image) : '#'}" alt=''
-    = form.file_field :cover_image, class: 'image-input form-control-file', hidden: ''
-    = form.label :cover_image, 'Browse Image', class: 'btn btn-secondary'
+  .row
+    .col-md-4
+      .card.shadow.mb-4
+        .card-header.py-3.d-flex.flex-row.align-items-center.justify-content-between
+          h4.small.m-0.font-weight-bold
+            | Cover Image
+          .float-right
+            .btn.btn-danger.btn-circle.btn-sm.image-delete data-field-name='post[cover_image]'
+              i.fas.fa-times
+        .card-body.pb-0
+          .form-group
+            = image_tag form.object.cover_image.attachment ? rails_blob_url(form.object.cover_image) : '', class: 'image-input-preview', data: { field_name: 'post[cover_image]' }, alt: ''
+            = form.file_field :cover_image, class: 'image-input form-control-file', required: true
+            = form.label :cover_image, 'Browse Image', class: 'btn btn-secondary'
 
   .actions
     = form.submit class: 'btn btn-primary'
