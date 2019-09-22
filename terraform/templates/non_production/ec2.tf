@@ -57,7 +57,7 @@ resource "aws_eip_association" "this" {
 }
 
 resource "aws_instance" "this" {
-  ami = "ami-03b6f27628a4569c8" # ubuntu 18.04 LTS
+  ami = "ami-03b6f27628a4569c8" # ubuntu 18.04 LTS in ap-southeast-1
   instance_type = "t2.micro" # need at least micro or have problem installing nokogiri
   availability_zone = "${var.region}a"
   key_name = aws_key_pair.this.key_name

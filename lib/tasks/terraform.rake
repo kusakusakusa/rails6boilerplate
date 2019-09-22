@@ -67,9 +67,9 @@ namespace :terraform do
 
   desc 'Copy template files'
   task :copy_template_files, [:env] => :environment do |task, args|
-    puts "START - Copy files in `templates` folder into #{args[:env]} folder in terraform"
-    FileUtils.cp_r "#{Rails.root.join('terraform', 'templates')}/.", Rails.root.join('terraform', args[:env])
-    puts "END - Copy files in `templates` folder into #{args[:env]} folder in terraform"
+    puts "START - Copy files in `templates/non_production` folder into #{args[:env]} folder in terraform"
+    FileUtils.cp_r "#{Rails.root.join('terraform', 'templates', 'non_production')}/.", Rails.root.join('terraform', args[:env])
+    puts "END - Copy files in `templates/non_production` folder into #{args[:env]} folder in terraform"
   end
 
   desc 'Create tfstate_bucket'

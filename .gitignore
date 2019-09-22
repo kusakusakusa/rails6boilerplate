@@ -80,4 +80,6 @@ startbootstrap-sb-admin-2-gh-pages/
 
 # Terraform
 terraform/*
-!terraform/templates/*
+!terraform/templates
+!terraform/templates/non_production
+!terraform/templates/non_production/*
