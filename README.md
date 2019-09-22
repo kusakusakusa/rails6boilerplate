@@ -104,13 +104,17 @@ Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `po
 
 ### Models
 
-Remove `post` model and `cms/posts_controller` by removing these files:
-```
-TODO
-rails d model post
-rails d scaffold cms::posts
-rails d scaffold_controller api::v1::posts
-```
+Remove `post` related tools by:
+
+1. run `rails d model post`
+2. run `rails d scaffold cms::posts`
+3. run `rails d scaffold_controller api::v1::posts`
+4. delete `has_many :posts` in user model
+5. delete `db/seeds/1_posts.rb`
+5. delete `spec/factories/post.rb`
+6. drop, create and mograte database
+7. run APIPIE_RECORD=examples rspec
+8. run `annotate`
 
 ## Terraform
 
@@ -158,3 +162,5 @@ Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6
 * read ec2 ubuntu ami id based on region
 * find out how to NOT redownload providers in terraform or copy whole context into dockerfile by copy or mounting volume in correct order
 * deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
+* Use packer instead of provisioner scripts
+* Add monitoring to instances
