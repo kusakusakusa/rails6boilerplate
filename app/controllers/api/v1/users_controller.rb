@@ -4,7 +4,6 @@ module Api
   module V1
     class UsersController < Api::BaseController
       before_action :doorkeeper_authorize!, only: [:update_profile]
-      before_action :add_default_response_keys
 
       resource_description do
         name 'Users'

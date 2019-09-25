@@ -4,6 +4,8 @@ module Api
   class BaseController < ActionController::API
     include ApiRescues
 
+    before_action :add_default_response_keys
+    before_action :doorkeeper_authorize!
 
     protected
 
