@@ -92,11 +92,7 @@ RSpec.describe 'Authentications', type: :request do
     end
 
     scenario 'should fail with revoked refresh_token (after logout)' do
-      params = {
-        token: @refresh_token
-      }
-
-      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: {}.to_json, headers:DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       params = {
         refresh_token: @refresh_token,
@@ -111,11 +107,7 @@ RSpec.describe 'Authentications', type: :request do
     end
 
     scenario 'should fail with revoked access_token (after logout)' do
-      params = {
-        token: @access_token
-      }
-
-      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: {}.to_json, headers:DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       params = {
         refresh_token: @refresh_token,
@@ -149,56 +141,58 @@ RSpec.describe 'Authentications', type: :request do
   end
 
   describe 'POST /api/v1/logout' do
-    describe 'with invalid token' do
-      scenario 'should pass for doorkeeper-5.1.0' do
-        params = {
-          token: 'invalid_token'
-        }
+    before :each do
+      params = {
+        email: user.email,
+        password: '12345678',
+        grant_type: 'password'
+      }
 
-        post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
-        expect(response.status).to eq 200
-        expect(response_body.response_code).to eq 'custom.success.default'
-        expect(response_body.response_message).to eq I18n.t(response_body.response_code)
-      end
+      @access_token = response_body['access_token']
+      @refresh_token = response_body['refresh_token']
     end
 
-    describe 'with valid' do
-      before :each do
-        params = {
-          email: user.email,
-          password: '12345678',
-          grant_type: 'password'
-        }
+    scenario 'should fail with invalid token' do
+      post '/api/v1/logout', params: {}.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': 'Bearer invalid')
 
-        post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
+      expect(response.status).to eq 401
+      expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.unknown'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    end
 
-        @access_token = response_body['access_token']
-        @refresh_token = response_body['refresh_token']
-      end
+    scenario 'should pass with valid token' do
+      post '/api/v1/logout', params: {}.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
-      scenario 'refresh_token should pass for doorkeeper-5.1.0' do
-        params = {
-          token: @refresh_token
-        }
+      expect(response.status).to eq 200
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    end
 
-        post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+    scenario 'should revoke access token', :show_in_doc do
+      expect(Doorkeeper::AccessToken.by_token(@access_token).revoked_at).to eq nil
+      post '/api/v1/logout', params: {}.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
-        expect(response.status).to eq 200
-        expect(response_body.response_code).to eq 'custom.success.default'
-        expect(response_body.response_message).to eq I18n.t(response_body.response_code)
-      end
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(Doorkeeper::AccessToken.by_token(@access_token).revoked_at).not_to eq nil
+    end
 
-      scenario 'access_token should pass for doorkeeper-5.1.0', :show_in_doc do
-        params = {
-          token: @access_token
-        }
+    scenario 'should revoke refresh token too' do
+      expect(Doorkeeper::AccessToken.by_refresh_token(@refresh_token).revoked_at).to eq nil
+      post '/api/v1/logout', params: {}.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
-        post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(Doorkeeper::AccessToken.by_refresh_token(@refresh_token).revoked_at).not_to eq nil
+    end
 
-        expect(response.status).to eq 200
-        expect(response_body.response_code).to eq 'custom.success.default'
-        expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+    scenario 'should fail on using expired access token' do
+      Timecop.freeze(Time.now + Doorkeeper.configuration.access_token_expires_in.seconds + 1.day) do
+        post '/api/v1/logout', params: {}.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
+
+        expect(response.status).to eq 401
+        expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.expired'
+        expect(response_body.response_message).to eq I18n.t response_body.response_code
       end
     end
   end
