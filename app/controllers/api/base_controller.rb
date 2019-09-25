@@ -2,20 +2,8 @@
 
 module Api
   class BaseController < ActionController::API
-    before_action :doorkeeper_authorize!
-    before_action :add_default_response_keys
-    rescue_from Doorkeeper::Errors::InvalidToken, with: :handle_doorkeeper_errors
-    rescue_from Doorkeeper::Errors::TokenForbidden, with: :handle_doorkeeper_errors
-    rescue_from Doorkeeper::Errors::TokenExpired, with: :handle_doorkeeper_errors
-    rescue_from Doorkeeper::Errors::TokenRevoked, with: :handle_doorkeeper_errors
-    rescue_from Doorkeeper::Errors::TokenUnknown, with: :handle_doorkeeper_errors
+    include ApiRescues
 
-    rescue_from Apipie::ParamMissing do |e|
-      render json: {
-        response_code: 'custom.errors.apipie.missing_params',
-        response_message: e.message
-      }
-    end
 
     protected
 

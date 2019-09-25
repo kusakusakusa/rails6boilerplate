@@ -3,6 +3,8 @@
 module Api
   module V1
     class TokensController < Doorkeeper::TokensController
+      include ApiRescues
+
       resource_description do
         name 'Authentication-tokens'
         resource_id 'Authentication-tokens'
