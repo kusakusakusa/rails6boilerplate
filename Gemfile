@@ -68,7 +68,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'apipie-rails', '~> 0.5.16'
 gem 'devise', '~> 4.7.0'
-gem 'doorkeeper', '~> 5.1.0'
+gem 'doorkeeper', '~> 5.2.1'
 gem 'doorkeeper-jwt', '~> 0.3.0'
 gem 'ckeditor', '~> 5.0.0'
 gem 'mini_magick', '~> 4.9.5'

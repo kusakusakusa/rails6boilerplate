@@ -41,5 +41,8 @@ module Rails6boilerplate
 
     # constants
     config.confirmation_token_length = 6
+
+    # add concerns
+    config.eager_load_paths << Rails.root.join('app', 'concerns')
   end
 end

@@ -52,11 +52,7 @@ RSpec.describe 'Posts', type: :request do
     end
 
     scenario 'should fail with revoked refresh token used' do
-      params = {
-        token: @refresh_token
-      }
-
-      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: {}.to_json, headers:DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
@@ -66,11 +62,7 @@ RSpec.describe 'Posts', type: :request do
     end
 
     scenario 'should fail with revoked access token used' do
-      params = {
-        token: @refresh_token
-      }
-
-      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: {}.to_json, headers:DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
