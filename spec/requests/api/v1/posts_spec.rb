@@ -10,16 +10,7 @@ RSpec.describe 'Posts', type: :request do
     let(:post2) { create(:post, user: user2) }
 
     before :each do
-      login_params = {
-        email: user1.email,
-        password: '12345678',
-        grant_type: 'password'
-      }
-
-      post '/api/v1/login', params: login_params.to_json, headers: DEFAULT_HEADERS
-
-      @access_token = response_body['access_token']
-      @refresh_token = response_body['refresh_token']
+      @access_token, @refresh_token = get_tokens(user1)
     end
 
     scenario 'should fail if there is no access token' do

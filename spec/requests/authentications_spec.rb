@@ -66,16 +66,7 @@ RSpec.describe 'Authentications', type: :request do
 
   describe 'POST /api/v1/refresh' do
     before :each do
-      params = {
-        email: user.email,
-        password: '12345678',
-        grant_type: 'password'
-      }
-
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
-
-      @access_token = response_body['access_token']
-      @refresh_token = response_body['refresh_token']
+      @access_token, @refresh_token = get_tokens(user)
     end
 
     scenario 'should fail with invalid refresh_token' do
@@ -142,16 +133,7 @@ RSpec.describe 'Authentications', type: :request do
 
   describe 'POST /api/v1/logout' do
     before :each do
-      params = {
-        email: user.email,
-        password: '12345678',
-        grant_type: 'password'
-      }
-
-      post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
-
-      @access_token = response_body['access_token']
-      @refresh_token = response_body['refresh_token']
+      @access_token, @refresh_token = get_tokens(user)
     end
 
     scenario 'should fail with invalid token' do

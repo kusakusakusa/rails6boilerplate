@@ -6,16 +6,7 @@ RSpec.describe 'Users', type: :request do
   let(:user) { create(:user) }
   describe 'POST /api/v1/update-profile' do
     before :each do
-      login_params = {
-        email: user.email,
-        password: '12345678',
-        grant_type: 'password'
-      }
-
-      post '/api/v1/login', params: login_params.to_json, headers: DEFAULT_HEADERS
-
-      @access_token = response_body['access_token']
-      @refresh_token = response_body['refresh_token']
+      @access_token, @refresh_token = get_tokens(user)
     end
 
     scenario 'should pass with missing params and not change those attributes' do
