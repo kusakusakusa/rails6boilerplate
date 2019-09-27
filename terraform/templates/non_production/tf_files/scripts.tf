@@ -31,7 +31,7 @@ resource "null_resource" "startup" {
 resource "null_resource" "app" {
   depends_on = [
     aws_instance.this,
-    null_resource.app
+    null_resource.startup
   ]
 
   triggers = {
