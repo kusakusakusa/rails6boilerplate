@@ -58,7 +58,7 @@ namespace :terraform do
     if File.exist? filepath
       puts 'Private key already created'
     else
-      `ssh-keygen -t rsa -f #{filepath} -C #{private_key_file_name}`
+      `ssh-keygen -t rsa -f #{filepath} -C #{private_key_file_name} -N ''`
       puts "chmod 400 private and public keys for #{args[:env]}"
       `chmod 400 #{filepath}`
       `chmod 400 #{filepath}.pub`
