@@ -10,16 +10,7 @@ RSpec.describe 'Posts', type: :request do
     let(:post2) { create(:post, user: user2) }
 
     before :each do
-      login_params = {
-        email: user1.email,
-        password: '12345678',
-        grant_type: 'password'
-      }
-
-      post '/api/v1/login', params: login_params.to_json, headers: DEFAULT_HEADERS
-
-      @access_token = response_body['access_token']
-      @refresh_token = response_body['refresh_token']
+      @access_token, @refresh_token = get_tokens(user1)
     end
 
     scenario 'should fail if there is no access token' do
@@ -52,11 +43,7 @@ RSpec.describe 'Posts', type: :request do
     end
 
     scenario 'should fail with revoked refresh token used' do
-      params = {
-        token: @refresh_token
-      }
-
-      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: {}.to_json, headers:DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
@@ -66,11 +53,7 @@ RSpec.describe 'Posts', type: :request do
     end
 
     scenario 'should fail with revoked access token used' do
-      params = {
-        token: @refresh_token
-      }
-
-      post '/api/v1/logout', params: params.to_json, headers: DEFAULT_HEADERS
+      post '/api/v1/logout', params: {}.to_json, headers:DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
       get api_v1_posts_path, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
 
