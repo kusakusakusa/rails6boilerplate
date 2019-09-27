@@ -56,8 +56,19 @@ resource "aws_eip_association" "this" {
   allocation_id = "${aws_eip.this.id}"
 }
 
+data "aws_ami" "this" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["${var.project_name}-${var.env}"]
+  }
+
+  owners = ["self"]
+}
+
 resource "aws_instance" "this" {
-  ami = "ami-03b6f27628a4569c8" # ubuntu 18.04 LTS in ap-southeast-1
+  ami = data.aws_ami.this.id # from packer
   instance_type = "t2.micro" # need at least micro or have problem installing nokogiri
   availability_zone = "${var.region}a"
   key_name = aws_key_pair.this.key_name

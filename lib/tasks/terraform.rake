@@ -238,18 +238,69 @@ namespace :terraform do
     puts "END - Create push_error_state.sh for #{args[:env]}"
   end
 
-  desc 'Create startup.sh'
-  task :create_startup_sh, [:env, :aws_profile] => :environment do |task, args|
-    puts "START - Create startup.sh for #{args[:env]}"
-    db_password = Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
-    filepath = Rails.root.join('terraform', args[:env], 'scripts', 'startup.sh')
+  desc 'Create logrotate.sh'
+  task :create_logrotate_sh, [:env] => :environment do |task, args|
+    puts "START - Create create_logrotate.sh for #{args[:env]}"
+    filepath = Rails.root.join('terraform', args[:env], 'packer_scripts', 'logrotate.sh')
     file = File.open(filepath, 'w')
     file.puts <<~MSG
       #!/usr/bin/env bash
 
-      # install packages
-      sudo apt-get -y update
-      sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install nginx gnupg2 nodejs build-essential mysql-server libmysqlclient-dev awscli npm sendmail -y
+      echo 'Setup logrotate'
+      sudo touch /etc/logrotate.d/#{PROJECT_NAME}
+      sudo tee /etc/logrotate.d/#{PROJECT_NAME} > /dev/null <<EOF
+      /home/ubuntu/#{PROJECT_NAME}/shared/log/*.log {
+        daily
+        missingok
+        rotate 1
+        compress
+        notifempty
+        copytruncate
+        su ubuntu ubuntu
+      }
+      EOF
+      sudo logrotate /etc/logrotate.d/#{PROJECT_NAME}
+    MSG
+    file.close
+    puts "END - Create logrotate.sh for #{args[:env]}"
+  end
+
+  desc 'Create mysql_installation.sh'
+  task :create_mysql_installation_sh, [:env] => :environment do |task, args|
+    puts "START - Create mysql_installation.sh for #{args[:env]}"
+    db_password = Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
+    filepath = Rails.root.join('terraform', args[:env], 'packer_scripts', 'mysql_installation.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      echo 'Installing mysql'
+      echo 'Set password for root user'
+      sudo mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('#{db_password}');FLUSH PRIVILEGES;"
+
+      echo 'Delete anonymous users'
+      sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
+
+      echo 'Ensure the root user can not log in remotely'
+      sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+
+      echo 'Remove the test database'
+      sudo mysql -e "DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
+
+      echo 'Create curent user to remove sudo requirement'
+      sudo mysql -u root -p#{db_password} -e "CREATE USER 'ubuntu'@'localhost' IDENTIFIED BY '#{db_password}';GRANT ALL PRIVILEGES ON *.* TO 'ubuntu'@'localhost';FLUSH PRIVILEGES;"
+    MSG
+    file.close
+    puts "END - Create mysql_installation.sh for #{args[:env]}"
+  end
+
+  desc 'Create startup.sh'
+  task :create_startup_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create startup.sh for #{args[:env]}"
+    filepath = Rails.root.join('terraform', args[:env], 'scripts', 'startup.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
 
       # copy keys files
       aws s3 cp s3://#{PROJECT_NAME}-#{args[:env]}-secrets/#{PROJECT_NAME}-#{args[:env]} /home/ubuntu/.ssh/id_rsa
@@ -271,69 +322,6 @@ namespace :terraform do
       fi
       chmod 400 /home/ubuntu/.ssh/id_rsa
       chmod 400 /home/ubuntu/.ssh/id_rsa.pub
-
-      echo 'Install rvm'
-      echo 'gem: --no-document' > .gemrc # remove documentation
-      gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-      \\curl -sSL https://get.rvm.io | bash # download rvm
-      source /home/ubuntu/.rvm/scripts/rvm # make rvm available in current session
-
-      echo 'Install ruby-2.6.4'
-      rvm install 2.6.4 # install the ruby version
-
-      echo 'Set ruby-2.6.4 as default'
-      rvm default use 2.6.4
-
-      echo 'Install bundler'
-      gem install bundler # install bundler
-
-      echo 'Install yarn via npm'
-      sudo npm install -g yarn
-      if [ $? -ne 0 ]
-      then
-        echo 'Fail to install npm'
-        exit 1
-      fi
-
-      echo 'Enable swap for assets compilation'
-      # https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-16-04
-      sudo fallocate -l 1G /swapfile
-      sudo chmod 600 /swapfile
-      sudo mkswap /swapfile
-      sudo swapon /swapfile
-      sudo cp /etc/fstab /etc/fstab.bak
-      echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-
-      echo 'Installing mysql'
-      echo 'Set password for root user'
-      sudo mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('#{db_password}');FLUSH PRIVILEGES;"
-
-      echo 'Delete anonymous users'
-      sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
-
-      echo 'Ensure the root user can not log in remotely'
-      sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-
-      echo 'Remove the test database'
-      sudo mysql -e "DROP DATABASE test;DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';"
-
-      echo 'Create curent user to remove sudo requirement'
-      sudo mysql -u root -p#{db_password} -e "CREATE USER 'ubuntu'@'localhost' IDENTIFIED BY '#{db_password}';GRANT ALL PRIVILEGES ON *.* TO 'ubuntu'@'localhost';FLUSH PRIVILEGES;"
-
-      echo 'Setup logrotate'
-      sudo touch /etc/logrotate.d/#{PROJECT_NAME}
-      sudo tee /etc/logrotate.d/#{PROJECT_NAME} > /dev/null <<EOF
-      /home/ubuntu/#{PROJECT_NAME}/shared/log/*.log {
-        daily
-        missingok
-        rotate 1
-        compress
-        notifempty
-        copytruncate
-        su ubuntu ubuntu
-      }
-      EOF
-      sudo logrotate /etc/logrotate.d/#{PROJECT_NAME}
     MSG
     file.close
     system("chmod +x #{filepath}")
@@ -501,7 +489,10 @@ namespace :terraform do
     Rake::Task['terraform:copy_template_files'].invoke(env)
     Rake::Task['terraform:create_variables_tf'].invoke(env, region)
     Rake::Task['terraform:create_setup_tf'].invoke(env, region)
+    Rake::Task['packer:create_ec2_json'].invoke(aws_profile, env, region)
     Rake::Task['terraform:create_push_error_state_sh'].invoke(env, aws_profile)
+    Rake::Task['terraform:create_logrotate_sh'].invoke(env)
+    Rake::Task['terraform:create_mysql_installation_sh'].invoke(env)
     Rake::Task['terraform:create_startup_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_app_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_deploy_sh'].invoke(env, aws_profile)
@@ -510,7 +501,7 @@ namespace :terraform do
 
     puts ''
     puts 'Terraform files created!'
-    puts "Make sure you have your config/environments/#{region}.rb file setup!"
+    puts "Make sure you have your config/environments/#{env}.rb file setup!"
     puts "Make sure you have your config/deploy.rb file setup for deploying via mina on #{env} too!"
     puts "Run `rake terraform:deploy` to deploy your infrastructure now!"
   end
