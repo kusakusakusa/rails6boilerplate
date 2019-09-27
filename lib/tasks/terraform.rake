@@ -149,9 +149,6 @@ namespace :terraform do
       provider "aws" {
         version = "~> 2.24"
         region = "#{args[:region]}"
-        # shared_credentials_file and profile NOT WORKING
-        # need to pass AWS_SHARED_CREDENTIALS_FILE
-        # and AWS_PROFILE
       }
 
       terraform {
@@ -194,48 +191,6 @@ namespace :terraform do
     MSG
     file.close
     puts "END - Create variables.tf for #{args[:env]}"
-  end
-
-  # for pushing terraform errored.tfstate in the event of
-  # losing internet connection during deployment
-  # with a remote backend
-  desc 'Create push_error_state.sh'
-  task :create_push_error_state_sh, [:env, :aws_profile] => :environment do |task, args|
-    puts "START - Create push_error_state.sh for #{args[:env]}"
-    filepath = Rails.root.join('terraform', args[:env], 'push_error_state.sh')
-    file = File.open(filepath, 'w')
-    file.puts <<~MSG
-      #!/usr/bin/env bash
-
-      SCRIPT_PATH=$(dirname `which $0`)
-
-      echo $SCRIPT_PATH
-
-      cp $SCRIPT_PATH/../../config/master.key $SCRIPT_PATH/master.key
-      cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
-
-      docker build \
-        -t #{PROJECT_NAME}-#{args[:env]}:latest \
-        --build-arg AWS_SHARED_CREDENTIALS_FILE_BUILD_ARG=awscredentials \
-        --build-arg AWS_PROFILE_BUILD_ARG=#{args[:aws_profile]} \
-        $SCRIPT_PATH
-
-      echo 'terraform push error.tfstate'
-      docker run \
-        -it \
-        --rm \
-        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
-        --env AWS_PROFILE=#{args[:aws_profile]} \
-        -v $SCRIPT_PATH:/workspace \
-        #{PROJECT_NAME}-#{args[:env]} \
-        state push errored.tfstate
-
-      rm $SCRIPT_PATH/master.key
-      rm $SCRIPT_PATH/awscredentials
-    MSG
-    file.close
-    system("chmod +x #{filepath}")
-    puts "END - Create push_error_state.sh for #{args[:env]}"
   end
 
   desc 'Create logrotate.sh'
@@ -377,6 +332,8 @@ namespace :terraform do
   desc 'Create deploy.sh'
   task :create_deploy_sh, [:env, :aws_profile] => :environment do |task, args|
     puts "START - Create deploy.sh for #{args[:env]}"
+    packer_image_name = "#{PROJECT_NAME}-#{args[:env]}-packer"
+    terraform_image_name = "#{PROJECT_NAME}-#{args[:env]}-terraform"
     filepath = Rails.root.join('terraform', args[:env], 'deploy.sh')
     file = File.open(filepath, 'w')
     file.puts <<~MSG
@@ -385,22 +342,45 @@ namespace :terraform do
       SCRIPT_PATH=$(dirname `which $0`)
 
       cp $SCRIPT_PATH/../../config/master.key $SCRIPT_PATH/master.key
-      cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
 
+      aws_access_key_id=$(aws configure get aws_access_key_id --profile #{args[:aws_profile]})
+      aws_secret_access_key=$(aws configure get aws_secret_access_key --profile #{args[:aws_profile]})
+
+      trap 'rm $SCRIPT_PATH/master.key' EXIT
+
+      echo 'docker build target packer'
       docker build \
-        -t #{PROJECT_NAME}-#{args[:env]}:latest \
-        --build-arg AWS_SHARED_CREDENTIALS_FILE_BUILD_ARG=awscredentials \
-        --build-arg AWS_PROFILE_BUILD_ARG=#{args[:aws_profile]} \
+        -t #{packer_image_name}:latest \
+        --target packer \
+        --build-arg AWS_ACCESS_KEY_ID_BUILD_ARG=$aws_access_key_id \
+        --build-arg AWS_SECRET_ACCESS_KEY_BUILD_ARG=$aws_secret_access_key \
+        $SCRIPT_PATH
+
+      echo 'packer build ec2 instance AMI for #{args[:env]}'
+      docker run \
+        -it \
+        --rm \
+        --env AWS_ACCESS_KEY_ID=$aws_access_key_id \
+        --env AWS_SECRET_ACCESS_KEY=$aws_secret_access_key \
+        #{packer_image_name} \
+        build ec2.json
+
+      echo 'docker build target terraform'
+      docker build \
+        -t #{terraform_image_name}:latest \
+        --target terraform \
+        --build-arg AWS_ACCESS_KEY_ID_BUILD_ARG=$aws_access_key_id \
+        --build-arg AWS_SECRET_ACCESS_KEY_BUILD_ARG=$aws_secret_access_key \
         $SCRIPT_PATH
 
       echo 'terraform init'
       docker run \
         -it \
         --rm \
-        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
-        --env AWS_PROFILE=#{args[:aws_profile]} \
-        -v $SCRIPT_PATH:/workspace \
-        #{PROJECT_NAME}-#{args[:env]} \
+        --env AWS_ACCESS_KEY_ID=$aws_access_key_id \
+        --env AWS_SECRET_ACCESS_KEY=$aws_secret_access_key \
+        -v $SCRIPT_PATH/master.key:/workspace/master.key \
+        #{terraform_image_name} \
         init
 
       echo 'terraform apply'
@@ -409,23 +389,64 @@ namespace :terraform do
         --rm \
         --env TF_LOG=ERROR \
         --env TF_LOG_PATH=tf_log \
-        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
-        --env AWS_PROFILE=#{args[:aws_profile]} \
-        -v $SCRIPT_PATH:/workspace \
-        #{PROJECT_NAME}-#{args[:env]} \
+        --env AWS_ACCESS_KEY_ID=$aws_access_key_id \
+        --env AWS_SECRET_ACCESS_KEY=$aws_secret_access_key \
+        -v $SCRIPT_PATH/error.tfstate:/workspace/error.tfstate \
+        -v $SCRIPT_PATH/master.key:/workspace/master.key \
+        -v $SCRIPT_PATH/ssh_keys:/workspace/ssh_keys \
+        -v $SCRIPT_PATH/tf_log:/workspace/tf_log \
+        #{terraform_image_name} \
         apply
-
-      rm $SCRIPT_PATH/master.key
-      rm $SCRIPT_PATH/awscredentials
     MSG
     system("chmod +x #{filepath}")
     file.close
     puts "END - Create deploy.sh for #{args[:env]}"
   end
 
+  # for pushing terraform errored.tfstate in the event of
+  # losing internet connection during deployment
+  # with a remote backend
+  desc 'Create push_error_state.sh'
+  task :create_push_error_state_sh, [:env, :aws_profile] => :environment do |task, args|
+    puts "START - Create push_error_state.sh for #{args[:env]}"
+    terraform_image_name = "#{PROJECT_NAME}-#{args[:env]}-terraform"
+    filepath = Rails.root.join('terraform', args[:env], 'push_error_state.sh')
+    file = File.open(filepath, 'w')
+    file.puts <<~MSG
+      #!/usr/bin/env bash
+
+      SCRIPT_PATH=$(dirname `which $0`)
+
+      echo $SCRIPT_PATH
+
+      cp $SCRIPT_PATH/../../config/master.key $SCRIPT_PATH/master.key
+
+      aws_access_key_id=$(aws configure get aws_access_key_id --profile #{args[:aws_profile]})
+      aws_secret_access_key=$(aws configure get aws_secret_access_key --profile #{args[:aws_profile]})
+
+      trap 'rm $SCRIPT_PATH/master.key' EXIT
+
+      echo 'terraform push error.tfstate'
+      docker run \
+        -it \
+        --rm \
+        --env AWS_ACCESS_KEY_ID=$aws_access_key_id \
+        --env AWS_SECRET_ACCESS_KEY=$aws_secret_access_key \
+        -v $SCRIPT_PATH/error.tfstate:/workspace/error.tfstate \
+        -v $SCRIPT_PATH/master.key:/workspace/master.key \
+        -v $SCRIPT_PATH/tf_log:/workspace/tf_log \
+        #{terraform_image_name} \
+        state push errored.tfstate
+    MSG
+    file.close
+    system("chmod +x #{filepath}")
+    puts "END - Create push_error_state.sh for #{args[:env]}"
+  end
+
   desc 'Create destroy.sh'
   task :create_destroy_sh, [:env, :aws_profile] => :environment do |task, args|
     puts "START - Create destroy.sh for #{args[:env]}"
+    terraform_image_name = "#{PROJECT_NAME}-#{args[:env]}-terraform"
     filepath = Rails.root.join('terraform', args[:env], 'destroy.sh')
     file = File.open(filepath, 'w')
     file.puts <<~MSG
@@ -433,18 +454,24 @@ namespace :terraform do
 
       SCRIPT_PATH=$(dirname `which $0`)
 
-      cp $HOME/.aws/credentials $SCRIPT_PATH/awscredentials
+      cp $SCRIPT_PATH/../../config/master.key $SCRIPT_PATH/master.key
+
+      aws_access_key_id=$(aws configure get aws_access_key_id --profile #{args[:aws_profile]})
+      aws_secret_access_key=$(aws configure get aws_secret_access_key --profile #{args[:aws_profile]})
+
+      trap 'rm $SCRIPT_PATH/master.key' EXIT
 
       docker run \
         -it \
         --rm \
-        --env AWS_SHARED_CREDENTIALS_FILE=awscredentials \
-        --env AWS_PROFILE=#{args[:aws_profile]} \
-        -v $SCRIPT_PATH:/workspace \
-        #{PROJECT_NAME}-#{args[:env]} \
+        --env AWS_ACCESS_KEY_ID=$aws_access_key_id \
+        --env AWS_SECRET_ACCESS_KEY=$aws_secret_access_key \
+        -v $SCRIPT_PATH/error.tfstate:/workspace/error.tfstate \
+        -v $SCRIPT_PATH/master.key:/workspace/master.key \
+        -v $SCRIPT_PATH/tf_log:/workspace/tf_log \
+        -v $SCRIPT_PATH/ssh_keys:/workspace/ssh_keys \
+        #{terraform_image_name} \
         destroy
-
-      rm $SCRIPT_PATH/awscredentials
 
     MSG
     file.close

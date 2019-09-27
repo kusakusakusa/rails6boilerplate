@@ -83,3 +83,4 @@ terraform/*
 !terraform/templates
 !terraform/templates/non_production
 !terraform/templates/non_production/*
+terraform/templates/non_production/.DS_Store
