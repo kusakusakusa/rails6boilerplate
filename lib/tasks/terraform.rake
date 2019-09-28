@@ -308,9 +308,9 @@ namespace :terraform do
         location / {
           proxy_pass http://backend;
           proxy_redirect off;
-          proxy_set_header   Host             \$host;
-          proxy_set_header   X-Real-IP        \$remote_addr;
-          proxy_set_header   X-Forwarded-For  \$proxy_add_x_forwarded_for;
+          proxy_set_header   Host             \\\$host;
+          proxy_set_header   X-Real-IP        \\\$remote_addr;
+          proxy_set_header   X-Forwarded-For  \\\$proxy_add_x_forwarded_for;
           proxy_pass_request_headers      on;
         }
 
@@ -543,6 +543,7 @@ namespace :terraform do
     puts "Update config/deploy.rb to prepare deployment via mina for #{env}"
     puts "Run `rake terraform:deploy` to deploy your infrastructure"
     puts "Look at newly created/edited uncommitted files and decide if want to commit"
+    puts "Add public ssh_key to repository for private repositories"
   end
 
   desc 'Deploy resources'

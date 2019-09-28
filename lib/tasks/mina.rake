@@ -105,9 +105,9 @@ namespace :mina do
       task :setup do
         invoke :'rvm:use', '#{ruby_gemset}'
         command 'gem install bundler'
-        command "aws s3 cp s3://#{fetch(:application_name)}-#{fetch(:rails_env)}-secrets/master.key /home/ubuntu/#{fetch(:application_name)}/shared/config/master.key"
         system "scp -i #{fetch(:identity_file)} #{File.expand_path('../server_configs/#{fetch(:rails_env)}_puma.rb', File.dirname(__FILE__))} #{fetch(:user)}@#{fetch(:domain)}:#{fetch(:shared_path)}/config/puma.rb"
         system "scp -i #{fetch(:identity_file)} #{File.expand_path('../server_configs/#{fetch(:rails_env)}_database.yml', File.dirname(__FILE__))} #{fetch(:user)}@#{fetch(:domain)}:#{fetch(:shared_path)}/config/database.yml"
+        command "aws s3 cp s3://\#{fetch(:application_name)}-\#{fetch(:rails_env)}-secrets/master.key /home/ubuntu/\#{fetch(:application_name)}/shared/config/master.key"
       end
 
       desc 'Deploys the current version to the server.'
@@ -139,7 +139,7 @@ namespace :mina do
       task :console do
         in_path(fetch(:current_path)) do
           invoke :'rvm:use', '#{ruby_gemset}'
-          command "RAILS_ENV=#{fetch(:rails_env)} bundle exec rails console"
+          command "RAILS_ENV=\#{fetch(:rails_env)} bundle exec rails console"
         end
       end
 
@@ -152,10 +152,10 @@ namespace :mina do
       task :reseed do
         in_path(fetch(:current_path)) do
           invoke :'rvm:use', '#{ruby_gemset}'
-          command "RAILS_ENV=#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:drop"
-          command "RAILS_ENV=#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:create"
-          command "RAILS_ENV=#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:migrate"
-          command "RAILS_ENV=#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:seed"
+          command "RAILS_ENV=\#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:drop"
+          command "RAILS_ENV=\#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:create"
+          command "RAILS_ENV=\#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:migrate"
+          command "RAILS_ENV=\#{fetch(:rails_env)} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:seed"
           # invoke :'sitemap:refresh'
         end
       end
@@ -168,7 +168,7 @@ namespace :mina do
 
       task :tail do
         in_path(fetch(:current_path)) do
-          command "tail -f /home/ubuntu/#{fetch(:application_name)}/shared/log/#{fetch(:rails_env)}.log"
+          command "tail -f /home/ubuntu/\#{fetch(:application_name)}/shared/log/\#{fetch(:rails_env)}.log"
         end
       end
 
@@ -186,7 +186,7 @@ namespace :mina do
 
       task :grep do
         in_path(fetch(:current_path)) do
-          command "cat /home/ubuntu/#{fetch(:application_name)}/shared/log/#{fetch(:rails_env)}.log | grep #{ENV['cmd']}"
+          command "cat /home/ubuntu/\#{fetch(:application_name)}/shared/log/\#{fetch(:rails_env)}.log | grep \#{ENV['cmd']}"
         end
       end
 
