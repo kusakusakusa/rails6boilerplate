@@ -60,7 +60,12 @@ namespace :mina do
     puts "START - Create config/deploy.rb"
     filepath = "#{Rails.root.join('config')}/deploy.rb"
     ruby_gemset = File.read("#{Rails.root}/.ruby-version").chomp
-    abort('config/deploy.rb file exist! Look for "# multi env" and add the configurations for your new environment!') if File.exist?(filepath)
+
+    if File.exist?(filepath)
+      puts 'config/deploy.rb file exist! Look for "# multi env" and add the configurations for your new environment!'
+      next
+    end
+
     file = File.open(filepath, 'w')
     file.puts <<~MSG
       # frozen_string_literal: true
