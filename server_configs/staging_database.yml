@@ -1,0 +1,9 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8mb4
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+staging:
+  <<: *default
+  username: ubuntu
+  database: rails6boilerplatestaging
+  password: <%= Rails.application.credentials.dig(:staging, :database, :password) %>

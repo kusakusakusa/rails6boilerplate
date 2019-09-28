@@ -526,6 +526,11 @@ namespace :terraform do
     Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
 
+    # files related to mina
+    Rake::Task['mina:create_server_database_yml'].invoke(env)
+    Rake::Task['mina:create_server_puma_rb'].invoke(env)
+    Rake::Task['mina:create_deploy_rb'].invoke(env)
+
     puts ''
     puts 'Terraform files created!'
     puts "Make sure you have your config/environments/#{env}.rb file setup!"
