@@ -105,8 +105,6 @@ namespace :mina do
       task :setup do
         invoke :'rvm:use', '#{ruby_gemset}'
         command 'gem install bundler'
-        system "scp -i #{fetch(:identity_file)} #{File.expand_path('../server_configs/#{fetch(:rails_env)}_puma.rb', File.dirname(__FILE__))} #{fetch(:user)}@#{fetch(:domain)}:#{fetch(:shared_path)}/config/puma.rb"
-        system "scp -i #{fetch(:identity_file)} #{File.expand_path('../server_configs/#{fetch(:rails_env)}_database.yml', File.dirname(__FILE__))} #{fetch(:user)}@#{fetch(:domain)}:#{fetch(:shared_path)}/config/database.yml"
         command "aws s3 cp s3://\#{fetch(:application_name)}-\#{fetch(:rails_env)}-secrets/master.key /home/ubuntu/\#{fetch(:application_name)}/shared/config/master.key"
       end
 
@@ -115,6 +113,8 @@ namespace :mina do
         # uncomment this line to make sure you pushed your local branch to the remote origin
         # invoke :'git:ensure_pushed'
         deploy do
+          system "scp -i \#{fetch(:identity_file)} \#{File.expand_path("../server_configs/\#{fetch(:rails_env)}_puma.rb", File.dirname(__FILE__))} \#{fetch(:user)}@\#{fetch(:domain)}:\#{fetch(:shared_path)}/config/puma.rb"
+          system "scp -i \#{fetch(:identity_file)} \#{File.expand_path("../server_configs/\#{fetch(:rails_env)}_database.yml", File.dirname(__FILE__))} \#{fetch(:user)}@\#{fetch(:domain)}:\#{fetch(:shared_path)}/config/database.yml"
           # Put things that will set up an empty directory into a fully set-up
           # instance of your project.
           invoke :'git:clone'
