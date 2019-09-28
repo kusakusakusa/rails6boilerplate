@@ -4,6 +4,7 @@ namespace :mina do
   desc 'Create server_database.yml'
   task :create_server_database_yml, [:env] => :environment do |task, args|
     puts "START - Create #{args[:env]}_database.yml"
+    FileUtils.mkdir_p "#{Rails.root.join('server_configs')}"
     filepath = Rails.root.join('server_configs', "#{args[:env]}_database.yml")
     file = File.open(filepath, 'w')
     file.puts <<~MSG
@@ -59,7 +60,7 @@ namespace :mina do
     puts "START - Create config/deploy.rb"
     filepath = "#{Rails.root.join('config')}/deploy.rb"
     ruby_gemset = File.read("#{Rails.root}/.ruby-version").chomp
-    abort('config/deploy.rb file exist!\nLook for "# multi env" and add the configurations for your new environment!') if File.exist?(filepath)
+    abort('config/deploy.rb file exist! Look for "# multi env" and add the configurations for your new environment!') if File.exist?(filepath)
     file = File.open(filepath, 'w')
     file.puts <<~MSG
       # frozen_string_literal: true
