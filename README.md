@@ -48,7 +48,9 @@ For admin users' devise related views and controllers, the views follow the path
 
 ### User
 
-User model use `devise` with OAuth provider `doorkeeper` and `doorkeeper-jwt` to allow refresh token and for users stay logged in. Consider `devise-jwt` if you want to expire your users' sessions. The decision to use `doorkeeper` instead of devise-jwt is due to the requirement for permanent logged in session in most of the applications that I need to build and [this comment from the owner of `devise-jwt` gem](https://github.com/waiting-for-dev/devise-jwt/issues/7#issuecomment-322115576).
+User model use `devise` with OAuth provider `doorkeeper` and `doorkeeper-jwt` to allow refresh token and for users stay logged in. Consider `devise-jwt` if you want to expire your users' sessions.
+
+The decision to use `doorkeeper` instead of `devise-jwt` is due to the requirement for permanent logged in session in most of the applications that I need to build and [this comment from the owner of `devise-jwt` gem](https://github.com/waiting-for-dev/devise-jwt/issues/7#issuecomment-322115576).
 
 These are the steps taken:
 
@@ -59,9 +61,17 @@ These are the steps taken:
 
 ### Admin User
 
-Admin user will authenticate without using `devise-jwt`. The only interaction admin users will have with this app is via a browser to work on the CMS. That implies the use of cookies instead of jwt.
+Admin user will authenticate without using neither `devise-jwt` nor `doorkeeper`. The only interaction admin users will have with this app is via a browser to work on the CMS. That implies the use of cookies instead of jwt, as well as just the old school `devise`.
 
-## Usage
+### Post
+
+Sample model for showing sample codes for associations, active storage integration etc.
+
+This should be deleted before starting work on the application.
+
+Read [the Usage section](#Remove_Post_Model) for the procedure to do so.
+
+## Usage - Development
 
 ### Gemset
 
@@ -102,7 +112,7 @@ The `Api::V1::TokensController` controller inherits from `Doorkeeper::TokensCont
 
 Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `posts` APIs. `handle_auth_errors` is set to `:raise` in `doorkeeper.rb`, so the `Doorkeeper::Errors` will be triggered via the `before_action :doorkeeper_authorize!` in the `API::BaseController`, which should be inherited by most of, if not all, the custom controllers. Each of the `Doorkeeper::Errors` will return their specific errors.
 
-### Models
+### Remove Post Model
 
 Remove `post` related tools by:
 
@@ -116,34 +126,45 @@ Remove `post` related tools by:
 7. run APIPIE_RECORD=examples rspec
 8. run `annotate`
 
-## Terraform
+## Usage - Staging And Non Production Environments In The Cloud
 
-## Staging
+A `rake` task is available to generate the files required for setting up non production servers. It can be repeatedly used to generate multiple non production environment for different scenarios. For example, a `staging` environment can be setup for developers in one region to work on, and a `uat` environment for clients and testers in another region.
 
-An AWS s3 backend will hold the `tfstate` file for `Terraform`. The s3 bucket is created via a rake task.
+The rake task will require [AWS cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) to be installed and [AWS cli named profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) setup prior to usage.
 
-Requirements to use the rake task:
-1. `aws-cli` installed on your local machine with at least a version of `1.16.234`
-2. AWS named profile to be setup
-3. IAM user with admin access permissions # TODO make sense to restrict?
-
-To run the rake task, enter the command in the root directory and follow the instructions:
+Once installed, create the required files by running this command and following the prompts:
 ```
-rake terraform:staging:init
+rake terraform:init
 ```
 
-This will create a number of terraform configuration and script files in `terraform/staging` folder. These files are not gitignore and left to your jurisdiction whether to store it in the repository or not. There are no sensitive information stored in the terraform config files itself. Storing the files in the repo gives it version control.
+To create more non production environments, repeat the above command again and change the inputs accordingly.
 
-This will create `deploy.sh` and `destroy.sh` scripts. The former will deploy the resources, the latter will destroy them. To run these scripts,
+The cloud resources are on AWS and provisioning is powered by [`Terraform`](https://www.terraform.io). Terraform commands execution will be done on the docker images, so instead of installing Terraform binaries, [install docker](https://docs.docker.com/install/) instead. Then, run and follow the instructions to provision the resources:
 ```
-rake terraform:staging:deploy
-# AND
-rake terraform:staging:destroy
+rake terraform:deploy
 ```
 
-It will also create the private and public key meant for
-1. creating the `aws_key_pair` for your ec2 instance(s)
-2. ssh key for your private git repository
+Deployment to these provisioned resources in the respective environments are done using [`mina`](https://github.com/mina-deploy/mina). After you have configured the `config/deploy.rb` file, run the following command to deploy the application:
+```
+mina setup
+mina deploy
+```
+
+TODO is the below NOTE necessary?
+NOTE: Decide if you want to commit the generated files in the repository. They should not contain any sensitive information.
+
+### Architecture Explanation
+
+An AWS s3 backend will hold the `tfstate` file for `Terraform`. The s3 bucket is created via the `terraform:init` rake task.
+
+A private and its corresponding ssh key pair will be generated using `ssh-keygen` command. The ssh keys serve 2 purposes:
+1. For creating the `aws_key_pair` for your ec2 instance(s)
+2. For ssh authentication with your project on private git repository if any
+For point 2, the servers are configured to use this same generated ssh key to authenticate itself with your private git repository and pull the files. Adding the generated ssh key to the git repository **has to be done manually** though.
+
+Nginx will be the front facing webserver and serve traffic on port 80 to the rails application on a proxy backend running on puma, the default app server for rails. The nginx configuration will consist of **only 1 server directive** and **no `server_name` is setup**. This means the rails application will be the one and only default server recognised by nginx. This also implies all traffic on port 80 will reach the rails application, regardless of their origin, due to [how nginx processes a request](http://nginx.org/en/docs/http/request_processing.html).
+
+This does present a security risk, but for a non production environment, that should not be an issue.
 
 ## Production
 
@@ -164,3 +185,27 @@ Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6
 * deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
 * Use packer instead of provisioner scripts
 * Add monitoring to instances
+* rspec check for response_code before response.status for faster debug
+* add taggable
+
+dockerize
+
+git_clone.sh
+git_pull.sh
+
+NOTE: production should try code build, which needs dockerizing the rails image
+update readme on tfstate ad log buckets to be used for production too
+git_clone.sh
+git_pull.sh
+bootstrap.sh (script to be run on all interations like apt-get install)
+creates database in server for staging
+wordpress setup
+
+
+
+
+read up on webpack
+how to do chunking
+what is imports loader doing
+what is provide plugin in webpack
+use fontawesome-free npm instead of vendor files
