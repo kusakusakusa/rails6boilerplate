@@ -308,9 +308,9 @@ namespace :terraform do
         location / {
           proxy_pass http://backend;
           proxy_redirect off;
-          proxy_set_header   Host             \$host;
-          proxy_set_header   X-Real-IP        \$remote_addr;
-          proxy_set_header   X-Forwarded-For  \$proxy_add_x_forwarded_for;
+          proxy_set_header   Host             \\\$host;
+          proxy_set_header   X-Real-IP        \\\$remote_addr;
+          proxy_set_header   X-Forwarded-For  \\\$proxy_add_x_forwarded_for;
           proxy_pass_request_headers      on;
         }
 
@@ -526,11 +526,24 @@ namespace :terraform do
     Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
     Rake::Task['terraform:create_destroy_sh'].invoke(env, aws_profile)
 
+    # files related to mina
+    Rake::Task['mina:create_server_database_yml'].invoke(env)
+    Rake::Task['mina:create_server_puma_rb'].invoke(env)
+    Rake::Task['mina:create_deploy_rb'].invoke(env)
+
+    # config files
+    Rake::Task['config:add_to_storage_yml'].invoke(env)
+    Rake::Task['config:config_environments_env_rb'].invoke(env)
+
     puts ''
-    puts 'Terraform files created!'
-    puts "Make sure you have your config/environments/#{env}.rb file setup!"
-    puts "Make sure you have your config/deploy.rb file setup for deploying via mina on #{env} too!"
-    puts "Run `rake terraform:deploy` to deploy your infrastructure now!"
+    puts 'Deployment files created!'
+    puts ''
+    puts 'Next Steps:'
+    puts "Update config/credentials.yml.enc by running `EDITOR=vim rails credentials:edit`"
+    puts "Update config/deploy.rb to prepare deployment via mina for #{env}"
+    puts "Run `rake terraform:deploy` to deploy your infrastructure"
+    puts "Look at newly created/edited uncommitted files and decide if want to commit"
+    puts "Add public ssh_key to repository for private repositories"
   end
 
   desc 'Deploy resources'
