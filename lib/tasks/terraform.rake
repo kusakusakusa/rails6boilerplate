@@ -531,6 +531,9 @@ namespace :terraform do
     Rake::Task['mina:create_server_puma_rb'].invoke(env)
     Rake::Task['mina:create_deploy_rb'].invoke(env)
 
+    # config files
+    Rake::Task['config:add_to_storage_yml'].invoke(env)
+
     puts ''
     puts 'Terraform files created!'
     puts "Make sure you have your config/environments/#{env}.rb file setup!"
