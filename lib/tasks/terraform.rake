@@ -533,12 +533,16 @@ namespace :terraform do
 
     # config files
     Rake::Task['config:add_to_storage_yml'].invoke(env)
+    Rake::Task['config:config_environments_env_rb'].invoke(env)
 
     puts ''
-    puts 'Terraform files created!'
-    puts "Make sure you have your config/environments/#{env}.rb file setup!"
-    puts "Make sure you have your config/deploy.rb file setup for deploying via mina on #{env} too!"
-    puts "Run `rake terraform:deploy` to deploy your infrastructure now!"
+    puts 'Deployment files created!'
+    puts ''
+    puts 'Next Steps:'
+    puts "Update config/credentials.yml.enc by running `EDITOR=vim rails credentials:edit`"
+    puts "Update config/deploy.rb to prepare deployment via mina for #{env}"
+    puts "Run `rake terraform:deploy` to deploy your infrastructure"
+    puts "Look at newly created/edited uncommitted files and decide if want to commit"
   end
 
   desc 'Deploy resources'
