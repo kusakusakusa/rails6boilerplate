@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+      target: app
+  web:
+    build:
+      context: .
+      target: web
+    depends_on:
+      - app
+    ports:
+      - 80:80
