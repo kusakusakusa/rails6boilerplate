@@ -180,32 +180,10 @@ Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6
 ## TODO
 * use https://registry.terraform.io/modules/trussworks/logs/aws/3.0.0 to add logs bucket instead of aws cli
 * dockerignore file
-* read ec2 ubuntu ami id based on region
 * find out how to NOT redownload providers in terraform or copy whole context into dockerfile by copy or mounting volume in correct order
 * deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
 * Use packer instead of provisioner scripts
 * Add monitoring to instances
 * rspec check for response_code before response.status for faster debug
 * add taggable
-
-dockerize
-
-git_clone.sh
-git_pull.sh
-
-NOTE: production should try code build, which needs dockerizing the rails image
-update readme on tfstate ad log buckets to be used for production too
-git_clone.sh
-git_pull.sh
-bootstrap.sh (script to be run on all interations like apt-get install)
-creates database in server for staging
-wordpress setup
-
-
-
-
-read up on webpack
-how to do chunking
-what is imports loader doing
-what is provide plugin in webpack
-use fontawesome-free npm instead of vendor files
+* update ckeditor version when latest version, which contain support for ActiveStorgae, is released (https://github.com/galetahub/ckeditor/pull/853)
