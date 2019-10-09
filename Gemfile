@@ -77,3 +77,4 @@ gem 'ckeditor', github: 'galetahub/ckeditor'
 gem 'mini_magick', '~> 4.9.5'
 gem 'rack-cors', '~> 1.0.3'
 gem 'slim-rails', '~> 3.2.0'
+gem "aws-sdk-s3", require: false
