@@ -24,6 +24,8 @@
   },
   "version": "0.1.0",
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "webpack-dev-server": "^3.8.0"
   }
 }
