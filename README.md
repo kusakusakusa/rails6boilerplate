@@ -168,8 +168,84 @@ This does present a security risk, but for a non production environment, that sh
 
 ## Production
 
-TODO?
+**NOT WORKING: Current version of ecs do not support multistage build (docker-compose version >= 3.4)**
 
+Deploying with docker on AWS ECS/Fargate.
+
+Make sure your database.yml does not contain your local database credentials. Build image locally using the command below:
+```
+docker-compose build --build-arg RAILS_MASTER_KEY_BUILD_ARG=`cat config/master.key`
+```
+
+Push the docker images to the repository
+```
+# this command will get the string of docker login command to login to docker
+# and the $(...) will run the output, which is the login command itself
+$(aws ecr get-login --no-include-email --region <AWS_REGION> --profile <AWS_PROFILE>)
+
+# push the images to their respective directories
+docker-compose push
+```
+
+Install [ecs-cli](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html).
+
+Configure the clusters using [ecs-cli](https://github.com/aws/amazon-ecs-cli#latest-version)
+
+### For EC2 Launch Type
+
+```
+ecs-cli configure \
+  --cluster railsboilerplate-ecs-cluster \
+  --region <AWS_REGION> \
+  --config-name railsboilerplate-ecs-conf \
+  --cfn-stack-name railsboilerplate-ecs-stack \
+  --default-launch-type EC2
+```
+
+Generate and overwrite the `docker_keypair` file meant for initializing EC2 instances' keypair
+```
+ssh-keygen -t rsa -f docker_keypair -C SAMPLE_KEY -N ''
+```
+
+Create keypair
+```
+aws ec2 import-key-pair \
+  --key-name rails6boilerplate \
+  # the "file://" prefix is required for linux too
+  --public-key-material file://$(pwd)/docker_keypair.pub \
+  --region <AWS_REGION> \
+  --profile <AWS_PROFILE>
+```
+
+Deploy cluster by running:
+```
+ecs-cli up \
+  --keypair rails6boilerplate \
+  --capability-iam \
+  --size 1 \
+  --instance-type t2.micro \
+  --aws-profile <AWS_PROFILE> \
+  --cluster-config railsboilerplate-ecs-conf
+```
+
+Deploy container by running:
+```
+ecs-cli compose \
+  --project-name railsboilerplate \
+  up \
+  --cluster-config railsboilerplate-ecs-conf
+```
+
+Destroy clusters by running:
+```
+ecs-cli down \
+  --aws-profile <AWS_PROFILE> \
+  --cluster-config railsboilerplate-ecs-conf
+```
+
+### For Fargate Launch Type
+
+TODO
 
 ## Notes
 

@@ -2,10 +2,12 @@ version: '3.7'
 
 services:
   app:
+    image: AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/rails6boilerplate_app
     build:
       context: .
       target: app
   web:
+    image: AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/rails6boilerplate_web
     build:
       context: .
       target: web
