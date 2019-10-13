@@ -1,0 +1,19 @@
+version: '3.0'
+
+services:
+  app:
+    image: "${ECR_URL}/${PROJECT_NAME}_app"
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: "${PROJECT_NAME}"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: app
+  web:
+    image: "${ECR_URL}/${PROJECT_NAME}_web"
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: "${PROJECT_NAME}"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: web

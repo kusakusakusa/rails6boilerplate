@@ -170,26 +170,36 @@ This does present a security risk, but for a non production environment, that sh
 
 Deploying with docker on AWS ECS/Fargate.
 
-Build the app image first using `docker-compose`:
+Build the `app` image first using just `docker-compose.yml` file, and precompile the assets.
 ```
-PROJECT_NAME=rails6boilerplate \
-ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
 docker-compose build app
-```
 
-Use the app image to compile the assets:
-```
-PROJECT_NAME=rails6boilerplate \
-ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
+RAILS_MASTER_KEY=`cat config/master.key` \
 docker-compose \
   run \
-  -e RAILS_MASTER_KEY=`cat config/master.key` \
   -v $(pwd)/public:/workspace/public \
   app \
   rails assets:precompile
 ```
 
-Build the web image with the generated assets that will be served directly:
+Rebulid the `app` image, but this time with `docker-compose-aws.yml` file too. We need rebuild again with additionaly configurations because running`docker-compose` locally is missing support for `awslogs-stream-prefix` options for `awslogs` log driver. You will get the error below:
+
+```
+Cannot create container for service app: unknown log opt 'awslogs-stream-prefix' for awslogs log driver
+```
+
+So we have to separate the logging options into another file, and only use both files when we are deploying and not running `docker-compose run` command. I hope this gets fixed soon.
+```
+PROJECT_NAME=rails6boilerplate \
+ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
+AWS_REGION=<AWS_REGION> \
+docker-compose \
+  -f docker-compose.yml \
+  -f docker-compose-aws.yml \
+  build app
+```
+
+Build the `web` image with the generated assets that will be served directly:
 ```
 PROJECT_NAME=rails6boilerplate \
 ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \

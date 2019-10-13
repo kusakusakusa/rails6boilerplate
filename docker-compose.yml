@@ -2,20 +2,12 @@ version: '3.0'
 
 services:
   app:
-    image: "${ECR_URL}/${PROJECT_NAME}_app"
     build:
       context: .
       dockerfile: Dockerfile_app
     environment:
-      RAILS_MASTER_KEY: "${RAILS_MASTER_KEY}"
-    # logging:
-    #   driver: awslogs
-    #   options: 
-    #     awslogs-group: "${PROJECT_NAME}"
-    #     awslogs-region: ap-southeast-1
-    #     awslogs-stream-prefix: app
+      - RAILS_MASTER_KEY
   web:
-    image: "${ECR_URL}/${PROJECT_NAME}_web"
     build:
       context: .
       dockerfile: Dockerfile_web
@@ -25,9 +17,3 @@ services:
       - app
     ports:
       - 80:80
-    # logging:
-    #   driver: awslogs
-    #   options: 
-    #     awslogs-group: "${PROJECT_NAME}"
-    #     awslogs-region: ap-southeast-1
-    #     awslogs-stream-prefix: web
