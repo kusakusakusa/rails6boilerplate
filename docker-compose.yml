@@ -1,17 +1,33 @@
-version: '3.7'
+version: '3.0'
 
 services:
   app:
-    image: AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/rails6boilerplate_app
+    image: "${ECR_URL}/${PROJECT_NAME}_app"
     build:
       context: .
-      target: app
+      dockerfile: Dockerfile_app
+    environment:
+      RAILS_MASTER_KEY: "${RAILS_MASTER_KEY}"
+    # logging:
+    #   driver: awslogs
+    #   options: 
+    #     awslogs-group: "${PROJECT_NAME}"
+    #     awslogs-region: ap-southeast-1
+    #     awslogs-stream-prefix: app
   web:
-    image: AWS_ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/rails6boilerplate_web
+    image: "${ECR_URL}/${PROJECT_NAME}_web"
     build:
       context: .
-      target: web
+      dockerfile: Dockerfile_web
+    links:
+      - app
     depends_on:
       - app
     ports:
       - 80:80
+    # logging:
+    #   driver: awslogs
+    #   options: 
+    #     awslogs-group: "${PROJECT_NAME}"
+    #     awslogs-region: ap-southeast-1
+    #     awslogs-stream-prefix: web
