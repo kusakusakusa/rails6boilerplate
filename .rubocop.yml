@@ -6,4 +6,4 @@ Metrics/MethodLength:
   Max: 9999
 AllCops:
   Exclude:
-    - *.slim
+    - '*.slim'

@@ -48,6 +48,7 @@ group :development do
   gem 'mina', '~> 1.2.3'
   gem 'mina-nginx', require: false
   gem 'mina-puma', require: false, github: 'untitledkingdom/mina-puma'
+  gem 'rubocop', '~> 0.75.0', require: false
   gem 'slim_lint', '~> 0.17.1'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
