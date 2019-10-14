@@ -17,3 +17,6 @@ services:
         awslogs-group: "${PROJECT_NAME}"
         awslogs-region: "${AWS_REGION}"
         awslogs-stream-prefix: web
+
+# more awslogs driver options here
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html#create_awslogs_logdriver_options

@@ -1,3 +1,5 @@
+# list of params here
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cmd-ecs-cli-compose-ecsparams.html
 version: 1
 task_definition:
   ecs_network_mode: bridge
