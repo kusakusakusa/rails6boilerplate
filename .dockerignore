@@ -12,7 +12,6 @@ pickle-email-*.html
 /log/*
 /tmp/*
 config/initializers/secret_token.rb
-config/master.key
 .env
 /.bundle
 /vendor/bundle

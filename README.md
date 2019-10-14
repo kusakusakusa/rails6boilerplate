@@ -168,8 +168,161 @@ This does present a security risk, but for a non production environment, that sh
 
 ## Production
 
-TODO?
+Deploying with docker on AWS ECS/Fargate.
 
+Build the `app` image first using just `docker-compose.yml` file, and precompile the assets.
+```
+docker-compose build app
+
+RAILS_MASTER_KEY=`cat config/master.key` \
+docker-compose \
+  run \
+  -v $(pwd)/public:/workspace/public \
+  app \
+  rails assets:precompile
+```
+
+Rebulid the `app` image, but this time with `docker-compose-aws.yml` file too. We need rebuild again with additionaly configurations because running`docker-compose` locally is missing support for `awslogs-stream-prefix` options for `awslogs` log driver. You will get the error below:
+
+```
+Cannot create container for service app: unknown log opt 'awslogs-stream-prefix' for awslogs log driver
+```
+
+So we have to separate the logging options into another file, and only use both files when we are deploying and not running `docker-compose run` command. I hope this gets fixed soon.
+```
+PROJECT_NAME=rails6boilerplate \
+ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
+AWS_REGION=<AWS_REGION> \
+docker-compose \
+  -f docker-compose.yml \
+  -f docker-compose-aws.yml \
+  build app
+```
+
+Build the `web` image with the generated assets that will be served directly:
+```
+PROJECT_NAME=rails6boilerplate \
+ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
+docker-compose build web
+```
+
+Push the docker images to the repository
+```
+# this command will get the string of docker login command to login to docker
+# and the $(...) will run the output, which is the login command itself
+$(aws ecr get-login --no-include-email --region <AWS_REGION> --profile <AWS_PROFILE>)
+
+# push the images to their respective directories
+PROJECT_NAME=rails6boilerplate \
+ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
+docker-compose push
+```
+
+Install [ecs-cli](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html).
+
+Configure the clusters using [ecs-cli](https://github.com/aws/amazon-ecs-cli#latest-version)
+
+### For EC2 Launch Type
+
+Setup cluster configuration file.
+```
+ecs-cli configure \
+  --cluster rails6boilerplate-ecs-cluster \
+  --region <AWS_REGION> \
+  --config-name rails6boilerplate-ecs-conf \
+  --cfn-stack-name rails6boilerplate-ecs-stack \
+  --default-launch-type EC2
+```
+
+Generate, overwrite and import the `docker_keypair` file meant for initializing EC2 instances' keypair
+```
+ssh-keygen -t rsa -f docker_keypair -C SAMPLE_KEY -N ''
+
+# the public-key-material "file://" prefix is required for linux too
+aws ec2 import-key-pair \
+  --key-name rails6boilerplate \
+  --public-key-material file://$(pwd)/docker_keypair.pub \
+  --region <AWS_REGION> \
+  --profile <AWS_PROFILE>
+```
+
+Deploy cluster by running:
+```
+ecs-cli up \
+  --keypair rails6boilerplate \
+  --capability-iam \
+  --size 1 \
+  --instance-type t2.micro \
+  --aws-profile <AWS_PROFILE> \
+  --cluster-config rails6boilerplate-ecs-conf
+```
+
+The outputs from the previous command will will show the subnets and security groups ids. Update `ecs-params.yml` file.
+
+Deploy the docker services to the cluster.
+```
+PROJECT_NAME=rails6boilerplate \
+ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile <AWS_PROFILE>`.dkr.ecr.<AWS_REGION>.amazonaws.com \
+RAILS_MASTER_KEY=`cat config/master.key` \
+ecs-cli compose \
+  --project-name rails6boilerplate \
+  up \
+  --aws-profile <AWS_PROFILE> \
+  --create-log-groups \
+  --cluster-config rails6boilerplate-ecs-conf
+```
+
+### Destroy
+
+Destroy clusters by running:
+```
+ecs-cli down \
+  --aws-profile <AWS_PROFILE> \
+  --cluster-config rails6boilerplate-ecs-conf
+```
+
+Remove images in each ECR.
+```
+aws ecr batch-delete-image \
+  --repository-name rails6boilerplate_app \
+  --profile <AWS_PROFILE> \
+  --region <AWS_REGION> \
+  --image-ids imageTag=latest
+
+aws ecr batch-delete-image \
+  --repository-name rails6boilerplate_web \
+  --profile <AWS_PROFILE> \
+  --region <AWS_REGION> \
+  --image-ids imageTag=latest
+```
+
+Remove repositories in ECR.
+```
+aws ecr delete-repository \
+  --repository-name rails6boilerplate_app \
+  --profile <AWS_PROFILE> \
+  --region <AWS_REGION>
+
+aws ecr delete-repository \
+  --repository-name rails6boilerplate_web \
+  --profile <AWS_PROFILE> \
+  --region <AWS_REGION>
+```
+
+Remove keypair.
+```
+# the "file://" prefix is required for linux too \
+aws ec2 delete-key-pair \
+  --key-name rails6boilerplate \
+  --region <AWS_REGION> \
+  --profile <AWS_PROFILE>
+```
+
+Deregister ECS task definitions. This only makes them inactive but not delete them. This is a [feature that is still WIP](https://forums.aws.amazon.com/thread.jspa?threadID=170378), since 2015...
+
+### For Fargate Launch Type
+
+TODO
 
 ## Notes
 

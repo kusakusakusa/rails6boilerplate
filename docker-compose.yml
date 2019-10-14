@@ -1,14 +1,18 @@
-version: '3.7'
+version: '3.0'
 
 services:
   app:
     build:
       context: .
-      target: app
+      dockerfile: Dockerfile_app
+    environment:
+      - RAILS_MASTER_KEY
   web:
     build:
       context: .
-      target: web
+      dockerfile: Dockerfile_web
+    links:
+      - app
     depends_on:
       - app
     ports:

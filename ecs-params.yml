@@ -1,0 +1,19 @@
+# list of params here
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cmd-ecs-cli-compose-ecsparams.html
+version: 1
+task_definition:
+  ecs_network_mode: bridge
+  task_size:
+    cpu_limit: 256
+    mem_limit: 128
+  services:
+    nginx:
+      essential: true
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+        - TODO
+        - TODO
+      security_groups:
+        - TODO
