@@ -20,6 +20,7 @@
     "jquery.easing": "^1.4.1",
     "popper.js": "^1.15.0",
     "prop-types": "^15.7.2",
+    "rails-erb-loader": "^5.5.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "turbolinks": "^5.2.0"
