@@ -56,6 +56,18 @@ ActiveRecord::Schema.define(version: 2019_09_13_011823) do
     t.index ["type"], name: "index_ckeditor_assets_on_type"
   end
 
+  create_table "oauth_access_grants", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "resource_owner_id", null: false
+    t.integer "application_id"
+    t.string "token", null: false
+    t.integer "expires_in", null: false
+    t.text "redirect_uri", null: false
+    t.datetime "created_at", null: false
+    t.datetime "revoked_at"
+    t.string "scopes", default: "", null: false
+    t.index ["resource_owner_id"], name: "index_oauth_access_grants_on_resource_owner_id"
+  end
+
   create_table "oauth_access_tokens", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "resource_owner_id"
     t.integer "application_id"

@@ -13,6 +13,18 @@ class CreateDoorkeeperTables < ActiveRecord::Migration[6.0]
       t.string :scopes
     end
 
+    # required to allow model.destroy to work
+    create_table :oauth_access_grants do |t|
+      t.references :resource_owner, null: false
+      t.integer :application_id
+      t.string   :token, null: false
+      t.integer  :expires_in, null: false
+      t.text     :redirect_uri, null: false
+      t.datetime :created_at, null: false
+      t.datetime :revoked_at
+      t.string   :scopes, null: false, default: ''
+    end
+
     # Uncomment below to ensure a valid reference to the resource owner's table
     add_foreign_key :oauth_access_tokens, :users, column: :resource_owner_id
   end
