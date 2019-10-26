@@ -31,11 +31,8 @@ gem 'jbuilder', '~> 2.7'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to
-  # stop execution and get a debugger console
-  gem 'byebug', platforms: %i[mri mingw x64_mingw]
-  gem 'faker', '~> 2.2.1'
   gem 'letter_opener'
+  gem 'pry'
   gem 'rspec-rails', '~> 3.8.0'
 end
 
@@ -50,11 +47,6 @@ group :development do
   gem 'mina-puma', require: false, github: 'untitledkingdom/mina-puma'
   gem 'rubocop', '~> 0.75.0', require: false
   gem 'slim_lint', '~> 0.17.1'
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
-  # Spring speeds up development
-  # by keeping your application running in the background.
-  # Read more: https://github.com/rails/spring
   gem 'web-console', '>= 3.3.0'
 end
 
@@ -77,6 +69,8 @@ gem 'ckeditor', github: 'galetahub/ckeditor'
 gem 'devise', '~> 4.7.1'
 gem 'doorkeeper', '~> 5.2.1'
 gem 'doorkeeper-jwt', '~> 0.3.0'
+gem 'faker', '~> 2.2.1' # for seeding in non development/test env
+gem 'jquery-rails', '~> 4.3.5' # required for old gems still relying on assets pipeline
 gem 'mini_magick', '~> 4.9.5'
 gem 'rack-cors', '~> 1.0.3'
 gem 'slim-rails', '~> 3.2.0'
