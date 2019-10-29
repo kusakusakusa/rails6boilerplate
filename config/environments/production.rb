@@ -48,7 +48,7 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  config.log_level = :debug
+  config.log_level = :error
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
@@ -80,11 +80,13 @@ Rails.application.configure do
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger           = ActiveSupport::Logger.new(STDOUT)
-    logger.formatter = config.log_formatter
-    config.logger    = ActiveSupport::TaggedLogging.new(logger)
-  end
+  config.logger = CloudWatchLogger.new({
+    access_key_id: Rails.application.credentials.dig(:production, :aws, :access_key_id),
+    secret_access_key: Rails.application.credentials.dig(:production, :aws, :secret_access_key)
+  },
+  "#{Rails.application.class.module_parent_name}-#{Rails.env}",
+  nil,
+  region: Rails.application.credentials.dig(:production, :aws, :region))
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false

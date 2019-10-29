@@ -66,6 +66,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'apipie-rails', '~> 0.5.16'
 gem 'aws-sdk-s3', require: false
 gem 'ckeditor', github: 'galetahub/ckeditor'
+gem 'cloudwatchlogger', '~> 0.2.1'
 gem 'devise', '~> 4.7.1'
 gem 'doorkeeper', '~> 5.2.1'
 gem 'doorkeeper-jwt', '~> 0.3.0'
