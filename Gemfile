@@ -38,6 +38,10 @@ end
 
 group :development do
   gem 'annotate', '~> 2.7.5'
+
+  # for deployment
+  gem 'aws-sdk-ec2', '~> 1.112.0'
+
   gem 'rename', '~> 1.0.6'
   # Access an interactive console on exception pages or
   # by calling 'console' anywhere in the code.
