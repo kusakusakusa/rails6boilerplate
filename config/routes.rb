@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   mount Ckeditor::Engine => '/ckeditor'
   apipie
 
+  get '/healthcheck', to: 'application#healthcheck'
+
   namespace :cms do
     root to: 'application#index'
     resources :posts
