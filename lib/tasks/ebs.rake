@@ -202,8 +202,7 @@ namespace :ebs do
           ]
         )
 
-        FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
-        file = File.open(Rails.root.join('terraform', 'production', 'vpc.tf'), 'w')
+        file = File.open(Rails.root.join('terraform', args[:env], 'vpc.tf'), 'w')
 
         file.puts <<~MSG
           resource "aws_vpc" "main" {
@@ -268,7 +267,7 @@ namespace :ebs do
 
           # Security Groups
           resource "aws_security_group" "bastion" {
-            name = "bastion"
+            name = "${var.project_name}${var.env}-bastion"
             description = "for bastion server"
             vpc_id = aws_vpc.main.id
 
@@ -350,6 +349,76 @@ namespace :ebs do
 
       puts "END - Create vpc.tf for #{args[:env]}"
     end
+
+    desc 'Create rds.tf'
+    task :create_rds_tf, %i[
+      env
+      aws_profile
+      region
+    ] => :environment do |_, args|
+      puts "START - Create rds.tf for #{args[:env]}"
+
+      begin
+        aws_access_key_id = `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp
+        aws_secret_access_key = `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp
+        ec2_client = Aws::EC2::Client.new(
+          region: args[:region],
+          access_key_id: aws_access_key_id,
+          secret_access_key: aws_secret_access_key
+        )
+        resp = ec2_client.describe_availability_zones(
+          filters: [
+            {
+              name: 'region-name',
+              values: [args[:region]]
+            }
+          ]
+        )
+
+        file = File.open(Rails.root.join('terraform', args[:env], 'rds.tf'), 'w')
+        file.puts <<~MSG
+          resource "aws_db_instance" "default" {
+            allocated_storage = 20
+            storage_type = "gp2"
+            engine = "mysql"
+            engine_version = "5.7"
+            instance_class = "db.t2.micro"
+            name = "#{Rails.application.credentials.dig(:production, :database, :db)}"
+            username = "#{Rails.application.credentials.dig(:production, :database, :username)}"
+            password = "#{Rails.application.credentials.dig(:production, :database, :password)}"
+
+            tags = {
+              Name = "rds-${var.project_name}${var.env}"
+            }
+          }
+
+          resource "aws_db_subnet_group" "main" {
+            name = "db-private-subnets"
+            subnet_ids = [
+        MSG
+
+        resp[:availability_zones].each.with_index do |az, index|
+          file.puts <<~SUBNET_TF
+                aws_subnet.private-#{az.zone_name}.id,
+          SUBNET_TF
+        end
+
+        file.puts <<~MSG
+            ]
+
+            tags = {
+              Name = "subnet-group-${var.project_name}${var.env}"
+            }
+          }
+        MSG
+        file.close
+      rescue Aws::EC2::Errors::ServiceError
+        # leave debug point here
+        binding.pry
+      end
+
+      puts "END - Create rds.tf for #{args[:env]}"
+    end
   end
 
   ##################
@@ -357,6 +426,8 @@ namespace :ebs do
   ##################
   desc 'For production env with proper infrastructure'
   task init: :environment do
+    FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
+
     env = aws_profile = region = ''
 
     ## TODO env set as production for now?
@@ -393,6 +464,7 @@ namespace :ebs do
     Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_variables_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region)
+    Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region)
 
     sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
