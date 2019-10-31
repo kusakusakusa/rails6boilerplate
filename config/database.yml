@@ -58,7 +58,9 @@ staging:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 production:
-  <<: *default
-  database: rails6boilerplate_production
-  username: rails6boilerplate
-  password: <%= ENV['RAILS6BOILERPLATE_DATABASE_PASSWORD'] %>
+  adapter: mysql2
+  encoding: utf8mb4
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  variables:
+  sql_mode: TRADITIONAL
+  url: <%= ENV['DATABASE_URL'] %>

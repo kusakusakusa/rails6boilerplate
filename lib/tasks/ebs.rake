@@ -407,7 +407,7 @@ namespace :ebs do
 
         file = File.open(Rails.root.join('terraform', args[:env], 'rds.tf'), 'w')
         file.puts <<~MSG
-          resource "aws_db_instance" "default" {
+          resource "aws_db_instance" "main" {
             allocated_storage = 20
             storage_type = "gp2"
             engine = "mysql"
@@ -529,9 +529,26 @@ namespace :ebs do
         MSG
       end
 
+      dbname = Rails.application.credentials.dig(:production, :database, :db)
+      username = Rails.application.credentials.dig(:production, :database, :username)
+      password = Rails.application.credentials.dig(:production, :database, :password)
+
       file.puts <<~MSG
           ]
           stage = var.env
+
+          additional_settings = [
+            {
+              namespace = "aws:elasticbeanstalk:application:environment"
+              name = "DATABASE_URL"
+              value = "mysql2://#{username}:#{password}@${aws_db_instance.main.endpoint}/#{dbname}"
+            },
+            {
+              namespace = "aws:elasticbeanstalk:application:environment"
+              name = "RAILS_MASTER_KEY"
+              value = "#{`cat #{Rails.root.join('config')}/master.key`}"
+            }
+          ]
         }
       MSG
       file.close
