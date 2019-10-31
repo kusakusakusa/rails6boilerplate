@@ -418,7 +418,8 @@ namespace :ebs do
             password = "#{Rails.application.credentials.dig(:production, :database, :password)}"
 
             skip_final_snapshot = false
-            final_snapshot_identifier = "rds-${var.project_name}${var.env}-#{SecureRandom.alphanumeric(6)}"
+            # notes time of creation of rds.tf file
+            final_snapshot_identifier = "rds-${var.project_name}${var.env}-#{DateTime.now.to_i}"
 
             tags = {
               Name = "rds-${var.project_name}${var.env}"
