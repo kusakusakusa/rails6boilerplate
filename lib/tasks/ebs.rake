@@ -480,81 +480,176 @@ namespace :ebs do
         ]
       )
 
-      file = File.open(Rails.root.join('terraform', args[:env], 'ebs.tf'), 'w')
-      file.puts <<~MSG
-        # https://registry.terraform.io/modules/cloudposse/elastic-beanstalk-environment/aws/0.17.0
-        module "elastic-beanstalk-application" {
-          source  = "cloudposse/elastic-beanstalk-application/aws"
-          version = "0.4.0"
-
-          # 1 required variable
-          name = "${var.project_name}${var.env}-ebs-application"
-        }
-
-        module "elastic-beanstalk-environment" {
-          source = "cloudposse/elastic-beanstalk-environment/aws"
-          version = "0.17.0"
-
-          # 6 required variables
-          application_subnets = [
-      MSG
-
-      resp[:availability_zones].each do |az|
-        file.puts <<~MSG
-              aws_subnet.private-#{az.zone_name}.id,
-        MSG
-      end
-
-      file.puts <<~MSG
-          ]
-          elastic_beanstalk_application_name = module.elastic-beanstalk-application.elastic_beanstalk_application_name
-          name = "app"
-          region = var.region
-          solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Puma)"
-          vpc_id = aws_vpc.main.id
-
-          # optional variables
-          allowed_security_groups = [
-            aws_security_group.web_server.id
-          ]
-          autoscale_min = 1
-          autoscale_max = 2 # min cannot eq max
-          availability_zone_selector = "Any"
-          healthcheck_url = "/healthcheck" # default is /healthcheck
-          instance_type = "t2.micro" # default is t2.micro
-          keypair = ""
-          loadbalancer_subnets = [
-      MSG
-
-      resp[:availability_zones].each do |az|
-        file.puts <<~MSG
-              aws_subnet.public-#{az.zone_name}.id,
-        MSG
-      end
-
       dbname = Rails.application.credentials.dig(:production, :database, :db)
       username = Rails.application.credentials.dig(:production, :database, :username)
       password = Rails.application.credentials.dig(:production, :database, :password)
 
+      file = File.open(Rails.root.join('terraform', args[:env], 'ebs.tf'), 'w')
       file.puts <<~MSG
-          ]
-          stage = var.env
+        # with reference to
+        # https://github.com/wardviaene/terraform-demo/blob/master/elasticbeanstalk.tf
+        # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
 
-          additional_settings = [
-            {
-              namespace = "aws:elasticbeanstalk:application:environment"
-              name = "DATABASE_URL"
-              value = "mysql2://#{username}:#{password}@${aws_db_instance.main.endpoint}/#{dbname}"
-            },
-            {
-              namespace = "aws:elasticbeanstalk:application:environment"
-              name = "RAILS_MASTER_KEY"
-              value = "#{`cat #{Rails.root.join('config')}/master.key`}"
-            }
-          ]
+        resource "aws_elastic_beanstalk_application" "main" {
+          name = "eb-${var.project_name}${var.env}"
+          description = "Elastic Beanstalk"
         }
 
-        module "iam_policy" {
+        resource "aws_elastic_beanstalk_environment" "main" {
+          name = "eb-env-${var.project_name}${var.env}"
+          application = aws_elastic_beanstalk_application.main.name
+          solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Puma)"
+
+          #################
+          # command-options-general-ec2vpc
+          #################
+          setting {
+            namespace = "aws:ec2:vpc"
+            name = "VPCId"
+            value = aws_vpc.main.id
+          }
+
+          setting {
+            namespace = "aws:ec2:vpc"
+            name = "ELBScheme"
+            value = "public"
+          }
+
+          setting {
+            namespace = "aws:ec2:vpc"
+            name = "AssociatePublicIpAddress"
+            value = "false"
+          }
+
+          setting {
+            namespace = "aws:ec2:vpc"
+            name = "ELBSubnets"
+            value = "#{resp[:availability_zones].map do |az|
+              "\${aws_subnet.public-#{az.zone_name}.id}"
+            end.join(',')}"
+          }
+
+          setting {
+            namespace = "aws:ec2:vpc"
+            name = "Subnets"
+            value = "#{resp[:availability_zones].map do |az|
+              "\${aws_subnet.private-#{az.zone_name}.id}"
+            end.join(',')}"
+          }
+
+          #################
+          # command-options-general-autoscalinglaunchconfiguration
+          #################
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "SecurityGroups"
+            value = aws_security_group.web_server.id
+          }
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "EC2KeyName"
+            value = aws_key_pair.main.id
+          }
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "InstanceType"
+            value = "t2.micro"
+          }
+
+          #################
+
+          setting {
+            namespace = "aws:elasticbeanstalk:environment"
+            name = "ServiceRole"
+            value = "eb-${var.project_name}${var.env}-service-role"
+          }
+
+          #################
+
+          setting {
+            namespace = "aws:elb:loadbalancer"
+            name = "CrossZone"
+            value = "true"
+          }
+
+          #################
+          # command-options-general-elasticbeanstalkcommand
+          #################
+          setting {
+            namespace = "aws:elasticbeanstalk:command"
+            name = "BatchSize"
+            value = "30"
+          }
+          setting {
+            namespace = "aws:elasticbeanstalk:command"
+            name = "BatchSize"
+            value = "30"
+          }
+          setting {
+            namespace = "aws:elasticbeanstalk:command"
+            name = "BatchSizeType"
+            value = "Percentage"
+          }
+
+          #################
+          # command-options-general-autoscalingasg
+          #################
+          setting {
+            namespace = "aws:autoscaling:asg"
+            name = "Availability Zones"
+            value = "Any #{resp[:availability_zones].count}"
+          }
+
+          setting {
+            namespace = "aws:autoscaling:asg"
+            name = "MinSize"
+            value = "2"
+          }
+
+          setting {
+            namespace = "aws:autoscaling:asg"
+            name = "MaxSize"
+            value = "2"
+          }
+          #################
+
+          setting {
+            namespace = "aws:autoscaling:updatepolicy:rollingupdate"
+            name = "RollingUpdateType"
+            value = "Health"
+          }
+
+          #################
+          # command-options-general-elasticbeanstalkapplicationenvironment
+          #################
+          setting {
+            namespace = "aws:elasticbeanstalk:application:environment"
+            name = "DATABASE_URL"
+            value = "mysql2://#{username}:#{password}@${aws_db_instance.main.endpoint}/#{dbname}"
+          }
+
+          setting {
+            namespace = "aws:elasticbeanstalk:application:environment"
+            name = "RAILS_MASTER_KEY"
+            value = "#{`cat #{Rails.root.join('config')}/master.key`}"
+          }
+
+          tags = {
+            Name = "eb-${var.project_name}${var.env}"
+          }
+        }
+
+        output "endpoint_url" {
+          value = aws_elastic_beanstalk_environment.main.endpoint_url
+        }
+      MSG
+
+      # ebs user
+      file.puts <<~MSG
+
+        module "eb-iam_policy" {
           source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
           version = "~> 2.0"
 
@@ -661,7 +756,7 @@ namespace :ebs do
         EOF
         }
 
-        module "iam_user" {
+        module "eb-iam_user" {
           source  = "terraform-aws-modules/iam/aws//modules/iam-user"
           version = "~> 2.0"
 
@@ -669,7 +764,7 @@ namespace :ebs do
           create_iam_user_login_profile = "false"
 
           name = "eb-${var.project_name}${var.env}"
-          permissions_boundary = module.iam_policy.arn
+          permissions_boundary = module.eb-iam_policy.arn
           
           tags = {
             Name = "eb-${var.project_name}${var.env}"
@@ -677,11 +772,11 @@ namespace :ebs do
         }
 
         output "eb-user-access_key_id" {
-          value = module.iam_user.this_iam_access_key_id
+          value = module.eb-iam_user.this_iam_access_key_id
         }
 
         output "eb-user-secret_access_key" {
-          value = module.iam_user.this_iam_access_key_secret
+          value = module.eb-iam_user.this_iam_access_key_secret
         }
       MSG
       file.close
@@ -701,14 +796,14 @@ namespace :ebs do
 
     ## TODO env set as production for now?
     env = 'production'
-    # loop do
-    #   puts 'Enter environment:'
-    #   env = STDIN.gets.chomp
+    loop do
+      puts 'Enter environment:'
+      env = STDIN.gets.chomp
 
-    #   break unless env.blank?
+      break unless env.blank?
 
-    #   puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-    # end
+      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    end
 
     loop do
       puts 'Enter region:'
@@ -737,23 +832,32 @@ namespace :ebs do
     Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region)
 
-    sh "cd #{Rails.root.join('terraform', env)} && \
+    Rake::Task['ebs:apply'].invoke(env, aws_profile)
+  end
+
+  task :apply, %i[
+    env
+    aws_profile
+  ] => :environment do |_, args|
+    FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
+
+    sh "cd #{Rails.root.join('terraform', args[:env])} && \
     docker run \
     --rm \
-    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
-    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
-    -v #{Rails.root.join('terraform', env)}:/workspace \
+    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
+    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
+    -v #{Rails.root.join('terraform', args[:env])}:/workspace \
     -w /workspace \
     -it \
     hashicorp/terraform:0.12.12 \
     init"
 
-    sh "cd #{Rails.root.join('terraform', env)} && \
+    sh "cd #{Rails.root.join('terraform', args[:env])} && \
     docker run \
     --rm \
-    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
-    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
-    -v #{Rails.root.join('terraform', env)}:/workspace \
+    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
+    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
+    -v #{Rails.root.join('terraform', args[:env])}:/workspace \
     -w /workspace \
     -it \
     hashicorp/terraform:0.12.12 \
@@ -766,14 +870,14 @@ namespace :ebs do
 
     ## TODO env set as production for now?
     env = 'production'
-    # loop do
-    #   puts 'Enter environment:'
-    #   env = STDIN.gets.chomp
+    loop do
+      puts 'Enter environment:'
+      env = STDIN.gets.chomp
 
-    #   break unless env.blank?
+      break unless env.blank?
 
-    #   puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-    # end
+      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    end
 
     loop do
       puts 'Enter region:'
