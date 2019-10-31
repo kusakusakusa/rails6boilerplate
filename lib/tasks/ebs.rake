@@ -336,7 +336,7 @@ namespace :ebs do
             resource "aws_subnet" "public-#{az.zone_name}" {
               vpc_id = aws_vpc.main.id
               cidr_block = "10.0.#{100 + index}.0/24"
-              availability_zone_id = "#{az.id}"
+              availability_zone_id = "#{az.zone_id}"
 
               tags = {
                 Name = "public-#{az.zone_name}-${var.project_name}${var.env}"
@@ -358,7 +358,7 @@ namespace :ebs do
             resource "aws_subnet" "private-#{az.zone_name}" {
               vpc_id = aws_vpc.main.id
               cidr_block = "10.0.#{1 + index}.0/24"
-              availability_zone_id = "#{az.id}"
+              availability_zone_id = "#{az.zone_id}"
 
               tags = {
                 Name = "private-#{az.zone_name}-${var.project_name}${var.env}"
