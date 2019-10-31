@@ -44,6 +44,36 @@ namespace :ebs do
     puts 'END - Checks necessary conditions before proceeding'
   end
 
+  desc 'Generate private/public key'
+  task :generate_ssh_keys, [:env] => :environment do |_, args|
+    # these keys will be used for:
+    # 1. generating aws keypair
+    # 2. authentication key for private git repository
+    private_key_file_name = 'production_keypair'
+    filepath = "#{Rails.root}/#{private_key_file_name}"
+    puts "START - Create private/public keys for #{args[:env]}"
+
+    if File.exist? filepath
+      puts 'Private key already created'
+    else
+      `ssh-keygen -t rsa -f #{filepath} -C #{private_key_file_name} -N ''`
+      puts "chmod 400 private and public keys for #{args[:env]}"
+      `chmod 400 #{filepath}`
+      `chmod 400 #{filepath}.pub`
+    end
+
+    file = File.open(Rails.root.join('terraform', args[:env], 'keypair.tf'), 'w')
+    file.puts <<~MSG
+      resource "aws_key_pair" "main" {
+        key_name = "${var.project_name}-${var.env}"
+        public_key = "#{`cat #{filepath}.pub`.chomp}"
+      }
+    MSG
+    file.close
+
+    puts "END - Create private/public keys for #{args[:env]}"
+  end
+
   #######################
   ### Terraform Files ###
   #######################
@@ -288,7 +318,7 @@ namespace :ebs do
           }
 
           resource "aws_security_group" "web_server" {
-            name = "Web servers"
+            name = "${var.project_name}${var.env}-web-servers"
             description = "for Web servers"
             vpc_id = aws_vpc.main.id
 
@@ -387,6 +417,9 @@ namespace :ebs do
             username = "#{Rails.application.credentials.dig(:production, :database, :username)}"
             password = "#{Rails.application.credentials.dig(:production, :database, :password)}"
 
+            skip_final_snapshot = false
+            final_snapshot_identifier = "rds-${var.project_name}${var.env}-#{SecureRandom.alphanumeric(6)}"
+
             tags = {
               Name = "rds-${var.project_name}${var.env}"
             }
@@ -419,6 +452,92 @@ namespace :ebs do
 
       puts "END - Create rds.tf for #{args[:env]}"
     end
+
+    desc 'Create ebs.tf'
+    task :create_ebs_tf, %i[
+      env
+      aws_profile
+      region
+    ] => :environment do |_, args|
+      puts "START - Create ebs.tf for #{args[:env]}"
+
+      aws_access_key_id = `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp
+      aws_secret_access_key = `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp
+      ec2_client = Aws::EC2::Client.new(
+        region: args[:region],
+        access_key_id: aws_access_key_id,
+        secret_access_key: aws_secret_access_key
+      )
+      resp = ec2_client.describe_availability_zones(
+        filters: [
+          {
+            name: 'region-name',
+            values: [args[:region]]
+          }
+        ]
+      )
+
+      file = File.open(Rails.root.join('terraform', args[:env], 'ebs.tf'), 'w')
+      file.puts <<~MSG
+        # https://registry.terraform.io/modules/cloudposse/elastic-beanstalk-environment/aws/0.17.0
+        module "elastic-beanstalk-application" {
+          source  = "cloudposse/elastic-beanstalk-application/aws"
+          version = "0.4.0"
+
+          # 1 required variable
+          name = "${var.project_name}${var.env}-ebs-application"
+        }
+
+        module "elastic-beanstalk-environment" {
+          source = "cloudposse/elastic-beanstalk-environment/aws"
+          version = "0.17.0"
+
+          # 6 required variables
+          application_subnets = [
+      MSG
+
+      resp[:availability_zones].each do |az|
+        file.puts <<~MSG
+              aws_subnet.private-#{az.zone_name}.id,
+        MSG
+      end
+
+      file.puts <<~MSG
+          ]
+          elastic_beanstalk_application_name = module.elastic-beanstalk-application.elastic_beanstalk_application_name
+          name = "app"
+          region = var.region
+          solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Puma)"
+          vpc_id = aws_vpc.main.id
+
+          # optional variables
+          allowed_security_groups = [
+            aws_security_group.web_server.id
+          ]
+          autoscale_min = 1
+          autoscale_max = 2 # min cannot eq max
+          availability_zone_selector = "Any"
+          healthcheck_url = "/healthcheck" # default is /healthcheck
+          instance_type = "t2.micro" # default is t2.micro
+          keypair = ""
+          loadbalancer_subnets = [
+      MSG
+
+      resp[:availability_zones].each do |az|
+        file.puts <<~MSG
+              aws_subnet.public-#{az.zone_name}.id,
+        MSG
+      end
+
+      file.puts <<~MSG
+          ]
+          stage = var.env
+        }
+      MSG
+      file.close
+
+      puts "END - Create ebs.tf for #{args[:env]}"
+    end
   end
 
   ##################
@@ -432,14 +551,14 @@ namespace :ebs do
 
     ## TODO env set as production for now?
     env = 'production'
-    loop do
-      puts 'Enter environment:'
-      env = STDIN.gets.chomp
+    # loop do
+    #   puts 'Enter environment:'
+    #   env = STDIN.gets.chomp
 
-      break unless env.blank?
+    #   break unless env.blank?
 
-      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-    end
+    #   puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    # end
 
     loop do
       puts 'Enter region:'
@@ -460,11 +579,13 @@ namespace :ebs do
     end
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+    Rake::Task['ebs:generate_ssh_keys'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_tfstate_bucket'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_variables_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region)
+    Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region)
 
     sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
@@ -495,14 +616,14 @@ namespace :ebs do
 
     ## TODO env set as production for now?
     env = 'production'
-    loop do
-      puts 'Enter environment:'
-      env = STDIN.gets.chomp
+    # loop do
+    #   puts 'Enter environment:'
+    #   env = STDIN.gets.chomp
 
-      break unless env.blank?
+    #   break unless env.blank?
 
-      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-    end
+    #   puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+    # end
 
     loop do
       puts 'Enter region:'
