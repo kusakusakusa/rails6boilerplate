@@ -1,5 +1,42 @@
 # frozen_string_literal: true
 
+module Ebs
+  class Helper
+    def self.inputs
+      env = aws_profile = region = ''
+
+      loop do
+        puts 'Enter environment:'
+        env = STDIN.gets.chomp
+
+        break unless env.blank?
+
+        puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+      end
+
+      loop do
+        puts 'Enter region:'
+        region = STDIN.gets.chomp
+
+        break unless region.blank?
+
+        puts 'Nothing entered. Please enter an region (eg us-east-1)'
+      end
+
+      loop do
+        puts 'Enter your desired aws profile for this project:'
+        aws_profile = STDIN.gets.chomp
+
+        break unless aws_profile.blank?
+
+        puts 'Nothing entered. Please enter your desired aws profile for this project.'
+      end
+
+      [env, aws_profile, region]
+    end
+  end
+end
+
 namespace :ebs do
   PROJECT_NAME = Rails.application.class.module_parent_name.downcase
 
@@ -790,38 +827,9 @@ namespace :ebs do
   ##################
   desc 'For production env with proper infrastructure'
   task init: :environment do
+    env, aws_profile, region = Ebs::Helper.inputs
+
     FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
-
-    env = aws_profile = region = ''
-
-    ## TODO env set as production for now?
-    env = 'production'
-    loop do
-      puts 'Enter environment:'
-      env = STDIN.gets.chomp
-
-      break unless env.blank?
-
-      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-    end
-
-    loop do
-      puts 'Enter region:'
-      region = STDIN.gets.chomp
-
-      break unless region.blank?
-
-      puts 'Nothing entered. Please enter an region (eg us-east-1)'
-    end
-
-    loop do
-      puts 'Enter your desired aws profile for this project:'
-      aws_profile = STDIN.gets.chomp
-
-      break unless aws_profile.blank?
-
-      puts 'Nothing entered. Please enter your desired aws profile for this project.'
-    end
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
     Rake::Task['ebs:generate_ssh_keys'].invoke(env, aws_profile, region)
@@ -866,36 +874,7 @@ namespace :ebs do
 
   desc 'For production env with proper infrastructure'
   task destroy: :environment do
-    env = aws_profile = region = ''
-
-    ## TODO env set as production for now?
-    env = 'production'
-    loop do
-      puts 'Enter environment:'
-      env = STDIN.gets.chomp
-
-      break unless env.blank?
-
-      puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-    end
-
-    loop do
-      puts 'Enter region:'
-      region = STDIN.gets.chomp
-
-      break unless region.blank?
-
-      puts 'Nothing entered. Please enter an region (eg us-east-1)'
-    end
-
-    loop do
-      puts 'Enter your desired aws profile for this project:'
-      aws_profile = STDIN.gets.chomp
-
-      break unless aws_profile.blank?
-
-      puts 'Nothing entered. Please enter your desired aws profile for this project.'
-    end
+    env, aws_profile, region = Ebs::Helper.inputs
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
