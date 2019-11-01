@@ -34,6 +34,16 @@ module Ebs
 
       [env, aws_profile, region]
     end
+
+    def self.ec2_client(aws_profile:, region:)
+      aws_access_key_id = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
+      aws_secret_access_key = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
+      Aws::EC2::Client.new(
+        region: region,
+        access_key_id: aws_access_key_id,
+        secret_access_key: aws_secret_access_key
+      )
+    end
   end
 end
 
@@ -253,13 +263,11 @@ namespace :ebs do
       puts "START - Create vpc.tf for #{args[:env]}"
 
       begin
-        aws_access_key_id = `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp
-        aws_secret_access_key = `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp
-        ec2_client = Aws::EC2::Client.new(
-          region: args[:region],
-          access_key_id: aws_access_key_id,
-          secret_access_key: aws_secret_access_key
+        ec2_client = Ebs::Helper.ec2_client(
+          aws_profile: args[:aws_profile],
+          region: args[:region]
         )
+
         resp = ec2_client.describe_availability_zones(
           filters: [
             {
@@ -428,12 +436,9 @@ namespace :ebs do
       puts "START - Create rds.tf for #{args[:env]}"
 
       begin
-        aws_access_key_id = `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp
-        aws_secret_access_key = `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp
-        ec2_client = Aws::EC2::Client.new(
-          region: args[:region],
-          access_key_id: aws_access_key_id,
-          secret_access_key: aws_secret_access_key
+        ec2_client = Ebs::Helper.ec2_client(
+          aws_profile: args[:aws_profile],
+          region: args[:region]
         )
         resp = ec2_client.describe_availability_zones(
           filters: [
@@ -470,7 +475,7 @@ namespace :ebs do
             subnet_ids = [
         MSG
 
-        resp[:availability_zones].each.with_index do |az, index|
+        resp[:availability_zones].each do |az|
           file.puts <<~SUBNET_TF
                 aws_subnet.private-#{az.zone_name}.id,
           SUBNET_TF
@@ -501,12 +506,9 @@ namespace :ebs do
     ] => :environment do |_, args|
       puts "START - Create ebs.tf for #{args[:env]}"
 
-      aws_access_key_id = `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp
-      aws_secret_access_key = `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp
-      ec2_client = Aws::EC2::Client.new(
-        region: args[:region],
-        access_key_id: aws_access_key_id,
-        secret_access_key: aws_secret_access_key
+      ec2_client = Ebs::Helper.ec2_client(
+        aws_profile: args[:aws_profile],
+        region: args[:region]
       )
       resp = ec2_client.describe_availability_zones(
         filters: [
@@ -802,7 +804,7 @@ namespace :ebs do
 
           name = "eb-${var.project_name}${var.env}"
           permissions_boundary = module.eb-iam_policy.arn
-          
+
           tags = {
             Name = "eb-${var.project_name}${var.env}"
           }
