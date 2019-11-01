@@ -824,6 +824,257 @@ namespace :ebs do
     end
   end
 
+  #####################
+  ### Bastion Tasks ###
+  #####################
+  namespace :bastion do
+    desc 'Pack bastion server AMI'
+    task :pack, %i[
+      env
+      aws_profile
+      region
+    ] => :environment do |_, args|
+      puts 'Packing bastion...'
+
+      ec2_client = Ebs::Helper.ec2_client(
+        aws_profile: args[:aws_profile],
+        region: args[:region]
+      )
+
+      bastion_ami = ec2_client.describe_images(
+        filters: [
+          {
+            name: 'name',
+            values: ["bastion-#{PROJECT_NAME}-#{args[:env]}"]
+          }
+        ],
+        owners: ['self']
+      ).images.max_by(&:creation_date)
+
+      if bastion_ami.nil?
+        # with reference to
+        # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
+        ami = ec2_client.describe_images(
+          filters: [
+            {
+              name: 'name',
+              values: ['amzn2-ami-hvm-2.0.????????.?-x86_64-gp2']
+            }
+          ],
+          owners: ['amazon']
+        ).images.max_by(&:creation_date) # latest image
+
+        file = File.open(Rails.root.join('terraform', args[:env], 'bastion.json'), 'w')
+        file.puts <<~MSG
+          {
+            "variables": {
+              "project_name": "#{PROJECT_NAME}",
+              "region": "#{args[:region]}",
+              "env": "#{args[:env]}"
+            },
+            "builders": [
+              {
+                "type": "amazon-ebs",
+                "region": "{{user `region`}}",
+                "source_ami": "#{ami.image_id}",
+                "instance_type": "t2.nano",
+                "ssh_username": "ec2-user",
+                "ami_name": "bastion-{{user `project_name`}}-{{user `env`}}",
+                "shutdown_behavior": "terminate",
+                "run_tags": {
+                  "Name": "{{user `project_name`}}",
+                  "Env": "{{user `env`}}"
+                },
+                "run_volume_tags": {
+                  "Name": "{{user `project_name`}}",
+                  "Env": "{{user `env`}}"
+                },
+                "snapshot_tags": {
+                  "Name": "{{user `project_name`}}",
+                  "Env": "{{user `env`}}"
+                }
+              }
+            ],
+            "provisioners": [
+              {
+                "type": "shell",
+                "inline": [
+                  "sudo wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm",
+                  "sudo yum -y localinstall mysql57-community-release-el7-11.noarch.rpm ",
+                  "sudo yum -y install mysql-community-client mysql-community-common mysql-community-libs mysql-community-server",
+                  "sudo service mysqld restart"
+                ]
+              }
+            ]
+          }
+        MSG
+        file.close
+
+        sh "cd #{Rails.root.join('terraform', args[:env])} && \
+          docker run \
+          -it \
+          --rm \
+          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
+          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
+          -v #{Rails.root.join('terraform', args[:env])}/bastion.json:/workspace/bastion.json \
+          -w /workspace \
+          hashicorp/packer:light \
+          build -force bastion.json"
+
+        puts 'Packed bastion AMI!'
+      else
+        puts('Bastion image has already been packed!')
+      end
+      puts ''
+    end
+
+    desc 'Unpack bastion server AMI'
+    task unpack: :environment do
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+      puts 'Unpacking bastion AMI...'
+
+      ec2_client = Ebs::Helper.ec2_client(
+        aws_profile: aws_profile,
+        region: region
+      )
+
+      ami = ec2_client.describe_images(
+        filters: [
+          {
+            name: 'name',
+            values: ["bastion-#{PROJECT_NAME}-#{env}"]
+          }
+        ],
+        owners: ['self']
+      ).images.max_by(&:creation_date) # latest image
+
+      ec2_client.deregister_image(
+        image_id: ami.image_id
+      )
+
+      puts 'Unpacked bastion AMI'
+    end
+
+    desc 'Setup bastion server'
+    task up: :environment do
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+      puts 'Setting up bastion...'
+
+      Rake::Task['ebs:bastion:pack'].invoke(env, aws_profile, region)
+
+      sh "cd #{Rails.root.join('terraform', env)} && \
+        docker run \
+        --rm \
+        --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+        --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+        -v #{Rails.root.join('terraform', env)}:/workspace \
+        -v #{Rails.root}/production_keypair:/workspace/production_keypair \
+        -w /workspace \
+        -it \
+        hashicorp/terraform:0.12.12 \
+        apply -auto-approve"
+
+      if File.exist?(Rails.root.join('terraform', 'production', 'ebs.tf'))
+        ec2_client = Ebs::Helper.ec2_client(
+          aws_profile: aws_profile,
+          region: region
+        )
+
+        # with reference to
+        # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
+        ami = ec2_client.describe_images(
+          filters: [
+            {
+              name: 'name',
+              values: ["bastion-#{PROJECT_NAME}-#{env}"]
+            }
+          ],
+          owners: ['self']
+        ).images.max_by(&:creation_date) # latest image
+
+        resp = ec2_client.describe_availability_zones(
+          filters: [
+            {
+              name: 'region-name',
+              values: [region]
+            }
+          ]
+        )
+
+        file = File.open(Rails.root.join('terraform', env, 'bastion.tf'), 'w')
+        file.puts <<~MSG
+          resource "aws_instance" "bastion" {
+            ami = "#{ami.image_id}"
+            associate_public_ip_address = true
+            instance_type = "t2.nano"
+            subnet_id = aws_subnet.public-#{resp[:availability_zones].first.zone_name}.id
+            vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
+            key_name = aws_key_pair.main.key_name
+
+            tags = {
+              Name = "bastion-${var.project_name}${var.env}"
+            }
+          }
+
+          output "bastion_public_ip" {
+            value = aws_instance.bastion.public_ip
+          }
+        MSG
+        file.close
+
+        # mount production_keypair to root of /workspace in container
+        sh "cd #{Rails.root.join('terraform', env)} && \
+          docker run \
+          --rm \
+          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+          -v #{Rails.root.join('terraform', env)}:/workspace \
+          -v #{Rails.root}/production_keypair:/workspace/production_keypair \
+          -w /workspace \
+          -it \
+          hashicorp/terraform:0.12.12 \
+          apply -auto-approve"
+      else
+        abort('`ebs.tf` file not found!\nSetup your EBS environment first by running:\n\n  rake ebs:init\n')
+      end
+
+      puts 'Set up bastion!'
+    end
+
+    desc 'Shutdown bastion server'
+    task down: :environment do
+      puts 'Shutting up bastion...'
+
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      if File.exist?(Rails.root.join('terraform', 'production', 'bastion.tf'))
+
+        FileUtils.rm(Rails.root.join('terraform', 'production', 'bastion.tf'))
+
+        sh "cd #{Rails.root.join('terraform', env)} && \
+          docker run \
+          --rm \
+          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+          -v #{Rails.root.join('terraform', env)}:/workspace \
+          -w /workspace \
+          -it \
+          hashicorp/terraform:0.12.12 \
+          apply -auto-approve"
+      else
+        abort('`bastion.tf` file not found!\nDo nothing here!\n')
+      end
+
+      puts 'Shutdown bastion!'
+    end
+  end
+
   ##################
   ### Main Tasks ###
   ##################
