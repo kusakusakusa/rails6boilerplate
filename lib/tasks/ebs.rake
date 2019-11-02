@@ -2,34 +2,46 @@
 
 module Ebs
   class Helper
-    def self.inputs
+    def self.inputs(args = nil)
       env = aws_profile = region = ''
 
-      loop do
-        puts 'Enter environment:'
-        env = STDIN.gets.chomp
+      if args.nil? ||
+         (
+          args[:env].blank? &&
+          args[:aws_profile].blank? &&
+          args[:region].blank?
+        )
 
-        break unless env.blank?
+        loop do
+          puts 'Enter environment:'
+          env = STDIN.gets.chomp
 
-        puts 'Nothing entered. Please enter an environment (eg staging, uat)'
-      end
+          break unless env.blank?
 
-      loop do
-        puts 'Enter region:'
-        region = STDIN.gets.chomp
+          puts 'Nothing entered. Please enter an environment (eg staging, uat)'
+        end
 
-        break unless region.blank?
+        loop do
+          puts 'Enter region:'
+          region = STDIN.gets.chomp
 
-        puts 'Nothing entered. Please enter an region (eg us-east-1)'
-      end
+          break unless region.blank?
 
-      loop do
-        puts 'Enter your desired aws profile for this project:'
-        aws_profile = STDIN.gets.chomp
+          puts 'Nothing entered. Please enter an region (eg us-east-1)'
+        end
 
-        break unless aws_profile.blank?
+        loop do
+          puts 'Enter your desired aws profile for this project:'
+          aws_profile = STDIN.gets.chomp
 
-        puts 'Nothing entered. Please enter your desired aws profile for this project.'
+          break unless aws_profile.blank?
+
+          puts 'Nothing entered. Please enter your desired aws profile for this project.'
+        end
+      else
+        env = args[:env]
+        aws_profile = args[:aws_profile]
+        region = args[:region]
       end
 
       [env, aws_profile, region]
