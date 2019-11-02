@@ -815,11 +815,15 @@ namespace :ebs do
           create_iam_user_login_profile = "false"
 
           name = "eb-${var.project_name}${var.env}"
-          permissions_boundary = module.eb-iam_policy.arn
 
           tags = {
             Name = "eb-${var.project_name}${var.env}"
           }
+        }
+
+        resource "aws_iam_user_policy_attachment" "eb" {
+          user = module.eb-iam_user.this_iam_user_name
+          policy_arn = module.eb-iam_policy.arn
         }
 
         output "eb-user-access_key_id" {
