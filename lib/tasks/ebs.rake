@@ -726,6 +726,18 @@ namespace :ebs do
             value = "#{`cat #{Rails.root.join('config')}/master.key`}"
           }
 
+          setting {
+            namespace = "aws:elasticbeanstalk:application:environment"
+            name = "RAILS_ENV"
+            value = "#{args[:env]}"
+          }
+
+          setting {
+            namespace = "aws:elasticbeanstalk:application:environment"
+            name = "RACK_ENV"
+            value = "#{args[:env]}"
+          }
+
           tags = {
             Name = "eb-${var.project_name}${var.env}"
           }
