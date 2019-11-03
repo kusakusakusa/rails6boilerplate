@@ -358,7 +358,7 @@ namespace :ebs do
             description = "for bastion server"
             vpc_id = aws_vpc.main.id
 
-            # ssh
+            # allow ssh into bastion
             ingress {
               from_port = 22
               to_port = 22
@@ -367,6 +367,16 @@ namespace :ebs do
               # Opening to 0.0.0.0/0 can lead to security vulnerabilities
               # You may want to set a fixed ip address if you have a static ip
               cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            # allow bastion to ssh into private instances
+            egress {
+              from_port = 22
+              to_port = 22
+              protocol = "tcp"
+              security_groups = [
+                aws_security_group.web_server.id
+              ]
             }
 
             tags = {
