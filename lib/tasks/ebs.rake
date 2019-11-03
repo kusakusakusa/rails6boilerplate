@@ -487,8 +487,37 @@ namespace :ebs do
             # notes time of creation of rds.tf file
             final_snapshot_identifier = "rds-${var.project_name}${var.env}-#{DateTime.now.to_i}"
 
+            vpc_security_group_ids = [aws_security_group.rds.id]
+            db_subnet_group_name = aws_db_subnet_group.main.id
+
             tags = {
               Name = "rds-${var.project_name}${var.env}"
+            }
+          }
+
+          resource "aws_security_group" "rds" {
+            name = "${var.project_name}${var.env}"
+            description = "for rds"
+            vpc_id = aws_vpc.main.id
+
+            # allow bastion to communicate via 3306
+            ingress {
+              from_port = 3306
+              to_port = 3306
+              protocol = "tcp"
+              security_groups = [aws_security_group.bastion.id]
+            }
+
+            # allow web servers to communicate via 3306
+            ingress {
+              from_port = 3306
+              to_port = 3306
+              protocol = "tcp"
+              security_groups = [aws_security_group.web_server.id]
+            }
+
+            tags = {
+              Name = "${var.project_name}${var.env}"
             }
           }
 
