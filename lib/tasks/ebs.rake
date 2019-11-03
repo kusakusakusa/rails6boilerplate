@@ -720,6 +720,13 @@ namespace :ebs do
             value = "mysql2://#{username}:#{password}@${aws_db_instance.main.endpoint}/#{dbname}"
           }
 
+          # serve assets using static files
+          setting {
+            namespace = "aws:elasticbeanstalk:application:environment"
+            name = "RAILS_SERVE_STATIC_FILES"
+            value = "true"
+          }
+
           setting {
             namespace = "aws:elasticbeanstalk:application:environment"
             name = "RAILS_MASTER_KEY"
