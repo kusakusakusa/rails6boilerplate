@@ -1167,25 +1167,27 @@ namespace :ebs do
     env
     aws_profile
   ] => :environment do |_, args|
+    env, aws_profile, region = Ebs::Helper.inputs(args)
+
     FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
 
-    sh "cd #{Rails.root.join('terraform', args[:env])} && \
+    sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
     --rm \
-    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
-    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
-    -v #{Rails.root.join('terraform', args[:env])}:/workspace \
+    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+    -v #{Rails.root.join('terraform', env)}:/workspace \
     -w /workspace \
     -it \
     hashicorp/terraform:0.12.12 \
     init"
 
-    sh "cd #{Rails.root.join('terraform', args[:env])} && \
+    sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
     --rm \
-    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
-    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
-    -v #{Rails.root.join('terraform', args[:env])}:/workspace \
+    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+    -v #{Rails.root.join('terraform', env)}:/workspace \
     -w /workspace \
     -it \
     hashicorp/terraform:0.12.12 \
@@ -1198,6 +1200,8 @@ namespace :ebs do
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
+    puts 'Destroying infrastructure...'
+
     sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
     --rm \
@@ -1208,5 +1212,7 @@ namespace :ebs do
     -it \
     hashicorp/terraform:0.12.12 \
     destroy"
+
+    puts 'Destroyed infrastructure!'
   end
 end
