@@ -84,3 +84,8 @@ terraform/*
 !terraform/templates/non_production
 !terraform/templates/non_production/*
 terraform/templates/non_production/.DS_Store
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/config.yml
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
