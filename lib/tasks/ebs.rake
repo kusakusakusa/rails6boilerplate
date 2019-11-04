@@ -902,106 +902,6 @@ namespace :ebs do
   ### Bastion Tasks ###
   #####################
   namespace :bastion do
-    desc 'Pack bastion server AMI'
-    task :pack, %i[
-      env
-      aws_profile
-      region
-    ] => :environment do |_, args|
-      puts 'Packing bastion...'
-
-      ec2_client = Ebs::Helper.ec2_client(
-        aws_profile: args[:aws_profile],
-        region: args[:region]
-      )
-
-      bastion_ami = ec2_client.describe_images(
-        filters: [
-          {
-            name: 'name',
-            values: ["bastion-#{PROJECT_NAME}-#{args[:env]}"]
-          }
-        ],
-        owners: ['self']
-      ).images.max_by(&:creation_date)
-
-      if bastion_ami.nil?
-        # with reference to
-        # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
-        ami = ec2_client.describe_images(
-          filters: [
-            {
-              name: 'name',
-              values: ['amzn2-ami-hvm-2.0.????????.?-x86_64-gp2']
-            }
-          ],
-          owners: ['amazon']
-        ).images.max_by(&:creation_date) # latest image
-
-        file = File.open(Rails.root.join('terraform', args[:env], 'bastion.json'), 'w')
-        file.puts <<~MSG
-          {
-            "variables": {
-              "project_name": "#{PROJECT_NAME}",
-              "region": "#{args[:region]}",
-              "env": "#{args[:env]}"
-            },
-            "builders": [
-              {
-                "type": "amazon-ebs",
-                "region": "{{user `region`}}",
-                "source_ami": "#{ami.image_id}",
-                "instance_type": "t2.nano",
-                "ssh_username": "ec2-user",
-                "ami_name": "bastion-{{user `project_name`}}-{{user `env`}}",
-                "shutdown_behavior": "terminate",
-                "run_tags": {
-                  "Name": "{{user `project_name`}}",
-                  "Env": "{{user `env`}}"
-                },
-                "run_volume_tags": {
-                  "Name": "{{user `project_name`}}",
-                  "Env": "{{user `env`}}"
-                },
-                "snapshot_tags": {
-                  "Name": "{{user `project_name`}}",
-                  "Env": "{{user `env`}}"
-                }
-              }
-            ],
-            "provisioners": [
-              {
-                "type": "shell",
-                "inline": [
-                  "sudo wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm",
-                  "sudo yum -y localinstall mysql57-community-release-el7-11.noarch.rpm ",
-                  "sudo yum -y install mysql-community-client mysql-community-common mysql-community-libs mysql-community-server",
-                  "sudo service mysqld restart"
-                ]
-              }
-            ]
-          }
-        MSG
-        file.close
-
-        sh "cd #{Rails.root.join('terraform', args[:env])} && \
-          docker run \
-          -it \
-          --rm \
-          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
-          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
-          -v #{Rails.root.join('terraform', args[:env])}/bastion.json:/workspace/bastion.json \
-          -w /workspace \
-          hashicorp/packer:light \
-          build -force bastion.json"
-
-        puts 'Packed bastion AMI!'
-      else
-        puts('Bastion image has already been packed!')
-      end
-      puts ''
-    end
-
     desc 'Unpack bastion server AMI'
     task unpack: :environment do
       env, aws_profile, region = Ebs::Helper.inputs
@@ -1146,6 +1046,180 @@ namespace :ebs do
       end
 
       puts 'Shutdown bastion!'
+    end
+
+    desc 'Pack bastion server AMI'
+    task :pack, %i[
+      env
+      aws_profile
+      region
+    ] => :environment do |_, args|
+      puts 'Packing bastion...'
+
+      ec2_client = Ebs::Helper.ec2_client(
+        aws_profile: args[:aws_profile],
+        region: args[:region]
+      )
+
+      bastion_ami = ec2_client.describe_images(
+        filters: [
+          {
+            name: 'name',
+            values: ["bastion-#{PROJECT_NAME}-#{args[:env]}"]
+          }
+        ],
+        owners: ['self']
+      ).images.max_by(&:creation_date)
+
+      if bastion_ami.nil?
+        # with reference to
+        # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
+        ami = ec2_client.describe_images(
+          filters: [
+            {
+              name: 'name',
+              values: ['amzn2-ami-hvm-2.0.????????.?-x86_64-gp2']
+            }
+          ],
+          owners: ['amazon']
+        ).images.max_by(&:creation_date) # latest image
+
+        file = File.open(Rails.root.join('terraform', args[:env], 'bastion.json'), 'w')
+        file.puts <<~MSG
+          {
+            "variables": {
+              "project_name": "#{PROJECT_NAME}",
+              "region": "#{args[:region]}",
+              "env": "#{args[:env]}"
+            },
+            "builders": [
+              {
+                "type": "amazon-ebs",
+                "region": "{{user `region`}}",
+                "source_ami": "#{ami.image_id}",
+                "instance_type": "t2.nano",
+                "ssh_username": "ec2-user",
+                "ami_name": "bastion-{{user `project_name`}}-{{user `env`}}",
+                "shutdown_behavior": "terminate",
+                "run_tags": {
+                  "Name": "{{user `project_name`}}",
+                  "Env": "{{user `env`}}"
+                },
+                "run_volume_tags": {
+                  "Name": "{{user `project_name`}}",
+                  "Env": "{{user `env`}}"
+                },
+                "snapshot_tags": {
+                  "Name": "{{user `project_name`}}",
+                  "Env": "{{user `env`}}"
+                }
+              }
+            ],
+            "provisioners": [
+              {
+                "type": "shell",
+                "inline": [
+                  "sudo wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm",
+                  "sudo yum -y localinstall mysql57-community-release-el7-11.noarch.rpm ",
+                  "sudo yum -y install mysql-community-client mysql-community-common mysql-community-libs mysql-community-server",
+                  "sudo service mysqld restart"
+                ]
+              }
+            ]
+          }
+        MSG
+        file.close
+
+        sh "cd #{Rails.root.join('terraform', args[:env])} && \
+          docker run \
+          -it \
+          --rm \
+          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
+          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
+          -v #{Rails.root.join('terraform', args[:env])}/bastion.json:/workspace/bastion.json \
+          -w /workspace \
+          hashicorp/packer:light \
+          build -force bastion.json"
+
+        puts 'Packed bastion AMI!'
+      else
+        puts('Bastion image has already been packed!')
+      end
+      puts ''
+    end
+
+    desc 'SSH into private servers via bastion'
+    task ssh: :environment do
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      puts 'ssh into bastion...'
+
+      ec2_client = Ebs::Helper.ec2_client(
+        aws_profile: aws_profile,
+        region: region
+      )
+
+      ##### Get bastion #####
+      results = ec2_client.describe_instances(
+        filters: [
+          {
+            name: 'instance.group-name',
+            values: ["#{PROJECT_NAME}#{env}-bastion"]
+          }
+        ]
+      )
+
+      abort('There are more than 1 reservations. Please check!') if results.reservations.count > 1
+
+      abort('There are no reservations. Make sure to setup your bastion servers first by running the command below:\n\n\trake ebs:bastion:up\n') if results.reservations.count.zero?
+
+      instances = results.reservations.first.instances
+
+      abort('There are more than 1 bastion servers.\nThis should not happen. Please check!') if instances.count > 1
+
+      bastion = instances.first
+
+      ##### Get one of the instances #####
+
+      results = ec2_client.describe_instances(
+        filters: [
+          {
+            name: 'instance.group-name',
+            values: ["#{PROJECT_NAME}#{env}-web-servers"]
+          }
+        ]
+      )
+
+      abort('There are no reservations. Make sure to setup the ebs instance first by running the comand:\n\n\trake ebs:init\n') if results.reservations.count.zero?
+
+      private_ip_addresses = results.reservations.map do |reservation|
+        reservation.instances.map(&:private_ip_address)
+      end.flatten
+
+      abort('There are no private_ip_addresses.\nThis should not happen. Please check!') if private_ip_addresses.count.zero?
+
+      ##### SSH time #####
+      # TODO ask for private ip address choice
+      # TODO check local machine has ssh agent
+
+      puts 'Clear ssh agent identities'
+      sh 'ssh-add -D'
+      puts 'Add keypair to ssh agent'
+      sh "ssh-add -K #{Rails.root}/production_keypair"
+      puts "ssh into bastion then into private instance (#{private_ip_addresses.first})"
+      sh('ssh ' \
+      '-tt ' \
+      '-A ' \
+      "ec2-user@#{bastion.public_ip_address} " \
+      "-o 'UserKnownHostsFile /dev/null' " \
+      '-o StrictHostKeyChecking=no ' \
+      "\"ssh ec2-user@#{private_ip_addresses.first} " \
+      "-o 'UserKnownHostsFile /dev/null' " \
+      '-o StrictHostKeyChecking=no"')
+      puts 'Clear ssh agent identities'
+      sh 'ssh-add -D'
+
+      puts 'ssh-ed into bastion!'
     end
   end
 
