@@ -47,6 +47,16 @@ module Ebs
       [env, aws_profile, region]
     end
 
+    def self.announce(msg)
+      puts ''
+      msg.length.times { print '¥' }
+      puts ''
+      puts msg
+      msg.length.times { print '¥' }
+      puts ''
+      puts ''
+    end
+
     def self.bastion(ec2_client:, env:)
       results = ec2_client.describe_instances(
         filters: [
@@ -59,11 +69,11 @@ module Ebs
 
       abort('There are more than 1 reservations. Please check!') if results.reservations.count > 1
 
-      abort('There are no reservations. Make sure to setup your bastion servers first by running the command below:\n\n\trake ebs:bastion:up\n') if results.reservations.count.zero?
+      abort("There are no reservations. Make sure to setup your bastion servers first by running the command below:\n\n\trake ebs:bastion:up\n\n") if results.reservations.count.zero?
 
       instances = results.reservations.first.instances
 
-      abort('There are more than 1 bastion servers.\nThis should not happen. Please check!') if instances.count > 1
+      abort("There are more than 1 bastion servers.\nThis should not happen. Please check!") if instances.count > 1
 
       instances.first
     end
@@ -72,6 +82,16 @@ module Ebs
       aws_access_key_id = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
       aws_secret_access_key = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
       Aws::EC2::Client.new(
+        region: region,
+        access_key_id: aws_access_key_id,
+        secret_access_key: aws_secret_access_key
+      )
+    end
+
+    def self.s3_client(aws_profile:, region:)
+      aws_access_key_id = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
+      aws_secret_access_key = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
+      Aws::S3::Client.new(
         region: region,
         access_key_id: aws_access_key_id,
         secret_access_key: aws_secret_access_key
@@ -107,7 +127,7 @@ module Ebs
       result = rds_client.describe_db_instances(
         db_instance_identifier: "rds-#{PROJECT_NAME}#{env}"
       )
-      abort('More than 1 db instances found.\nThis should not happen. Please check!\n') if result.db_instances.count > 1
+      abort("More than 1 db instances found.\nThis should not happen. Please check!\n") if result.db_instances.count > 1
       db_instance = result.db_instances.first
 
       forwarded_port_no = rand(10_000..60_000)
@@ -116,9 +136,9 @@ module Ebs
       gateway = Net::SSH::Gateway.new(
         bastion.public_ip_address,
         'ec2-user',
-        keys: ["#{Rails.root}/production_keypair"]
+        keys: ["#{Rails.root}/#{PROJECT_NAME}-#{env}"]
       )
-      abort('\nGateway not active!\n') unless gateway.active?
+      abort("\nGateway not active!\n") unless gateway.active?
       port = gateway.open(
         db_instance.endpoint.address,
         db_instance.endpoint.port,
@@ -144,15 +164,19 @@ namespace :ebs do
     aws_profile
     region
   ] => :environment do |_, args|
-    puts 'START - Checks necessary conditions before proceeding'
+    env = args[:env]
+    aws_profile = args[:aws_profile]
+    region = args[:region]
+
+    Ebs::Helper.announce 'START - Checks necessary conditions before proceeding'
     abort('awscli not installed!') if `type -a aws`.blank?
     abort('~/.aws/credentials does not exist!') unless File.exist?("#{ENV['HOME']}/.aws/credentials")
-    abort("#{args[:aws_profile]} does not have aws_access_key_id properly setup!") if `aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp.blank?
-    abort("#{args[:aws_profile]} does not have aws_secret_access_key properly setup!") if `aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp.blank?
-    abort("Opt-in region #{args[:region]} are not supported!") if %w[
+    abort("#{aws_profile} does not have aws_access_key_id properly setup!") if `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp.blank?
+    abort("#{aws_profile} does not have aws_secret_access_key properly setup!") if `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp.blank?
+    abort("Opt-in region #{region} are not supported!") if %w[
       me-south-1
       ap-east-1
-    ].include? args[:region]
+    ].include? region
     abort('Invalid aws region!') unless %w[
       us-east-1
       us-east-2
@@ -171,30 +195,32 @@ namespace :ebs do
       ap-southeast-2
       ap-south-1
       sa-east-1
-    ].include? args[:region]
-    abort("No database password in credentials file for #{args[:env]} environment") unless Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
-    puts 'END - Checks necessary conditions before proceeding'
+    ].include? region
+    abort("No database password in credentials file for #{env} environment") unless Rails.application.credentials.dig(env.to_sym, :database, :password)
+    Ebs::Helper.announce 'END - Checks necessary conditions before proceeding'
   end
 
   desc 'Generate private/public key'
   task :generate_ssh_keys, [:env] => :environment do |_, args|
+    env = args[:env]
+
     # these keys will be used for:
     # 1. generating aws keypair
     # 2. authentication key for private git repository
-    private_key_file_name = 'production_keypair'
+    private_key_file_name = "#{PROJECT_NAME}-#{env}"
     filepath = "#{Rails.root}/#{private_key_file_name}"
-    puts "START - Create private/public keys for #{args[:env]}"
+    Ebs::Helper.announce "START - Create private/public keys for #{env}"
 
     if File.exist? filepath
       puts 'Private key already created'
     else
       `ssh-keygen -t rsa -f #{filepath} -C #{private_key_file_name} -N ''`
-      puts "chmod 400 private and public keys for #{args[:env]}"
+      puts "chmod 400 private and public keys for #{env}"
       `chmod 400 #{filepath}`
       `chmod 400 #{filepath}.pub`
     end
 
-    file = File.open(Rails.root.join('terraform', args[:env], 'keypair.tf'), 'w')
+    file = File.open(Rails.root.join('terraform', env, 'keypair.tf'), 'w')
     file.puts <<~MSG
       resource "aws_key_pair" "main" {
         key_name = "${var.project_name}-${var.env}"
@@ -203,7 +229,7 @@ namespace :ebs do
     MSG
     file.close
 
-    puts "END - Create private/public keys for #{args[:env]}"
+    Ebs::Helper.announce "END - Create private/public keys for #{env}"
   end
 
   #######################
@@ -216,28 +242,39 @@ namespace :ebs do
       aws_profile
       region
     ] => :environment do |_, args|
+      env, aws_profile, region = Ebs::Helper.inputs(args)
+
       # create terraform backend s3 bucket via aws-cli
       # aws-cli is assumed to be present on local machine
 
-      tfstate_bucket_name = "#{PROJECT_NAME}-#{args[:env]}-tfstate"
-      tfstate_bucket = `aws s3 --profile #{args[:aws_profile]} ls | grep " #{tfstate_bucket_name}$"`.chomp
+      tfstate_bucket_name = "#{PROJECT_NAME}-#{env}-tfstate"
+      tfstate_bucket = `aws s3 --profile #{aws_profile} ls | grep " #{tfstate_bucket_name}$"`.chomp
       if tfstate_bucket.blank?
-        puts "Creating Terraform state bucket (#{tfstate_bucket_name})"
-        `aws s3api create-bucket --bucket #{tfstate_bucket_name} --region #{args[:region]} --profile #{args[:aws_profile]} --create-bucket-configuration LocationConstraint=#{args[:region]}`
+        Ebs::Helper.announce "Creating Terraform state bucket (#{tfstate_bucket_name})"
+        `aws s3api create-bucket --bucket #{tfstate_bucket_name} --region #{region} --profile #{aws_profile} --create-bucket-configuration LocationConstraint=#{region}`
 
         sleep 2
 
         puts 'Uploading empty tfstate file'
         blank_filepath = Rails.root.join('tmp/tfstate')
         `touch #{blank_filepath}`
-        `aws s3 cp #{blank_filepath} s3://#{tfstate_bucket_name}/terraform.tfstate --profile #{args[:aws_profile]}`
+        s3_client = Ebs::Helper.s3_client(
+          aws_profile: aws_profile,
+          region: region
+        )
+        s3_client.put_object(
+          body: blank_filepath,
+          bucket: tfstate_bucket_name,
+          key: terraform.tfstate
+        )
+
         File.delete(blank_filepath)
       else
-        puts "Terraform state bucket (#{tfstate_bucket_name}) already created!"
+        Ebs::Helper.announce "Terraform state bucket (#{tfstate_bucket_name}) already created!"
       end
 
       puts "Enabling/overwriting versioning for #{tfstate_bucket_name}"
-      `aws s3api put-bucket-versioning --bucket #{tfstate_bucket_name} --profile #{args[:aws_profile]} --versioning-configuration Status=Enabled`
+      `aws s3api put-bucket-versioning --bucket #{tfstate_bucket_name} --profile #{aws_profile} --versioning-configuration Status=Enabled`
 
       tmp_versioning_filepath = Rails.root.join('tmp/tf_state_encryption_rule.json')
       puts "Enabling/overwriting encryption for #{tfstate_bucket_name}"
@@ -254,7 +291,7 @@ namespace :ebs do
         }
       MSG
       file.close
-      `aws s3api put-bucket-encryption --bucket #{tfstate_bucket_name} --profile #{args[:aws_profile]} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
+      `aws s3api put-bucket-encryption --bucket #{tfstate_bucket_name} --profile #{aws_profile} --server-side-encryption-configuration file://#{tmp_versioning_filepath}`
       File.delete(tmp_versioning_filepath)
 
       puts "Enabling/overwriting lifecycle for #{tfstate_bucket_name}"
@@ -275,8 +312,10 @@ namespace :ebs do
         }
       MSG
       file.close
-      `aws s3api put-bucket-lifecycle-configuration --bucket #{tfstate_bucket_name} --profile #{args[:aws_profile]} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
+      `aws s3api put-bucket-lifecycle-configuration --bucket #{tfstate_bucket_name} --profile #{aws_profile} --lifecycle-configuration file://#{tmp_lifecycle_filepath}`
       File.delete(tmp_lifecycle_filepath)
+
+      Ebs::Helper.announce 'Completed tfstate bucket configurations setup!'
     end
 
     desc 'Create setup.tf'
@@ -284,22 +323,25 @@ namespace :ebs do
       env
       region
     ] => :environment do |_, args|
-      puts "START - Create setup.tf for #{args[:env]}"
-      file = File.open(Rails.root.join('terraform', args[:env], 'setup.tf'), 'w')
+      env, _, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce "START - Create setup.tf for #{env}"
+
+      file = File.open(Rails.root.join('terraform', env, 'setup.tf'), 'w')
       file.puts <<~MSG
         # download all necessary plugins for terraform
         # set versions
         provider "aws" {
           version = "~> 2.24"
-          region = "#{args[:region]}"
+          region = "#{region}"
         }
 
         terraform {
           required_version = "~> 0.12.0"
           backend "s3" {
-            bucket = "#{PROJECT_NAME}-#{args[:env]}-tfstate"
+            bucket = "#{PROJECT_NAME}-#{env}-tfstate"
             key = "terraform.tfstate"
-            region = "#{args[:region]}"
+            region = "#{region}"
           }
         }
 
@@ -309,7 +351,8 @@ namespace :ebs do
 
       MSG
       file.close
-      puts "END - Create setup.tf for #{args[:env]}"
+
+      Ebs::Helper.announce "END - Create setup.tf for #{env}"
     end
 
     desc 'Create variables.tf'
@@ -317,8 +360,11 @@ namespace :ebs do
       env
       region
     ] => :environment do |_, args|
-      puts "START - Create variables.tf for #{args[:env]}"
-      file = File.open(Rails.root.join('terraform', args[:env], 'variables.tf'), 'w')
+      env, _, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce "START - Create variables.tf for #{env}"
+
+      file = File.open(Rails.root.join('terraform', env, 'variables.tf'), 'w')
       file.puts <<~MSG
         variable "project_name" {
           type = string
@@ -327,16 +373,17 @@ namespace :ebs do
 
         variable "region" {
           type = string
-          default = "#{args[:region]}"
+          default = "#{region}"
         }
 
         variable "env" {
           type = string
-          default = "#{args[:env]}"
+          default = "#{env}"
         }
       MSG
       file.close
-      puts "END - Create variables.tf for #{args[:env]}"
+
+      Ebs::Helper.announce "END - Create variables.tf for #{env}"
     end
 
     desc 'Create vpc.tf'
@@ -345,24 +392,26 @@ namespace :ebs do
       aws_profile
       region
     ] => :environment do |_, args|
-      puts "START - Create vpc.tf for #{args[:env]}"
+      env, aws_profile, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce "START - Create vpc.tf for #{env}"
 
       begin
         ec2_client = Ebs::Helper.ec2_client(
-          aws_profile: args[:aws_profile],
-          region: args[:region]
+          aws_profile: aws_profile,
+          region: region
         )
 
         resp = ec2_client.describe_availability_zones(
           filters: [
             {
               name: 'region-name',
-              values: [args[:region]]
+              values: [region]
             }
           ]
         )
 
-        file = File.open(Rails.root.join('terraform', args[:env], 'vpc.tf'), 'w')
+        file = File.open(Rails.root.join('terraform', env, 'vpc.tf'), 'w')
 
         file.puts <<~MSG
           resource "aws_vpc" "main" {
@@ -542,7 +591,7 @@ namespace :ebs do
         binding.pry
       end
 
-      puts "END - Create vpc.tf for #{args[:env]}"
+      Ebs::Helper.announce "END - Create vpc.tf for #{env}"
     end
 
     desc 'Create rds.tf'
@@ -551,23 +600,25 @@ namespace :ebs do
       aws_profile
       region
     ] => :environment do |_, args|
-      puts "START - Create rds.tf for #{args[:env]}"
+      env, aws_profile, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce "START - Create rds.tf for #{env}"
 
       begin
         ec2_client = Ebs::Helper.ec2_client(
-          aws_profile: args[:aws_profile],
-          region: args[:region]
+          aws_profile: aws_profile,
+          region: region
         )
         resp = ec2_client.describe_availability_zones(
           filters: [
             {
               name: 'region-name',
-              values: [args[:region]]
+              values: [region]
             }
           ]
         )
 
-        file = File.open(Rails.root.join('terraform', args[:env], 'rds.tf'), 'w')
+        file = File.open(Rails.root.join('terraform', env, 'rds.tf'), 'w')
         file.puts <<~MSG
           resource "aws_db_instance" "main" {
             allocated_storage = 20
@@ -576,9 +627,9 @@ namespace :ebs do
             engine_version = "5.7"
             instance_class = "db.t2.micro"
             identifier = "rds-${var.project_name}${var.env}"
-            name = "#{Rails.application.credentials.dig(:production, :database, :db)}"
-            username = "#{Rails.application.credentials.dig(:production, :database, :username)}"
-            password = "#{Rails.application.credentials.dig(:production, :database, :password)}"
+            name = "#{Rails.application.credentials.dig(env.to_sym, :database, :db)}"
+            username = "#{Rails.application.credentials.dig(env.to_sym, :database, :username)}"
+            password = "#{Rails.application.credentials.dig(env.to_sym, :database, :password)}"
 
             skip_final_snapshot = false
             # notes time of creation of rds.tf file
@@ -645,7 +696,7 @@ namespace :ebs do
         binding.pry
       end
 
-      puts "END - Create rds.tf for #{args[:env]}"
+      Ebs::Helper.announce "END - Create rds.tf for #{env}"
     end
 
     desc 'Create ebs.tf'
@@ -654,26 +705,28 @@ namespace :ebs do
       aws_profile
       region
     ] => :environment do |_, args|
-      puts "START - Create ebs.tf for #{args[:env]}"
+      env, aws_profile, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce "START - Create ebs.tf for #{env}"
 
       ec2_client = Ebs::Helper.ec2_client(
-        aws_profile: args[:aws_profile],
-        region: args[:region]
+        aws_profile: aws_profile,
+        region: region
       )
       resp = ec2_client.describe_availability_zones(
         filters: [
           {
             name: 'region-name',
-            values: [args[:region]]
+            values: [region]
           }
         ]
       )
 
-      dbname = Rails.application.credentials.dig(args[:env].to_sym, :database, :db)
-      username = Rails.application.credentials.dig(args[:env].to_sym, :database, :username)
-      password = Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
+      dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
+      username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+      password = Rails.application.credentials.dig(env.to_sym, :database, :password)
 
-      file = File.open(Rails.root.join('terraform', args[:env], 'ebs.tf'), 'w')
+      file = File.open(Rails.root.join('terraform', env, 'ebs.tf'), 'w')
       file.puts <<~MSG
         # with reference to
         # https://github.com/wardviaene/terraform-demo/blob/master/elasticbeanstalk.tf
@@ -835,13 +888,13 @@ namespace :ebs do
           setting {
             namespace = "aws:elasticbeanstalk:application:environment"
             name = "RAILS_ENV"
-            value = "#{args[:env]}"
+            value = "#{env}"
           }
 
           setting {
             namespace = "aws:elasticbeanstalk:application:environment"
             name = "RACK_ENV"
-            value = "#{args[:env]}"
+            value = "#{env}"
           }
 
           tags = {
@@ -993,7 +1046,7 @@ namespace :ebs do
       MSG
       file.close
 
-      puts "END - Create ebs.tf for #{args[:env]}"
+      Ebs::Helper.announce "END - Create ebs.tf for #{env}"
     end
   end
 
@@ -1002,12 +1055,16 @@ namespace :ebs do
   #####################
   namespace :bastion do
     desc 'Unpack bastion server AMI'
-    task unpack: :environment do
-      env, aws_profile, region = Ebs::Helper.inputs
+    task :unpack, %i[
+      env
+      aws_profile
+      region
+    ] => :environment do |_, args|
+      env, aws_profile, region = Ebs::Helper.inputs(args)
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
-      puts 'Unpacking bastion AMI...'
+      Ebs::Helper.announce 'START - Unpacking bastion AMI...'
 
       ec2_client = Ebs::Helper.ec2_client(
         aws_profile: aws_profile,
@@ -1028,7 +1085,7 @@ namespace :ebs do
         image_id: ami.image_id
       )
 
-      puts 'Unpacked bastion AMI'
+      Ebs::Helper.announce 'END - Unpacked bastion AMI'
     end
 
     desc 'Setup bastion server'
@@ -1037,7 +1094,7 @@ namespace :ebs do
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
-      puts 'Setting up bastion...'
+      Ebs::Helper.announce 'START - Setting up bastion...'
 
       Rake::Task['ebs:bastion:pack'].invoke(env, aws_profile, region)
 
@@ -1047,13 +1104,13 @@ namespace :ebs do
         --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
         --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
         -v #{Rails.root.join('terraform', env)}:/workspace \
-        -v #{Rails.root}/production_keypair:/workspace/production_keypair \
+        -v #{Rails.root}/#{PROJECT_NAME}-#{env}:/workspace/#{PROJECT_NAME}-#{env} \
         -w /workspace \
         -it \
         hashicorp/terraform:0.12.12 \
         apply -auto-approve"
 
-      if File.exist?(Rails.root.join('terraform', 'production', 'ebs.tf'))
+      if File.exist?(Rails.root.join('terraform', env, 'ebs.tf'))
         ec2_client = Ebs::Helper.ec2_client(
           aws_profile: aws_profile,
           region: region
@@ -1101,34 +1158,36 @@ namespace :ebs do
         MSG
         file.close
 
-        # mount production_keypair to root of /workspace in container
+        # mount keypair to root of /workspace in container
         sh "cd #{Rails.root.join('terraform', env)} && \
           docker run \
           --rm \
           --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
           --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
           -v #{Rails.root.join('terraform', env)}:/workspace \
-          -v #{Rails.root}/production_keypair:/workspace/production_keypair \
+          -v #{Rails.root}/#{PROJECT_NAME}-#{env}:/workspace/#{PROJECT_NAME}-#{env} \
           -w /workspace \
           -it \
           hashicorp/terraform:0.12.12 \
           apply -auto-approve"
       else
-        abort('`ebs.tf` file not found!\nSetup your EBS environment first by running:\n\n  rake ebs:init\n')
+        abort("`ebs.tf` file not found!\nSetup your EBS environment first by running:\n\n  rake ebs:init\n")
       end
 
-      puts 'Set up bastion!'
+      Ebs::Helper.announce 'END - Set up bastion!'
     end
 
     desc 'Shutdown bastion server'
     task down: :environment do
-      puts 'Shutting up bastion...'
-
       env, aws_profile, region = Ebs::Helper.inputs
 
-      if File.exist?(Rails.root.join('terraform', 'production', 'bastion.tf'))
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
-        FileUtils.rm(Rails.root.join('terraform', 'production', 'bastion.tf'))
+      Ebs::Helper.announce 'START - Shutting up bastion...'
+
+      if File.exist?(Rails.root.join('terraform', env, 'bastion.tf'))
+
+        FileUtils.rm(Rails.root.join('terraform', env, 'bastion.tf'))
 
         sh "cd #{Rails.root.join('terraform', env)} && \
           docker run \
@@ -1141,10 +1200,10 @@ namespace :ebs do
           hashicorp/terraform:0.12.12 \
           apply -auto-approve"
       else
-        abort('`bastion.tf` file not found!\nDo nothing here!\n')
+        abort("`bastion.tf` file not found!\nDo nothing here!\n")
       end
 
-      puts 'Shutdown bastion!'
+      Ebs::Helper.announce 'END - Shutdown bastion!'
     end
 
     desc 'Pack bastion server AMI'
@@ -1153,18 +1212,20 @@ namespace :ebs do
       aws_profile
       region
     ] => :environment do |_, args|
-      puts 'Packing bastion...'
+      env, aws_profile, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce 'START - Packing bastion...'
 
       ec2_client = Ebs::Helper.ec2_client(
-        aws_profile: args[:aws_profile],
-        region: args[:region]
+        aws_profile: aws_profile,
+        region: region
       )
 
       bastion_ami = ec2_client.describe_images(
         filters: [
           {
             name: 'name',
-            values: ["bastion-#{PROJECT_NAME}-#{args[:env]}"]
+            values: ["bastion-#{PROJECT_NAME}-#{env}"]
           }
         ],
         owners: ['self']
@@ -1183,13 +1244,13 @@ namespace :ebs do
           owners: ['amazon']
         ).images.max_by(&:creation_date) # latest image
 
-        file = File.open(Rails.root.join('terraform', args[:env], 'bastion.json'), 'w')
+        file = File.open(Rails.root.join('terraform', env, 'bastion.json'), 'w')
         file.puts <<~MSG
           {
             "variables": {
               "project_name": "#{PROJECT_NAME}",
-              "region": "#{args[:region]}",
-              "env": "#{args[:env]}"
+              "region": "#{region}",
+              "env": "#{env}"
             },
             "builders": [
               {
@@ -1229,22 +1290,21 @@ namespace :ebs do
         MSG
         file.close
 
-        sh "cd #{Rails.root.join('terraform', args[:env])} && \
+        sh "cd #{Rails.root.join('terraform', env)} && \
           docker run \
           -it \
           --rm \
-          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{args[:aws_profile]} configure get aws_access_key_id`.chomp} \
-          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{args[:aws_profile]} configure get aws_secret_access_key`.chomp} \
-          -v #{Rails.root.join('terraform', args[:env])}/bastion.json:/workspace/bastion.json \
+          --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+          --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+          -v #{Rails.root.join('terraform', env)}/bastion.json:/workspace/bastion.json \
           -w /workspace \
           hashicorp/packer:light \
           build -force bastion.json"
 
-        puts 'Packed bastion AMI!'
+        Ebs::Helper.announce 'END - Packed bastion AMI!'
       else
-        puts('Bastion image has already been packed!')
+        Ebs::Helper.announce 'Bastion image has already been packed!'
       end
-      puts ''
     end
 
     desc 'SSH into private servers via bastion'
@@ -1253,7 +1313,7 @@ namespace :ebs do
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
-      puts 'ssh into bastion...'
+      Ebs::Helper.announce 'START - ssh into bastion...'
 
       ec2_client = Ebs::Helper.ec2_client(
         aws_profile: aws_profile,
@@ -1276,13 +1336,13 @@ namespace :ebs do
         ]
       )
 
-      abort('There are no reservations. Make sure to setup the ebs instance first by running the comand:\n\n\trake ebs:init\n') if results.reservations.count.zero?
+      abort("There are no reservations. Make sure to setup the ebs instance first by running the comand:\n\n\trake ebs:init\n") if results.reservations.count.zero?
 
       private_ip_addresses = results.reservations.map do |reservation|
         reservation.instances.map(&:private_ip_address)
       end.flatten
 
-      abort('There are no private_ip_addresses.\nThis should not happen. Please check!') if private_ip_addresses.count.zero?
+      abort("There are no private_ip_addresses.\nThis should not happen. Please check!") if private_ip_addresses.count.zero?
 
       ##### SSH time #####
       # TODO ask for private ip address choice
@@ -1291,7 +1351,7 @@ namespace :ebs do
       puts 'Clear ssh agent identities'
       sh 'ssh-add -D'
       puts 'Add keypair to ssh agent'
-      sh "ssh-add -K #{Rails.root}/production_keypair"
+      sh "ssh-add -K #{Rails.root}/#{PROJECT_NAME}-#{env}"
       puts "ssh into bastion then into private instance (#{private_ip_addresses.first})"
       sh('ssh ' \
       '-tt ' \
@@ -1305,7 +1365,7 @@ namespace :ebs do
       puts 'Clear ssh agent identities'
       sh 'ssh-add -D'
 
-      puts 'ssh-ed into bastion!'
+      Ebs::Helper.announce 'END - ssh-ed into bastion!'
     end
   end
 
@@ -1319,6 +1379,8 @@ namespace :ebs do
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
+      Ebs::Helper.announce 'START - Running rails console via tunneling through bastion'
+
       Ebs::Helper.tunnel(
         env: env,
         aws_profile: aws_profile,
@@ -1330,6 +1392,8 @@ namespace :ebs do
 
         sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails console"
       end
+
+      Ebs::Helper.announce 'END - Finished rails console!'
     end
 
     desc 'Seed database'
@@ -1337,6 +1401,8 @@ namespace :ebs do
       env, aws_profile, region = Ebs::Helper.inputs
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+      Ebs::Helper.announce "START - Seeding #{env} database"
 
       Ebs::Helper.tunnel(
         env: env,
@@ -1349,6 +1415,8 @@ namespace :ebs do
 
         sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:seed"
       end
+
+      Ebs::Helper.announce "END - Seeded #{env} database!"
     end
 
     desc 'Drop, create, migrate and seed database'
@@ -1357,7 +1425,10 @@ namespace :ebs do
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
+      Ebs::Helper.announce "RESEEDING #{env} database..."
+
       puts "You are reseeding the #{env} database for #{PROJECT_NAME}. Are you sure you want to proceed? (y for yes)"
+
       reply = STDIN.gets.chomp
       abort if reply.downcase != 'y'
 
@@ -1375,19 +1446,22 @@ namespace :ebs do
         sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:migrate"
         sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:seed"
       end
+
+      Ebs::Helper.announce "END - Reseeded #{env} database!"
     end
   end
 
   ##################
   ### Main Tasks ###
   ##################
-  desc 'For production env with proper infrastructure'
+  desc 'For production-like env with proper infrastructure'
   task init: :environment do
     env, aws_profile, region = Ebs::Helper.inputs
 
-    FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
-
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+    FileUtils.mkdir_p(Rails.root.join('terraform', env))
+
     Rake::Task['ebs:generate_ssh_keys'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_tfstate_bucket'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
@@ -1403,9 +1477,9 @@ namespace :ebs do
     env
     aws_profile
   ] => :environment do |_, args|
-    env, aws_profile, region = Ebs::Helper.inputs(args)
+    env, aws_profile, = Ebs::Helper.inputs(args)
 
-    FileUtils.mkdir_p(Rails.root.join('terraform', 'production'))
+    FileUtils.mkdir_p(Rails.root.join('terraform', env))
 
     sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
@@ -1430,25 +1504,84 @@ namespace :ebs do
     apply"
   end
 
-  desc 'For production env with proper infrastructure'
+  desc 'For production-like env with proper infrastructure'
   task destroy: :environment do
     env, aws_profile, region = Ebs::Helper.inputs
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
-    puts 'Destroying infrastructure...'
+    Ebs::Helper.announce 'START - Destroying infrastructure...'
 
-    sh "cd #{Rails.root.join('terraform', env)} && \
-    docker run \
-    --rm \
-    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
-    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
-    -v #{Rails.root.join('terraform', env)}:/workspace \
-    -w /workspace \
-    -it \
-    hashicorp/terraform:0.12.12 \
-    destroy"
+    if Dir.exist? Rails.root.join('terraform', env)
 
-    puts 'Destroyed infrastructure!'
+      sh "cd #{Rails.root.join('terraform', env)} && \
+      docker run \
+      --rm \
+      --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+      --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+      -v #{Rails.root.join('terraform', env)}:/workspace \
+      -w /workspace \
+      -it \
+      hashicorp/terraform:0.12.12 \
+      destroy"
+
+      Rake::Task['ebs:bastion:unpack'].invoke(env, aws_profile, region)
+    end
+
+    FileUtils.rm_rf(Rails.root.join('terraform', env))
+
+    bucket_name = "#{PROJECT_NAME}-#{env}-tfstate"
+    s3_client = Ebs::Helper.s3_client(
+      aws_profile: aws_profile,
+      region: region
+    )
+
+    begin
+      resp = s3_client.head_bucket(bucket: bucket_name)
+      s3_client.put_bucket_versioning(
+        bucket: bucket_name,
+        versioning_configuration: {
+          mfa_delete: 'Disabled',
+          status: 'Suspended'
+        }
+      )
+
+      result = s3_client.list_object_versions(bucket: bucket_name)
+      unless result.versions.empty?
+        s3_client.delete_objects(
+          bucket: bucket_name,
+          delete: {
+            objects: result.versions.map do |object|
+              {
+                key: object.key,
+                version_id: object.version_id
+              }
+            end
+          }
+        )
+      end
+
+      unless result.delete_markers.empty?
+        s3_client.delete_objects(
+          bucket: bucket_name,
+          delete: {
+            objects: result.delete_markers.map do |object|
+              {
+                key: object.key,
+                version_id: object.version_id
+              }
+            end
+          }
+        )
+      end
+
+      s3_client.delete_bucket_lifecycle(bucket: bucket_name)
+      s3_client.delete_bucket(bucket: bucket_name)
+    rescue Aws::S3::Errors::NotFound
+      Ebs::Helper.announce "#{bucket_name} already destroyed"
+      abort
+    end
+
+    Ebs::Helper.announce 'END - Destroyed infrastructure!'
   end
 end
