@@ -55,6 +55,7 @@ group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
+  gem 'sqlite3', '~> 1.4.1'
   gem 'timecop', '~> 0.9.1'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
@@ -64,7 +65,7 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'apipie-rails', '~> 0.5.16'
-gem 'aws-sdk-s3', require: false
+gem 'aws-sdk-s3', '~> 1.48.0'
 gem 'ckeditor', github: 'galetahub/ckeditor'
 gem 'cloudwatchlogger', '~> 0.2.1'
 gem 'devise', '~> 4.7.1'
@@ -75,3 +76,10 @@ gem 'jquery-rails', '~> 4.3.5' # required for old gems still relying on assets p
 gem 'mini_magick', '~> 4.9.5'
 gem 'rack-cors', '~> 1.0.3'
 gem 'slim-rails', '~> 3.2.0'
+
+# for deployment
+gem 'aws-sdk-ec2', '~> 1.112.0'
+gem 'aws-sdk-rds', '~> 1.68.0'
+gem 'bcrypt_pbkdf', '~> 1.0.1' # for OpenSSH to work with Net::SSH tunneling
+gem 'ed25519', '~> 1.2.4' # for OpenSSH to work with Net::SSH tunneling
+gem 'net-ssh-gateway', '~> 2.0.0' # for establishing ssh tunneling from bastion to private instances

@@ -3,6 +3,10 @@
 class ApplicationController < ActionController::Base
   layout :layout_by_resource
 
+  def healthcheck
+    head :ok, content_type: 'text/html'
+  end
+
   private
 
   def layout_by_resource

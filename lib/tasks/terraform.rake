@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-PROJECT_NAME=Rails.application.class.module_parent_name.downcase
-
 namespace :terraform do
+  PROJECT_NAME = Rails.application.class.module_parent_name.downcase
+
   desc 'Checks before proceeding'
   task :checks, [:env, :aws_profile, :region] => :environment do |task, args|
     puts 'START - Checks necessary conditions before proceeding'
