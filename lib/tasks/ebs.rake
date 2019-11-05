@@ -47,6 +47,27 @@ module Ebs
       [env, aws_profile, region]
     end
 
+    def self.bastion(ec2_client:, env:)
+      results = ec2_client.describe_instances(
+        filters: [
+          {
+            name: 'instance.group-name',
+            values: ["#{PROJECT_NAME}#{env}-bastion"]
+          }
+        ]
+      )
+
+      abort('There are more than 1 reservations. Please check!') if results.reservations.count > 1
+
+      abort('There are no reservations. Make sure to setup your bastion servers first by running the command below:\n\n\trake ebs:bastion:up\n') if results.reservations.count.zero?
+
+      instances = results.reservations.first.instances
+
+      abort('There are more than 1 bastion servers.\nThis should not happen. Please check!') if instances.count > 1
+
+      instances.first
+    end
+
     def self.ec2_client(aws_profile:, region:)
       aws_access_key_id = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
       aws_secret_access_key = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
@@ -1152,6 +1173,8 @@ namespace :ebs do
     task ssh: :environment do
       env, aws_profile, region = Ebs::Helper.inputs
 
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
       puts 'ssh into bastion...'
 
       ec2_client = Ebs::Helper.ec2_client(
@@ -1160,27 +1183,12 @@ namespace :ebs do
       )
 
       ##### Get bastion #####
-      results = ec2_client.describe_instances(
-        filters: [
-          {
-            name: 'instance.group-name',
-            values: ["#{PROJECT_NAME}#{env}-bastion"]
-          }
-        ]
+      bastion = Ebs::Helper.bastion(
+        ec2_client: ec2_client,
+        env: env
       )
 
-      abort('There are more than 1 reservations. Please check!') if results.reservations.count > 1
-
-      abort('There are no reservations. Make sure to setup your bastion servers first by running the command below:\n\n\trake ebs:bastion:up\n') if results.reservations.count.zero?
-
-      instances = results.reservations.first.instances
-
-      abort('There are more than 1 bastion servers.\nThis should not happen. Please check!') if instances.count > 1
-
-      bastion = instances.first
-
       ##### Get one of the instances #####
-
       results = ec2_client.describe_instances(
         filters: [
           {
