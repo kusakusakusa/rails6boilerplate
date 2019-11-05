@@ -77,6 +77,58 @@ module Ebs
         secret_access_key: aws_secret_access_key
       )
     end
+
+    def self.rds_client(aws_profile:, region:)
+      aws_access_key_id = `aws --profile #{aws_profile} configure get aws_access_key_id`.chomp
+      aws_secret_access_key = `aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp
+      Aws::RDS::Client.new(
+        region: region,
+        access_key_id: aws_access_key_id,
+        secret_access_key: aws_secret_access_key
+      )
+    end
+
+    def self.tunnel(env:, aws_profile:, region:)
+      ec2_client = Ebs::Helper.ec2_client(
+        aws_profile: aws_profile,
+        region: region
+      )
+
+      bastion = Ebs::Helper.bastion(
+        ec2_client: ec2_client,
+        env: env
+      )
+
+      ##### Get rds #####
+      rds_client = Ebs::Helper.rds_client(
+        aws_profile: aws_profile,
+        region: region
+      )
+      result = rds_client.describe_db_instances(
+        db_instance_identifier: "rds-#{PROJECT_NAME}#{env}"
+      )
+      abort('More than 1 db instances found.\nThis should not happen. Please check!\n') if result.db_instances.count > 1
+      db_instance = result.db_instances.first
+
+      forwarded_port_no = rand(10_000..60_000)
+      puts "\n  Tunneled port: #{forwarded_port_no}\n"
+
+      gateway = Net::SSH::Gateway.new(
+        bastion.public_ip_address,
+        'ec2-user',
+        keys: ["#{Rails.root}/production_keypair"]
+      )
+      abort('\nGateway not active!\n') unless gateway.active?
+      port = gateway.open(
+        db_instance.endpoint.address,
+        db_instance.endpoint.port,
+        forwarded_port_no
+      )
+
+      yield forwarded_port_no
+
+      gateway.close(port)
+    end
   end
 end
 
@@ -1254,6 +1306,75 @@ namespace :ebs do
       sh 'ssh-add -D'
 
       puts 'ssh-ed into bastion!'
+    end
+  end
+
+  ###################
+  ### Rails Tasks ###
+  ###################
+  namespace :rails do
+    desc 'For running rails console via bastion'
+    task console: :environment do
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+      Ebs::Helper.tunnel(
+        env: env,
+        aws_profile: aws_profile,
+        region: region
+      ) do |forwarded_port_no|
+        dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
+        username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+        password = Rails.application.credentials.dig(env.to_sym, :database, :password)
+
+        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails console"
+      end
+    end
+
+    desc 'Seed database'
+    task seed: :environment do
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+      Ebs::Helper.tunnel(
+        env: env,
+        aws_profile: aws_profile,
+        region: region
+      ) do |forwarded_port_no|
+        dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
+        username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+        password = Rails.application.credentials.dig(env.to_sym, :database, :password)
+
+        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:seed"
+      end
+    end
+
+    desc 'Drop, create, migrate and seed database'
+    task reseed: :environment do
+      env, aws_profile, region = Ebs::Helper.inputs
+
+      Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
+
+      puts "You are reseeding the #{env} database for #{PROJECT_NAME}. Are you sure you want to proceed? (y for yes)"
+      reply = STDIN.gets.chomp
+      abort if reply.downcase != 'y'
+
+      Ebs::Helper.tunnel(
+        env: env,
+        aws_profile: aws_profile,
+        region: region
+      ) do |forwarded_port_no|
+        dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
+        username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+        password = Rails.application.credentials.dig(env.to_sym, :database, :password)
+
+        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=#{env} bundle exec rails db:drop"
+        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:create"
+        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:migrate"
+        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:seed"
+      end
     end
   end
 

@@ -38,10 +38,6 @@ end
 
 group :development do
   gem 'annotate', '~> 2.7.5'
-
-  # for deployment
-  gem 'aws-sdk-ec2', '~> 1.112.0'
-
   gem 'rename', '~> 1.0.6'
   # Access an interactive console on exception pages or
   # by calling 'console' anywhere in the code.
@@ -80,3 +76,10 @@ gem 'jquery-rails', '~> 4.3.5' # required for old gems still relying on assets p
 gem 'mini_magick', '~> 4.9.5'
 gem 'rack-cors', '~> 1.0.3'
 gem 'slim-rails', '~> 3.2.0'
+
+# for deployment
+gem 'aws-sdk-ec2', '~> 1.112.0'
+gem 'aws-sdk-rds', '~> 1.68.0'
+gem 'bcrypt_pbkdf', '~> 1.0.1' # for OpenSSH to work with Net::SSH tunneling
+gem 'ed25519', '~> 1.2.4' # for OpenSSH to work with Net::SSH tunneling
+gem 'net-ssh-gateway', '~> 2.0.0' # for establishing ssh tunneling from bastion to private instances
