@@ -523,6 +523,7 @@ namespace :ebs do
             engine = "mysql"
             engine_version = "5.7"
             instance_class = "db.t2.micro"
+            identifier = "rds-${var.project_name}${var.env}"
             name = "#{Rails.application.credentials.dig(:production, :database, :db)}"
             username = "#{Rails.application.credentials.dig(:production, :database, :username)}"
             password = "#{Rails.application.credentials.dig(:production, :database, :password)}"
