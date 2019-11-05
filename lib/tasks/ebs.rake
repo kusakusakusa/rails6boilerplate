@@ -379,30 +379,42 @@ namespace :ebs do
             description = "for bastion server"
             vpc_id = aws_vpc.main.id
 
-            # allow ssh into bastion
-            ingress {
-              from_port = 22
-              to_port = 22
-              protocol = "tcp"
-              # Please restrict your ingress to only necessary IPs and ports.
-              # Opening to 0.0.0.0/0 can lead to security vulnerabilities
-              # You may want to set a fixed ip address if you have a static ip
-              cidr_blocks = ["0.0.0.0/0"]
-            }
-
-            # allow bastion to ssh into private instances
-            egress {
-              from_port = 22
-              to_port = 22
-              protocol = "tcp"
-              security_groups = [
-                aws_security_group.web_server.id
-              ]
-            }
-
             tags = {
               Name = "${var.project_name}${var.env}"
             }
+          }
+
+          # allow ssh into bastion
+          resource "aws_security_group_rule" "ssh-bastion-world" {
+            type = "ingress"
+            from_port = 22
+            to_port = 22
+            protocol = "tcp"
+            # Please restrict your ingress to only necessary IPs and ports.
+            # Opening to 0.0.0.0/0 can lead to security vulnerabilities
+            # You may want to set a fixed ip address if you have a static ip
+            security_group_id = aws_security_group.bastion.id
+            cidr_blocks = ["0.0.0.0/0"]
+          }
+
+          # allow bastion to ssh into private instances
+          resource "aws_security_group_rule" "ssh-bastion-web_server" {
+            type = "egress"
+            from_port = 22
+            to_port = 22
+            protocol = "tcp"
+            security_group_id = aws_security_group.bastion.id
+            source_security_group_id = aws_security_group.web_server.id
+          }
+
+          # allow bastion to connect out into rds
+          resource "aws_security_group_rule" "ssh-bastion-rds" {
+            type = "egress"
+            from_port = 3306
+            to_port = 3306
+            protocol = "tcp"
+            security_group_id = aws_security_group.bastion.id
+            source_security_group_id = aws_security_group.rds.id
           }
 
           resource "aws_security_group" "web_server" {
@@ -413,6 +425,17 @@ namespace :ebs do
             tags = {
               Name = "${var.project_name}${var.env}"
             }
+          }
+
+          # allow bastion to ssh into private instances
+          # rule will be duplicated with elastic beanstalk default security groups
+          resource "aws_security_group_rule" "ssh-web_server-bastion" {
+            type = "ingress"
+            from_port = 22
+            to_port = 22
+            protocol = "tcp"
+            security_group_id = aws_security_group.web_server.id
+            source_security_group_id = aws_security_group.bastion.id
           }
 
         MSG
@@ -517,29 +540,31 @@ namespace :ebs do
           }
 
           resource "aws_security_group" "rds" {
-            name = "${var.project_name}${var.env}"
+            name = "${var.project_name}${var.env}-rds"
             description = "for rds"
             vpc_id = aws_vpc.main.id
-
-            # allow bastion to communicate via 3306
-            ingress {
-              from_port = 3306
-              to_port = 3306
-              protocol = "tcp"
-              security_groups = [aws_security_group.bastion.id]
-            }
-
-            # allow web servers to communicate via 3306
-            ingress {
-              from_port = 3306
-              to_port = 3306
-              protocol = "tcp"
-              security_groups = [aws_security_group.web_server.id]
-            }
 
             tags = {
               Name = "${var.project_name}${var.env}"
             }
+          }
+
+          resource "aws_security_group_rule" "mysql-rds-web_server" {
+            type = "ingress"
+            from_port = 3306
+            to_port = 3306
+            protocol = "tcp"
+            security_group_id = aws_security_group.rds.id
+            source_security_group_id = aws_security_group.web_server.id
+          }
+
+          resource "aws_security_group_rule" "mysql-rds-bastion" {
+            type = "ingress"
+            from_port = 3306
+            to_port = 3306
+            protocol = "tcp"
+            security_group_id = aws_security_group.rds.id
+            source_security_group_id = aws_security_group.bastion.id
           }
 
           resource "aws_db_subnet_group" "main" {
@@ -591,9 +616,9 @@ namespace :ebs do
         ]
       )
 
-      dbname = Rails.application.credentials.dig(:production, :database, :db)
-      username = Rails.application.credentials.dig(:production, :database, :username)
-      password = Rails.application.credentials.dig(:production, :database, :password)
+      dbname = Rails.application.credentials.dig(args[:env].to_sym, :database, :db)
+      username = Rails.application.credentials.dig(args[:env].to_sym, :database, :username)
+      password = Rails.application.credentials.dig(args[:env].to_sym, :database, :password)
 
       file = File.open(Rails.root.join('terraform', args[:env], 'ebs.tf'), 'w')
       file.puts <<~MSG
