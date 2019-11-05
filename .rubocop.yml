@@ -7,3 +7,8 @@ Metrics/MethodLength:
 AllCops:
   Exclude:
     - 'app/views/**/*'
+# controller need to use `and return` to make sure
+# api do not look for template but just render json
+Style/AndOr:
+  Exclude:
+    - 'app/controllers/**/*'
