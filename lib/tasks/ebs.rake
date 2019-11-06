@@ -1353,6 +1353,7 @@ namespace :ebs do
       sh('ssh ' \
       '-tt ' \
       '-A ' \
+      "-i #{Rails.root}/#{PROJECT_NAME}-#{env} " \
       "ec2-user@#{bastion.public_ip_address} " \
       "-o 'UserKnownHostsFile /dev/null' " \
       '-o StrictHostKeyChecking=no ' \
