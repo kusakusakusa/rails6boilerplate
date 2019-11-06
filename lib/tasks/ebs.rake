@@ -251,24 +251,17 @@ namespace :ebs do
       tfstate_bucket = `aws s3 --profile #{aws_profile} ls | grep " #{tfstate_bucket_name}$"`.chomp
       if tfstate_bucket.blank?
         Ebs::Helper.announce "Creating Terraform state bucket (#{tfstate_bucket_name})"
-        `aws s3api create-bucket --bucket #{tfstate_bucket_name} --region #{region} --profile #{aws_profile} --create-bucket-configuration LocationConstraint=#{region}`
 
-        sleep 2
-
-        puts 'Uploading empty tfstate file'
-        blank_filepath = Rails.root.join('tmp/tfstate')
-        `touch #{blank_filepath}`
         s3_client = Ebs::Helper.s3_client(
           aws_profile: aws_profile,
           region: region
         )
-        s3_client.put_object(
-          body: blank_filepath,
+        s3_client.create_bucket(
           bucket: tfstate_bucket_name,
-          key: terraform.tfstate
+          create_bucket_configuration: {
+            location_constraint: region
+          }
         )
-
-        File.delete(blank_filepath)
       else
         Ebs::Helper.announce "Terraform state bucket (#{tfstate_bucket_name}) already created!"
       end
