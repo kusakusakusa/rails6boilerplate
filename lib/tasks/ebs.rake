@@ -131,7 +131,7 @@ module Ebs
       db_instance = result.db_instances.first
 
       forwarded_port_no = rand(10_000..60_000)
-      puts "\n  Tunneled port: #{forwarded_port_no}\n"
+      puts "\n  Tunneled port: #{forwarded_port_no}\n\n"
 
       gateway = Net::SSH::Gateway.new(
         bastion.public_ip_address,
@@ -585,6 +585,111 @@ namespace :ebs do
       end
 
       Ebs::Helper.announce "END - Create vpc.tf for #{env}"
+    end
+
+    desc 'Create assets.tf'
+    task :create_assets_tf, %i[
+      env
+      aws_profile
+      region
+    ] => :environment do |_, args|
+      env, aws_profile, region = Ebs::Helper.inputs(args)
+
+      Ebs::Helper.announce "START - Create assets.tf for #{env}"
+
+      # S3FullAccess full policy referenced from
+      # https://bl.ocks.org/magnetikonline/6215d9e80021c1f8de12#full-access-for-specific-iam-userrole
+      file = File.open(Rails.root.join('terraform', env, 'assets_bucket_policy.tmpl'), 'w')
+      file.puts <<~MSG
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": [
+                "s3:ListAllMyBuckets"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::*"
+              ]
+            },
+            {
+              "Action": [
+                "s3:*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "arn:aws:s3:::${bucket_name}/*"
+              ]
+            }
+          ]
+        }
+      MSG
+      file.close
+
+      file = File.open(Rails.root.join('terraform', env, 'assets.tf'), 'w')
+      file.puts <<~MSG
+        resource "aws_s3_bucket" "assets" {
+          bucket = "${var.project_name}-${var.env}-assets"
+          region = "#{region}"
+
+          cors_rule {
+            allowed_headers = ["*"]
+            allowed_methods = ["GET", "HEAD"]
+            allowed_origins = ["*"]
+          }
+
+          tags = {
+            Name = var.project_name
+            Env = var.env
+          }
+        }
+
+        module "assets-iam_policy" {
+          source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+          version = "~> 2.0"
+
+          name = "assets-policy-${var.project_name}${var.env}"
+          description = "Assets bucket policy for ${var.project_name}-${var.env}"
+
+          policy = templatefile("${path.module}/assets_bucket_policy.tmpl", { bucket_name = aws_s3_bucket.assets.id })
+        }
+
+        module "assets-iam_user" {
+          source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+          version = "~> 2.0"
+
+          create_iam_access_key = "true"
+          create_iam_user_login_profile = "false"
+
+          name = "assets-${var.project_name}${var.env}"
+
+          tags = {
+            Name = "assets-${var.project_name}${var.env}"
+          }
+        }
+
+        resource "aws_iam_user_policy_attachment" "assets" {
+          user = module.assets-iam_user.this_iam_user_name
+          policy_arn = module.assets-iam_policy.arn
+        }
+
+        output "assets-user-access_key_id" {
+          value = module.assets-iam_user.this_iam_access_key_id
+        }
+
+        output "assets-user-secret_access_key" {
+          value = module.assets-iam_user.this_iam_access_key_secret
+        }
+
+        output "assets-bucket_name" {
+          value = aws_s3_bucket.assets.id
+        }
+      MSG
+
+      file.close
+
+      Ebs::Helper.announce "END - Created assets.tf for #{env}"
     end
 
     desc 'Create rds.tf'
@@ -1348,11 +1453,18 @@ namespace :ebs do
     Rake::Task['ebs:terraform:create_tfstate_bucket'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_variables_tf'].invoke(env, region)
+    Rake::Task['ebs:terraform:create_assets_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region)
 
     Rake::Task['ebs:apply'].invoke(env, aws_profile)
+
+    if File.exist?("#{Rails.root.join('terraform', env)}/assets.tf")
+      Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun `eb init` next!"
+    else
+      Ebs::Helper.announce 'Run `eb init` next!'
+    end
   end
 
   task :apply, %i[
