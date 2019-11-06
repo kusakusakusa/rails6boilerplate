@@ -1074,9 +1074,13 @@ namespace :ebs do
         owners: ['self']
       ).images.max_by(&:creation_date) # latest image
 
-      ec2_client.deregister_image(
-        image_id: ami.image_id
-      )
+      if ami.nil?
+        puts "No bastion image found!\n"
+      else
+        ec2_client.deregister_image(
+          image_id: ami.image_id
+        )
+      end
 
       Ebs::Helper.announce 'END - Unpacked bastion AMI'
     end
