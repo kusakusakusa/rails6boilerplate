@@ -1520,7 +1520,33 @@ namespace :ebs do
 
     Ebs::Helper.announce 'START - Destroying infrastructure...'
 
+    s3_client = Ebs::Helper.s3_client(
+      aws_profile: aws_profile,
+      region: region
+    )
+
     if Dir.exist? Rails.root.join('terraform', env)
+
+      if File.exist? Rails.root.join('terraform', env, 'assets.tf')
+        bucket_name = "#{PROJECT_NAME}-#{env}-assets"
+        begin
+          s3_client.head_bucket(bucket: bucket_name) # will check and throw error if bucket is not present
+
+          result = s3_client.list_objects(bucket: bucket_name)
+          if result.contents && !result.contents.empty?
+            s3_client.delete_objects(
+              bucket: bucket_name,
+              delete: {
+                objects: result.contents.map do |object|
+                  { key: object.key }
+                end
+              }
+            )
+          end
+        rescue Aws::S3::Errors::NotFound
+          Ebs::Helper.announce "#{bucket_name} already destroyed"
+        end
+      end
 
       sh "cd #{Rails.root.join('terraform', env)} && \
       docker run \
@@ -1539,13 +1565,10 @@ namespace :ebs do
     FileUtils.rm_rf(Rails.root.join('terraform', env))
 
     bucket_name = "#{PROJECT_NAME}-#{env}-tfstate"
-    s3_client = Ebs::Helper.s3_client(
-      aws_profile: aws_profile,
-      region: region
-    )
 
     begin
-      resp = s3_client.head_bucket(bucket: bucket_name)
+      s3_client.head_bucket(bucket: bucket_name) # will check and throw error if bucket is not present
+
       s3_client.put_bucket_versioning(
         bucket: bucket_name,
         versioning_configuration: {
