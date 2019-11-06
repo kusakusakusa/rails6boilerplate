@@ -857,6 +857,12 @@ namespace :ebs do
           }
 
           #################
+          setting {
+            namespace = "aws:elasticbeanstalk:application"
+            name = "Application Healthcheck URL"
+            value = "/healthcheck"
+          }
+          #################
           # command-options-general-elasticbeanstalkapplicationenvironment
           #################
           setting {
