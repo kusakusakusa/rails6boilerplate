@@ -824,6 +824,8 @@ namespace :ebs do
       username = Rails.application.credentials.dig(env.to_sym, :database, :username)
       password = Rails.application.credentials.dig(env.to_sym, :database, :password)
 
+      # with reference to
+      # https://github.com/cloudposse/terraform-aws-elastic-beanstalk-environment/blob/master/main.tf
       file = File.open(Rails.root.join('terraform', env, 'ebs.tf'), 'w')
       file.puts <<~MSG
         # with reference to
@@ -833,6 +835,88 @@ namespace :ebs do
         resource "aws_elastic_beanstalk_application" "main" {
           name = "eb-${var.project_name}${var.env}"
           description = "Elastic Beanstalk"
+        }
+
+        data "aws_iam_policy_document" "service" {
+          statement {
+            actions = [
+              "sts:AssumeRole"
+            ]
+
+            principals {
+              type        = "Service"
+              identifiers = ["elasticbeanstalk.amazonaws.com"]
+            }
+
+            effect = "Allow"
+          }
+        }
+
+        data "aws_iam_policy_document" "ec2" {
+          statement {
+            sid = ""
+
+            actions = [
+              "sts:AssumeRole",
+            ]
+
+            principals {
+              type = "Service"
+              identifiers = ["ec2.amazonaws.com"]
+            }
+
+            effect = "Allow"
+          }
+
+          statement {
+            sid = ""
+
+            actions = [
+              "sts:AssumeRole",
+            ]
+
+            principals {
+              type        = "Service"
+              identifiers = ["ssm.amazonaws.com"]
+            }
+
+            effect = "Allow"
+          }
+        }
+
+        resource "aws_iam_role" "service" {
+          name = "eb-${var.project_name}${var.env}-service-role"
+          assume_role_policy = data.aws_iam_policy_document.service.json
+        }
+
+        resource "aws_iam_role" "ec2" {
+          name = "eb-${var.project_name}${var.env}-ec2-role"
+          assume_role_policy = data.aws_iam_policy_document.ec2.json
+        }
+
+        resource "aws_iam_role_policy_attachment" "enhanced_health" {
+          role = aws_iam_role.service.name
+          policy_arn = "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
+        }
+
+        resource "aws_iam_role_policy_attachment" "service" {
+          role = aws_iam_role.service.name
+          policy_arn = "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService"
+        }
+
+        resource "aws_iam_instance_profile" "ec2" {
+          name = "eb-${var.project_name}${var.env}-instance-profile"
+          role = aws_iam_role.ec2.name
+        }
+
+        resource "aws_iam_role_policy_attachment" "web_tier" {
+          role = aws_iam_role.service.name
+          policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier"
+        }
+
+        resource "aws_iam_role_policy_attachment" "worker_tier" {
+          role = aws_iam_role.service.name
+          policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
         }
 
         resource "aws_elastic_beanstalk_environment" "main" {
@@ -903,7 +987,13 @@ namespace :ebs do
           setting {
             namespace = "aws:elasticbeanstalk:environment"
             name = "ServiceRole"
-            value = "eb-${var.project_name}${var.env}-service-role"
+            value = aws_iam_role.service.name
+          }
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "IamInstanceProfile"
+            value = aws_iam_instance_profile.ec2.name
           }
 
           #################
@@ -953,12 +1043,28 @@ namespace :ebs do
             name = "MaxSize"
             value = "2"
           }
+
+          #################
+          # enhanced health monitoring
+          # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced-enable.html?icmpid=docs_elasticbeanstalk_console#health-enhanced-enable-config
           #################
 
           setting {
             namespace = "aws:autoscaling:updatepolicy:rollingupdate"
             name = "RollingUpdateType"
             value = "Health"
+          }
+
+          setting {
+            namespace = "aws:elasticbeanstalk:healthreporting:system"
+            name = "SystemType"
+            value = "enhanced"
+          }
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "IamInstanceProfile"
+            value = aws_iam_instance_profile.ec2.name
           }
 
           #################
