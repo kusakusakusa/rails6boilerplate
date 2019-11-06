@@ -79,14 +79,11 @@ Rails.application.configure do
   # Use a different logger for distributed setups.
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
-
-  config.logger = CloudWatchLogger.new({
-    access_key_id: Rails.application.credentials.dig(:production, :aws, :access_key_id),
-    secret_access_key: Rails.application.credentials.dig(:production, :aws, :secret_access_key)
-  },
-  "#{Rails.application.class.module_parent_name}-#{Rails.env}",
-  nil,
-  region: Rails.application.credentials.dig(:production, :aws, :region))
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger.formatter = config.log_formatter
+    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+  end
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
