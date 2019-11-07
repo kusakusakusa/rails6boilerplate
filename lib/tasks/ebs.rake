@@ -717,6 +717,10 @@ namespace :ebs do
           ]
         )
 
+        dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
+        username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+        password = Rails.application.credentials.dig(env.to_sym, :database, :password)
+
         file = File.open(Rails.root.join('terraform', env, 'rds.tf'), 'w')
         file.puts <<~MSG
           resource "aws_db_instance" "main" {
@@ -726,9 +730,9 @@ namespace :ebs do
             engine_version = "5.7"
             instance_class = "db.t2.micro"
             identifier = "rds-${var.project_name}${var.env}"
-            name = "#{Rails.application.credentials.dig(env.to_sym, :database, :db)}"
-            username = "#{Rails.application.credentials.dig(env.to_sym, :database, :username)}"
-            password = "#{Rails.application.credentials.dig(env.to_sym, :database, :password)}"
+            name = "#{dbname}"
+            username = "#{username}"
+            password = "#{password}"
 
             skip_final_snapshot = false
             # notes time of creation of rds.tf file
@@ -737,7 +741,11 @@ namespace :ebs do
             vpc_security_group_ids = [aws_security_group.rds.id]
         MSG
 
-        unless args[:is_single_instance]
+        if args[:is_single_instance]
+          file.puts <<~MSG
+            publicly_accessible = true
+          MSG
+        else
           file.puts <<~MSG
             db_subnet_group_name = aws_db_subnet_group.main.id
           MSG
@@ -786,6 +794,19 @@ namespace :ebs do
               protocol = "tcp"
               security_group_id = aws_security_group.rds.id
               source_security_group_id = aws_security_group.web_server-single_instance.id
+            }
+
+            resource "aws_security_group_rule" "mysql-world-rds" {
+              type = "ingress"
+              from_port = 3306
+              to_port = 3306
+              protocol = "tcp"
+              security_group_id = aws_security_group.rds.id
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
+            output "rds-database-url" {
+              value = "mysql2://#{username}:#{password}@${aws_db_instance.main.endpoint}/#{dbname}"
             }
           MSG
         else
