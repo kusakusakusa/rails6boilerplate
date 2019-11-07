@@ -12,3 +12,10 @@ amazon_production:
   secret_access_key: <%= Rails.application.credentials.dig(:production, :aws, :secret_access_key) %>
   region: <%= Rails.application.credentials.dig(:production, :aws, :region) %>
   bucket: <%= Rails.application.credentials.dig(:production, :aws, :bucket) %>
+
+amazon_staging:
+  service: S3
+  access_key_id: <%= Rails.application.credentials.dig(:staging, :aws, :access_key_id) %>
+  secret_access_key: <%= Rails.application.credentials.dig(:staging, :aws, :secret_access_key) %>
+  region: <%= Rails.application.credentials.dig(:staging, :aws, :region) %>
+  bucket: <%= Rails.application.credentials.dig(:staging, :aws, :bucket) %>

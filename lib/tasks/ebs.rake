@@ -470,7 +470,7 @@ namespace :ebs do
           # Security Groups
           resource "aws_security_group" "bastion" {
             name = "${var.project_name}${var.env}-bastion"
-            description = "for bastion server"
+            description = "For bastion server ${var.env}"
             vpc_id = aws_vpc.main.id
 
             tags = {
@@ -513,7 +513,7 @@ namespace :ebs do
 
           resource "aws_security_group" "web_server" {
             name = "${var.project_name}${var.env}-web-servers"
-            description = "for Web servers"
+            description = "For Web servers ${var.env}"
             vpc_id = aws_vpc.main.id
 
             tags = {
@@ -697,6 +697,7 @@ namespace :ebs do
       env
       aws_profile
       region
+      is_single_instance
     ] => :environment do |_, args|
       env, aws_profile, region = Ebs::Helper.inputs(args)
 
@@ -734,7 +735,15 @@ namespace :ebs do
             final_snapshot_identifier = "rds-${var.project_name}${var.env}-#{DateTime.now.to_i}"
 
             vpc_security_group_ids = [aws_security_group.rds.id]
+        MSG
+
+        unless args[:is_single_instance]
+          file.puts <<~MSG
             db_subnet_group_name = aws_db_subnet_group.main.id
+          MSG
+        end
+
+        file.puts <<~MSG
 
             tags = {
               Name = "rds-${var.project_name}${var.env}"
@@ -742,52 +751,85 @@ namespace :ebs do
           }
 
           resource "aws_security_group" "rds" {
-            name = "${var.project_name}${var.env}-rds"
-            description = "for rds"
-            vpc_id = aws_vpc.main.id
+              name = "rds-${var.project_name}${var.env}"
+              description = "For RDS ${var.env}"
 
+        MSG
+        unless args[:is_single_instance]
+          file.puts <<~MSG
+            vpc_id = aws_vpc.main.id
+          MSG
+        end
+        file.puts <<~MSG
             tags = {
               Name = "${var.project_name}${var.env}"
             }
           }
-
-          resource "aws_security_group_rule" "mysql-rds-web_server" {
-            type = "ingress"
-            from_port = 3306
-            to_port = 3306
-            protocol = "tcp"
-            security_group_id = aws_security_group.rds.id
-            source_security_group_id = aws_security_group.web_server.id
-          }
-
-          resource "aws_security_group_rule" "mysql-rds-bastion" {
-            type = "ingress"
-            from_port = 3306
-            to_port = 3306
-            protocol = "tcp"
-            security_group_id = aws_security_group.rds.id
-            source_security_group_id = aws_security_group.bastion.id
-          }
-
-          resource "aws_db_subnet_group" "main" {
-            name = "db-private-subnets"
-            subnet_ids = [
         MSG
 
-        resp[:availability_zones].each do |az|
-          file.puts <<~SUBNET_TF
-                aws_subnet.private-#{az.zone_name}.id,
-          SUBNET_TF
+        if args[:is_single_instance]
+          file.puts <<~MSG
+
+            resource "aws_security_group" "web_server-single_instance" {
+              name = "web_server-single_instance-${var.project_name}${var.env}"
+              description = "For web servers ${var.env}"
+
+              tags = {
+                Name = "${var.project_name}${var.env}"
+              }
+            }
+
+            resource "aws_security_group_rule" "mysql-rds-web_server-single_instance" {
+              type = "ingress"
+              from_port = 3306
+              to_port = 3306
+              protocol = "tcp"
+              security_group_id = aws_security_group.rds.id
+              source_security_group_id = aws_security_group.web_server-single_instance.id
+            }
+          MSG
+        else
+          file.puts <<~MSG
+
+            resource "aws_security_group_rule" "mysql-rds-web_server" {
+              type = "ingress"
+              from_port = 3306
+              to_port = 3306
+              protocol = "tcp"
+              security_group_id = aws_security_group.rds.id
+              source_security_group_id = aws_security_group.web_server.id
+            }
+
+            resource "aws_security_group_rule" "mysql-rds-bastion" {
+              type = "ingress"
+              from_port = 3306
+              to_port = 3306
+              protocol = "tcp"
+              security_group_id = aws_security_group.rds.id
+              source_security_group_id = aws_security_group.bastion.id
+            }
+
+            resource "aws_db_subnet_group" "main" {
+              name = "db-private-subnets"
+              subnet_ids = [
+          MSG
+
+          resp[:availability_zones].each do |az|
+            file.puts <<~SUBNET_TF
+                  aws_subnet.private-#{az.zone_name}.id,
+            SUBNET_TF
+          end
+
+          file.puts <<~MSG
+              ]
+
+              tags = {
+                Name = "subnet-group-${var.project_name}${var.env}"
+              }
+            }
+          MSG
         end
 
-        file.puts <<~MSG
-            ]
-
-            tags = {
-              Name = "subnet-group-${var.project_name}${var.env}"
-            }
-          }
-        MSG
         file.close
       rescue Aws::EC2::Errors::ServiceError
         # leave debug point here
@@ -802,6 +844,7 @@ namespace :ebs do
       env
       aws_profile
       region
+      is_single_instance
     ] => :environment do |_, args|
       env, aws_profile, region = Ebs::Helper.inputs(args)
 
@@ -867,21 +910,6 @@ namespace :ebs do
 
             effect = "Allow"
           }
-
-          statement {
-            sid = ""
-
-            actions = [
-              "sts:AssumeRole",
-            ]
-
-            principals {
-              type        = "Service"
-              identifiers = ["ssm.amazonaws.com"]
-            }
-
-            effect = "Allow"
-          }
         }
 
         resource "aws_iam_role" "service" {
@@ -924,8 +952,47 @@ namespace :ebs do
           application = aws_elastic_beanstalk_application.main.name
           solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Puma)"
 
+          ################
+          # common settings
+          ################
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "IamInstanceProfile"
+            value = aws_iam_instance_profile.ec2.name
+          }
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "InstanceType"
+            value = "t2.small"
+          }
+
+      MSG
+
+      if args[:is_single_instance]
+        file.puts <<~MSG
           #################
-          # command-options-general-ec2vpc
+          # single instance
+          #################
+
+          setting {
+            namespace = "aws:elasticbeanstalk:environment"
+            name = "EnvironmentType"
+            value = "SingleInstance"
+          }
+
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "SecurityGroups"
+            # use name for default vpc
+            value = aws_security_group.web_server-single_instance.name
+          }
+        MSG
+      else
+        file.puts <<~MSG
+          #################
+          # multiple instances
           #################
           setting {
             namespace = "aws:ec2:vpc"
@@ -961,12 +1028,10 @@ namespace :ebs do
             end.join(',')}"
           }
 
-          #################
-          # command-options-general-autoscalinglaunchconfiguration
-          #################
           setting {
             namespace = "aws:autoscaling:launchconfiguration"
             name = "SecurityGroups"
+            # use id for custom vpc
             value = aws_security_group.web_server.id
           }
 
@@ -977,59 +1042,9 @@ namespace :ebs do
           }
 
           setting {
-            namespace = "aws:autoscaling:launchconfiguration"
-            name = "InstanceType"
-            value = "t2.small"
-          }
-
-          #################
-
-          setting {
             namespace = "aws:elasticbeanstalk:environment"
             name = "ServiceRole"
             value = aws_iam_role.service.name
-          }
-
-          setting {
-            namespace = "aws:autoscaling:launchconfiguration"
-            name = "IamInstanceProfile"
-            value = aws_iam_instance_profile.ec2.name
-          }
-
-          #################
-
-          setting {
-            namespace = "aws:elb:loadbalancer"
-            name = "CrossZone"
-            value = "true"
-          }
-
-          #################
-          # command-options-general-elasticbeanstalkcommand
-          #################
-          setting {
-            namespace = "aws:elasticbeanstalk:command"
-            name = "BatchSize"
-            value = "30"
-          }
-          setting {
-            namespace = "aws:elasticbeanstalk:command"
-            name = "BatchSize"
-            value = "30"
-          }
-          setting {
-            namespace = "aws:elasticbeanstalk:command"
-            name = "BatchSizeType"
-            value = "Percentage"
-          }
-
-          #################
-          # command-options-general-autoscalingasg
-          #################
-          setting {
-            namespace = "aws:autoscaling:asg"
-            name = "Availability Zones"
-            value = "Any #{resp[:availability_zones].count}"
           }
 
           setting {
@@ -1044,10 +1059,23 @@ namespace :ebs do
             value = "2"
           }
 
-          #################
-          # enhanced health monitoring
-          # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced-enable.html?icmpid=docs_elasticbeanstalk_console#health-enhanced-enable-config
-          #################
+          setting {
+            namespace = "aws:elb:loadbalancer"
+            name = "CrossZone"
+            value = "true"
+          }
+
+          setting {
+            namespace = "aws:elasticbeanstalk:command"
+            name = "BatchSize"
+            value = "30"
+          }
+
+          setting {
+            namespace = "aws:elasticbeanstalk:command"
+            name = "BatchSizeType"
+            value = "Percentage"
+          }
 
           setting {
             namespace = "aws:autoscaling:updatepolicy:rollingupdate"
@@ -1056,25 +1084,33 @@ namespace :ebs do
           }
 
           setting {
+            namespace = "aws:autoscaling:updatepolicy:rollingupdate"
+            name = "RollingUpdateEnabled"
+            value = "true"
+          }
+        MSG
+      end
+
+      file.puts <<~MSG
+          #################
+          # enhanced health monitoring
+          # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced-enable.html?icmpid=docs_elasticbeanstalk_console#health-enhanced-enable-config
+          #################
+
+          setting {
             namespace = "aws:elasticbeanstalk:healthreporting:system"
             name = "SystemType"
             value = "enhanced"
           }
 
           setting {
-            namespace = "aws:autoscaling:launchconfiguration"
-            name = "IamInstanceProfile"
-            value = aws_iam_instance_profile.ec2.name
-          }
-
-          #################
-          setting {
             namespace = "aws:elasticbeanstalk:application"
             name = "Application Healthcheck URL"
             value = "/healthcheck"
           }
+
           #################
-          # command-options-general-elasticbeanstalkapplicationenvironment
+          # env vars
           #################
           setting {
             namespace = "aws:elasticbeanstalk:application:environment"
@@ -1565,6 +1601,18 @@ namespace :ebs do
   task init: :environment do
     env, aws_profile, region = Ebs::Helper.inputs
 
+    is_single_instance = nil
+    loop do
+      puts 'Are you deploying a single instance? (y|n)'
+      is_single_instance = STDIN.gets.chomp.downcase
+
+      break if %w[y n].include?(is_single_instance)
+
+      puts 'Enter either y or n:'
+    end
+
+    is_single_instance = is_single_instance == 'y'
+
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
     FileUtils.mkdir_p(Rails.root.join('terraform', env))
@@ -1574,9 +1622,9 @@ namespace :ebs do
     Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_variables_tf'].invoke(env, region)
     Rake::Task['ebs:terraform:create_assets_tf'].invoke(env, region)
-    Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region)
-    Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region)
-    Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region)
+    Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region) unless is_single_instance
+    Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region, is_single_instance)
+    Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region, is_single_instance)
 
     Rake::Task['ebs:apply'].invoke(env, aws_profile)
 
