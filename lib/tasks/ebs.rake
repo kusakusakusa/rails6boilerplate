@@ -1009,6 +1009,18 @@ namespace :ebs do
             # use name for default vpc
             value = aws_security_group.web_server-single_instance.name
           }
+
+          setting {
+            namespace = "aws:autoscaling:asg"
+            name = "MinSize"
+            value = "1"
+          }
+
+          setting {
+            namespace = "aws:autoscaling:asg"
+            name = "MaxSize"
+            value = "1"
+          }
         MSG
       else
         file.puts <<~MSG
