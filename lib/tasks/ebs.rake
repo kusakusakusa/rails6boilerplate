@@ -992,7 +992,7 @@ namespace :ebs do
         }
 
         resource "aws_elastic_beanstalk_environment" "main" {
-          name = "eb-env-${var.project_name}${var.env}"
+          name = "${var.project_name}-${var.env}"
           application = aws_elastic_beanstalk_application.main.name
           solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Puma)"
 
@@ -1009,7 +1009,7 @@ namespace :ebs do
           setting {
             namespace = "aws:autoscaling:launchconfiguration"
             name = "InstanceType"
-            value = "t2.small"
+            value = "t2.micro"
           }
 
           setting {
