@@ -810,6 +810,15 @@ namespace :ebs do
               source_security_group_id = aws_security_group.web_server-single_instance.id
             }
 
+            resource "aws_security_group_rule" "ssh-world-web_server-single_instance" {
+              type = "ingress"
+              from_port = 22
+              to_port = 22
+              protocol = "tcp"
+              security_group_id = aws_security_group.web_server-single_instance.id
+              cidr_blocks = ["0.0.0.0/0"]
+            }
+
             resource "aws_security_group_rule" "mysql-world-rds" {
               type = "ingress"
               from_port = 3306
