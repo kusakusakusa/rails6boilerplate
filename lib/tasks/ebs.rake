@@ -2,6 +2,20 @@
 
 module Ebs
   class Helper
+    def self.is_single_instance
+      is_single = nil
+      loop do
+        puts 'Are you deploying a single instance? (y|n)'
+        is_single = STDIN.gets.chomp.downcase
+
+        break if %w[y n].include?(is_single)
+
+        puts 'Enter either y or n:'
+      end
+
+      is_single == 'y'
+    end
+
     def self.inputs(args = nil)
       env = aws_profile = region = ''
 
@@ -897,7 +911,7 @@ namespace :ebs do
         # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html
 
         resource "aws_elastic_beanstalk_application" "main" {
-          name = "eb-${var.project_name}${var.env}"
+          name = "${var.project_name}-${var.env}"
           description = "Elastic Beanstalk"
         }
 
@@ -1633,18 +1647,7 @@ namespace :ebs do
   desc 'For production-like env with proper infrastructure'
   task init: :environment do
     env, aws_profile, region = Ebs::Helper.inputs
-
-    is_single_instance = nil
-    loop do
-      puts 'Are you deploying a single instance? (y|n)'
-      is_single_instance = STDIN.gets.chomp.downcase
-
-      break if %w[y n].include?(is_single_instance)
-
-      puts 'Enter either y or n:'
-    end
-
-    is_single_instance = is_single_instance == 'y'
+    is_single_instance = Ebs::Helper.is_single_instance
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
@@ -1662,8 +1665,9 @@ namespace :ebs do
     Rake::Task['ebs:apply'].invoke(env, aws_profile)
 
     if File.exist?("#{Rails.root.join('terraform', env)}/assets.tf")
-      Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun `eb init` next!"
+      Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun these commands next to deploy your application to the environment:\n\n\teb init\n\teb deploy [--staged]\n\n"
     else
+      Ebs::Helper.announce "Run these commands next to deploy your application to the environment:\n\n\teb init\n\teb deploy [--staged]\n\n"
       Ebs::Helper.announce 'Run `eb init` next!'
     end
   end
