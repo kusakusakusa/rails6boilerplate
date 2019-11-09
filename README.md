@@ -126,209 +126,123 @@ Remove `post` related tools by:
 7. run APIPIE_RECORD=examples rspec
 8. run `annotate`
 
-## Usage - Staging And Non Production Environments In The Cloud
-
-A `rake` task is available to generate the files required for setting up non production servers. It can be repeatedly used to generate multiple non production environment for different scenarios. For example, a `staging` environment can be setup for developers in one region to work on, and a `uat` environment for clients and testers in another region.
-
-The rake task will require [AWS cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) to be installed and [AWS cli named profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) setup prior to usage.
-
-Once installed, create the required files by running this command and following the prompts:
-```
-rake terraform:init
-```
-
-To create more non production environments, repeat the above command again and change the inputs accordingly.
-
-The cloud resources are on AWS and provisioning is powered by [`Terraform`](https://www.terraform.io). Terraform commands execution will be done on the docker images, so instead of installing Terraform binaries, [install docker](https://docs.docker.com/install/) instead. Then, run and follow the instructions to provision the resources:
-```
-rake terraform:deploy
-```
-
-Deployment to these provisioned resources in the respective environments are done using [`mina`](https://github.com/mina-deploy/mina). After you have configured the `config/deploy.rb` file, run the following command to deploy the application:
-```
-mina setup
-mina deploy
-```
-
-TODO is the below NOTE necessary?
-NOTE: Decide if you want to commit the generated files in the repository. They should not contain any sensitive information.
+## Usage - Deployment
 
 ### Architecture Explanation
 
-An AWS s3 backend will hold the `tfstate` file for `Terraform`. The s3 bucket is created via the `terraform:init` rake task.
+Provisioning of cloud resources will be done using `Terraform`.
+
+`Terraform` commands will be run using `terraform` and `packer` `docker` images.
+
+An `AWS S3` backend will hold the `tfstate` file for `Terraform`. The s3 bucket is created via the `terraform:init` rake task.
 
 A private and its corresponding ssh key pair will be generated using `ssh-keygen` command. The ssh keys serve 2 purposes:
 1. For creating the `aws_key_pair` for your ec2 instance(s)
 2. For ssh authentication with your project on private git repository if any
-For point 2, the servers are configured to use this same generated ssh key to authenticate itself with your private git repository and pull the files. Adding the generated ssh key to the git repository **has to be done manually** though.
 
-Nginx will be the front facing webserver and serve traffic on port 80 to the rails application on a proxy backend running on puma, the default app server for rails. The nginx configuration will consist of **only 1 server directive** and **no `server_name` is setup**. This means the rails application will be the one and only default server recognised by nginx. This also implies all traffic on port 80 will reach the rails application, regardless of their origin, due to [how nginx processes a request](http://nginx.org/en/docs/http/request_processing.html).
+Application will be deployed using `AWS Elastic Beanstalk`.
 
-This does present a security risk, but for a non production environment, that should not be an issue.
+### Prerequisite
 
-## Production
-
-Set your environment variable in the terminal. These variables will only last for the lifetime of the current session.
+1. Do this once. This ensures the official [net-ssh-gateway](https://github.com/net-ssh/net-ssh-gateway) gem is downloaded and not a tamerped version.
 ```
-export AWS_PROFILE=<YOUR_NAMED_PROFILE>
-export AWS_REGION=<DESIRED_AWS REGION>
-```
-
-Deploying with docker on AWS ECS/Fargate.
-
-Build the `app` image first using just `docker-compose.yml` file, and precompile the assets.
-```
-docker-compose build app
-
-RAILS_MASTER_KEY=`cat config/master.key` \
-docker-compose \
-  run \
-  -v $(pwd)/public:/workspace/public \
-  app \
-  rails assets:precompile
+# Add the public key as a trusted certificate
+# (You only need to do this once)
+$ curl -O https://raw.githubusercontent.com/net-ssh/net-ssh-gateway/master/net-ssh-public_cert.pem
+$ gem cert --add net-ssh-public_cert.pem
+$ rm -f net-ssh-public_cert.pem
 ```
 
-Rebulid the `app` image, but this time with `docker-compose-aws.yml` file too. We need rebuild again with additionaly configurations because running`docker-compose` locally is missing support for `awslogs-stream-prefix` options for `awslogs` log driver. You will get the error below:
+2. Install `docker`
 
-```
-Cannot create container for service app: unknown log opt 'awslogs-stream-prefix' for awslogs log driver
-```
+### Deployment Steps
 
-So we have to separate the logging options into another file, and only use both files when we are deploying and not running `docker-compose run` command. I hope this gets fixed soon.
-```
-PROJECT_NAME=rails6boilerplate \
-ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile $AWS_PROFILE`.dkr.ecr.$AWS_REGION.amazonaws.com \
-AWS_REGION=$AWS_REGION \
-docker-compose \
-  -f docker-compose.yml \
-  -f docker-compose-aws.yml \
-  build app
-```
+**NOTE**: make sure to separate each environment into **different git branches**.
 
-Build the `web` image with the generated assets that will be served directly:
+Run the command to create the `tf` files required for `Terraform` to deploy:
 ```
-PROJECT_NAME=rails6boilerplate \
-ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile $AWS_PROFILE`.dkr.ecr.$AWS_REGION.amazonaws.com \
-docker-compose build web
+rake ebs:init
 ```
+This command will require you to input `aws_profile`, `env`  and `region`, and whether your want to setup a single instance or not.
+This will create terraform files and deploy your infrastructure
 
-Push the docker images to the repository
-```
-# this command will get the string of docker login command to login to docker
-# and the $(...) will run the output, which is the login command itself
-$(aws ecr get-login --no-include-email --region $AWS_REGION --profile $AWS_PROFILE)
+It will save the `tfstate` file in the custom tf_state bucket.
 
-# push the images to their respective directories
-PROJECT_NAME=rails6boilerplate \
-ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile $AWS_PROFILE`.dkr.ecr.$AWS_REGION.amazonaws.com \
-docker-compose push
+If creating a single instance, a separate `RDS` that is publicly accessible will be created. This setup should **not** be meant for `production`.
+
+If not, it will create a custom VPC with private and public subnets for basic security.
+
+A separate `RDS` will be created in the private subnet where the EC2 instances will be deployed in. EC2 instances can communicate with the Internet via a `NAT` gateway, which will be provisioned and associated to all the private subnets.
+
+Public subnets will be associated with a Internet Gateway, which will be provisioned.
+
+### Deploy Application
+
+After deploying the infrastructure, the `eb-user` access key id and access secret key will be shown on the terminal. Use it to deploy your application to `Elastic Beanstalk`.
+
+Requires the [`Elastic Beanstalk` cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install-osx.html).
+```
+eb init
+
+eb deploy # OR eb deploy --staged
 ```
 
-Install [ecs-cli](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_CLI_installation.html).
+Note that `eb deploy` deploys only committed files to the server, or at the very least, staged files but that will require the `--staged` option.
 
-Configure the clusters using [ecs-cli](https://github.com/aws/amazon-ecs-cli#latest-version)
+### Troubleshooting
 
-### For EC2 Launch Type
+#### Logs
 
-Setup cluster configuration file.
+To get the Elastic Beanstalk logs, run:
 ```
-ecs-cli configure \
-  --cluster rails6boilerplate-ecs-cluster \
-  --region $AWS_REGION \
-  --config-name rails6boilerplate-ecs-conf \
-  --cfn-stack-name rails6boilerplate-ecs-stack \
-  --default-launch-type EC2
+eb logs --all
 ```
 
-Generate, overwrite and import the `docker_keypair` file meant for initializing EC2 instances' keypair
-```
-ssh-keygen -t rsa -f docker_keypair -C SAMPLE_KEY -N ''
+The logs for all the components of Elastic beanstalk will be downloaded into `.elasticbeanstalk/logs` folder
 
-# the public-key-material "file://" prefix is required for linux too
-aws ec2 import-key-pair \
-  --key-name rails6boilerplate \
-  --public-key-material file://$(pwd)/docker_keypair.pub \
-  --region $AWS_REGION \
-  --profile $AWS_PROFILE
-```
+#### Bastion
 
-Deploy cluster by running:
-```
-ecs-cli up \
-  --keypair rails6boilerplate \
-  --capability-iam \
-  --size 1 \
-  --instance-type t2.micro \
-  --aws-profile $AWS_PROFILE \
-  --cluster-config rails6boilerplate-ecs-conf
-```
+This will only be used by the environment that requires separate instances.
 
-The outputs from the previous command will will show the subnets and security groups ids. Update `ecs-params.yml` file.
+Communicate with the instances in the private subnet via a bastion server and ssh agent forwarding.
 
-Deploy the docker services to the cluster.
+##### Deploy bastion server
+
+This will bring up the bastion server.
 ```
-PROJECT_NAME=rails6boilerplate \
-ECR_URL=`aws sts get-caller-identity --output text --query 'Account' --profile $AWS_PROFILE`.dkr.ecr.$AWS_REGION.amazonaws.com \
-RAILS_MASTER_KEY=`cat config/master.key` \
-ecs-cli compose \
-  --project-name rails6boilerplate \
-  up \
-  --aws-profile $AWS_PROFILE \
-  --create-log-groups \
-  --cluster-config rails6boilerplate-ecs-conf
+rake ebs:bastion:up
+```
+- create bastion server AMI
+- setup bastion server in one of the public subnets that were created in the custom VPC
+- outputs bastion server public ip address
+
+##### Destroy bastion server
+
+This will bring up the bastion server.
+```
+rake ebs:bastion:down
 ```
 
-### Destroy
+##### Remove bastion AMI
 
-Destroy clusters by running:
+This will remove the bastion AMI (to save on the negligible S3 storage cost for storing the image)
 ```
-ecs-cli down \
-  --aws-profile $AWS_PROFILE \
-  --cluster-config rails6boilerplate-ecs-conf
+rake ebs:bastion:unpack
 ```
 
-Remove images in each ECR.
-```
-aws ecr batch-delete-image \
-  --repository-name rails6boilerplate_app \
-  --profile $AWS_PROFILE \
-  --region $AWS_REGION \
-  --image-ids imageTag=latest
+### Rails commands
 
-aws ecr batch-delete-image \
-  --repository-name rails6boilerplate_web \
-  --profile $AWS_PROFILE \
-  --region $AWS_REGION \
-  --image-ids imageTag=latest
+Some common rails commands that can be executed on the instances/database conveniently.
+
+```
+rake ebs:rails:console
+rake ebs:rails:seed
+rake ebs:rails:reseed
 ```
 
-Remove repositories in ECR.
-```
-aws ecr delete-repository \
-  --repository-name rails6boilerplate_app \
-  --profile $AWS_PROFILE \
-  --region $AWS_REGION
+These tasks involves tunneling through the bastion server, which means the bastion server has to be setup before hand.
 
-aws ecr delete-repository \
-  --repository-name rails6boilerplate_web \
-  --profile $AWS_PROFILE \
-  --region $AWS_REGION
-```
-
-Remove keypair.
-```
-# the "file://" prefix is required for linux too \
-aws ec2 delete-key-pair \
-  --key-name rails6boilerplate \
-  --region $AWS_REGION \
-  --profile $AWS_PROFILE
-```
-
-Deregister ECS task definitions. This only makes them inactive but not delete them. This is a [feature that is still WIP](https://forums.aws.amazon.com/thread.jspa?threadID=170378), since 2015...
-
-### For Fargate Launch Type
-
-TODO
+If the environment created is a single instance, its RDS should be publicly accessible. Hence, you can connect from your local machine and run the commands locally instead of having to use these comands.
 
 ### Logging
 
