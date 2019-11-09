@@ -80,3 +80,8 @@ startbootstrap-sb-admin-2-gh-pages/
 
 # Terraform
 terraform/*/.terraform
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
