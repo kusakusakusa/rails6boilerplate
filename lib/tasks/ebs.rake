@@ -1200,35 +1200,6 @@ namespace :ebs do
         }
       MSG
 
-      # ebs user
-      file.puts <<~MSG
-        module "eb-iam_user" {
-          source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-          version = "~> 2.0"
-
-          create_iam_access_key = "true"
-          create_iam_user_login_profile = "false"
-
-          name = "eb-${var.project_name}${var.env}"
-
-          tags = {
-            Name = "eb-${var.project_name}${var.env}"
-          }
-        }
-
-        resource "aws_iam_user_policy_attachment" "eb" {
-          user = module.eb-iam_user.this_iam_user_name
-          policy_arn = "arn:aws:iam::aws:policy/AWSElasticBeanstalkFullAccess"
-        }
-
-        output "eb-user-access_key_id" {
-          value = module.eb-iam_user.this_iam_access_key_id
-        }
-
-        output "eb-user-secret_access_key" {
-          value = module.eb-iam_user.this_iam_access_key_secret
-        }
-      MSG
       file.close
 
       Ebs::Helper.announce "END - Create ebs.tf for #{env}"
