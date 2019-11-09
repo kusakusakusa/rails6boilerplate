@@ -1012,6 +1012,12 @@ namespace :ebs do
             value = "t2.small"
           }
 
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "EC2KeyName"
+            value = aws_key_pair.main.id
+          }
+
       MSG
 
       if args[:is_single_instance]
@@ -1089,12 +1095,6 @@ namespace :ebs do
             name = "SecurityGroups"
             # use id for custom vpc
             value = aws_security_group.web_server.id
-          }
-
-          setting {
-            namespace = "aws:autoscaling:launchconfiguration"
-            name = "EC2KeyName"
-            value = aws_key_pair.main.id
           }
 
           setting {
