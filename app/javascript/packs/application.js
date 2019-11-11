@@ -51,4 +51,11 @@ document.addEventListener("turbolinks:load", () => {
     $("input[name='" + $(this).data('field-name') + "']").val('')
     $(".image-input-preview[data-field-name='" + $(this).data('field-name') + "']").prop('src', '')
   });
+
+  // prevent enter key press on to submit form
+  $('form.silence').on('keypress', e => {
+    if (e.keyCode == 13) {
+      return false;
+    }
+  });
 });
