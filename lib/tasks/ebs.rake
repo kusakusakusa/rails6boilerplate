@@ -1645,9 +1645,9 @@ namespace :ebs do
     Rake::Task['ebs:apply'].invoke(env, aws_profile)
 
     if File.exist?("#{Rails.root.join('terraform', env)}/assets.tf")
-      Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun these commands next to deploy your application to the environment:\n\n\teb init\n\teb deploy [--staged]\n\n"
+      Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun these commands next to deploy your application to the environment:\n\n\teb init --region #{region} --profile #{aws_profile}\n\teb deploy [--staged]\n\n"
     else
-      Ebs::Helper.announce "Run these commands next to deploy your application to the environment:\n\n\teb init\n\teb deploy [--staged]\n\n"
+      Ebs::Helper.announce "Run these commands next to deploy your application to the environment:\n\n\teb init --region #{region} --profile #{aws_profile}\n\teb deploy [--staged]\n\n"
       Ebs::Helper.announce 'Run `eb init` next!'
     end
   end
