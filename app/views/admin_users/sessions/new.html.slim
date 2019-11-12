@@ -2,10 +2,12 @@
 .text-center
   h1.h4.text-gray-900.mb-4 Welcome Back!
 = form_for resource, as: resource_name, url: session_path(resource_name), class: 'user' do |f|
-  .form-group
-    = f.email_field :email, autofocus: true, autocomplete: 'email', class: 'form-control form-control-user', 'aria-describedby': 'emailHelp', placeholder: 'Enter Email Address...'
-  .form-group
-    = f.password_field :password, autocomplete: 'current-password', class: 'form-control form-control-user', placeholder: 'Password'
+  .form-label-group
+    = f.email_field :email, autofocus: true, autocomplete: 'email', class: 'form-control form-control-user', 'aria-describedby': 'emailHelp', placeholder: 'Enter Email Address...', required: true
+    = f.label :email
+  .form-label-group
+    = f.password_field :password, autocomplete: 'current-password', class: 'form-control form-control-user', placeholder: 'Password', required: true
+    = f.label :password
   - if devise_mapping.rememberable?
     .form-group
       .custom-control.custom-checkbox.small
