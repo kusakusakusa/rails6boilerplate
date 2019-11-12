@@ -747,13 +747,24 @@ namespace :ebs do
             name = "#{dbname}"
             username = "#{username}"
             password = "#{password}"
+            vpc_security_group_ids = [aws_security_group.rds.id]
+        MSG
 
+        if args[:is_single_instance]
+          file.puts <<~MSG
+            skip_final_snapshot = yes
+          MSG
+        else
+          file.puts <<~MSG
             skip_final_snapshot = false
             # notes time of creation of rds.tf file
             final_snapshot_identifier = "rds-${var.project_name}${var.env}-#{DateTime.now.to_i}"
 
-            vpc_security_group_ids = [aws_security_group.rds.id]
-        MSG
+            lifecycle {
+              prevent_destroy = true
+            }
+          MSG
+        end
 
         if args[:is_single_instance]
           file.puts <<~MSG
