@@ -71,7 +71,7 @@ gem 'doorkeeper-jwt', '~> 0.3.0'
 gem 'faker', '~> 2.2.1' # for seeding in non development/test env
 gem 'jquery-rails', '~> 4.3.5' # required for old gems still relying on assets pipeline
 gem 'mini_magick', '~> 4.9.5'
-gem 'rack-cors', '~> 1.0.3'
+gem 'rack-cors', '~> 1.0.5'
 gem 'slim-rails', '~> 3.2.0'
 
 # for deployment
