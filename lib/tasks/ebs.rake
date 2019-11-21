@@ -1603,29 +1603,74 @@ namespace :ebs do
     desc 'Drop, create, migrate and seed database'
     task reseed: :environment do
       env, aws_profile, region = Ebs::Helper.inputs
+      is_single_instance = Ebs::Helper.is_single_instance
 
       Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
 
       Ebs::Helper.announce "RESEEDING #{env} database..."
 
-      puts "You are reseeding the #{env} database for #{PROJECT_NAME}. Are you sure you want to proceed? (y for yes)"
+      puts "You are reseeding the #{env.upcase} database for #{PROJECT_NAME}. Are you sure you want to proceed? (y for yes)"
 
       reply = STDIN.gets.chomp
       abort if reply.downcase != 'y'
 
-      Ebs::Helper.tunnel(
-        env: env,
-        aws_profile: aws_profile,
-        region: region
-      ) do |forwarded_port_no|
-        dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
-        username = Rails.application.credentials.dig(env.to_sym, :database, :username)
-        password = Rails.application.credentials.dig(env.to_sym, :database, :password)
+      dbname = Rails.application.credentials.dig(env.to_sym, :database, :db)
+      username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+      password = Rails.application.credentials.dig(env.to_sym, :database, :password)
 
-        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=#{env} bundle exec rails db:drop"
-        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:create"
-        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:migrate"
-        sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:seed"
+      if is_single_instance
+        ec2_client = Ebs::Helper.ec2_client(
+          aws_profile: aws_profile,
+          region: region
+        )
+
+        results = ec2_client.describe_instances(
+          filters: [
+            {
+              name: 'instance.group-name',
+              values: ["web_server-single_instance-#{PROJECT_NAME}#{env}"]
+            }
+          ]
+        )
+
+        abort('There are no reservations. The instance might be down. Please check.') if results.reservations.count.zero?
+
+        public_ip_address = results.reservations.map do |reservation|
+          reservation.instances.map(&:public_ip_address)
+        end.flatten.first
+
+        Net::SSH.start(
+          public_ip_address,
+          'ec2-user',
+          keys: ["#{Rails.root}/#{PROJECT_NAME}-#{env}"]
+        ) do |ssh|
+          output = ssh.exec!('echo RAILS_ENV = $RAILS_ENV && echo DATABASE_URL = $DATABASE_URL')
+          puts output
+
+          # capture all stderr and stdout output from a remote process
+          output = ssh.exec!('cd /var/app/current && rails db:drop')
+          puts output
+
+          output = ssh.exec!('cd /var/app/current && rails db:create')
+          puts output
+
+          output = ssh.exec!('cd /var/app/current && rails db:migrate')
+          puts output
+
+          output = ssh.exec!('cd /var/app/current && rails db:seed')
+          puts output
+        end
+      else
+        Ebs::Helper.tunnel(
+          env: env,
+          aws_profile: aws_profile,
+          region: region
+        ) do |forwarded_port_no|
+          sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} DISABLE_DATABASE_ENVIRONMENT_CHECK=1 RAILS_ENV=#{env} bundle exec rails db:drop"
+          sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:create"
+          sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:migrate"
+          sh "DATABASE_URL=mysql2://#{username}:#{password}@127.0.0.1:#{forwarded_port_no}/#{dbname} RAILS_ENV=#{env} bundle exec rails db:seed"
+        end
       end
 
       Ebs::Helper.announce "END - Reseeded #{env} database!"
