@@ -1283,6 +1283,7 @@ namespace :ebs do
         --rm \
         --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
         --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+        --env AWS_DEFAULT_REGION=#{region} \
         -v #{Rails.root.join('terraform', env)}:/workspace \
         -v #{Rails.root}/#{PROJECT_NAME}-#{env}:/workspace/#{PROJECT_NAME}-#{env} \
         -w /workspace \
@@ -1344,6 +1345,7 @@ namespace :ebs do
           --rm \
           --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
           --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+          --env AWS_DEFAULT_REGION=#{region} \
           -v #{Rails.root.join('terraform', env)}:/workspace \
           -v #{Rails.root}/#{PROJECT_NAME}-#{env}:/workspace/#{PROJECT_NAME}-#{env} \
           -w /workspace \
@@ -1374,6 +1376,7 @@ namespace :ebs do
           --rm \
           --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
           --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+          --env AWS_DEFAULT_REGION=#{region} \
           -v #{Rails.root.join('terraform', env)}:/workspace \
           -w /workspace \
           -it \
@@ -1476,6 +1479,7 @@ namespace :ebs do
           --rm \
           --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
           --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+          --env AWS_DEFAULT_REGION=#{region} \
           -v #{Rails.root.join('terraform', env)}/bastion.json:/workspace/bastion.json \
           -w /workspace \
           hashicorp/packer:light \
@@ -1698,7 +1702,7 @@ namespace :ebs do
     Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region, is_single_instance)
     Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region, is_single_instance)
 
-    Rake::Task['ebs:apply'].invoke(env, aws_profile)
+    Rake::Task['ebs:apply'].invoke(env, aws_profile, region)
 
     if File.exist?("#{Rails.root.join('terraform', env)}/assets.tf")
       Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun these commands next to deploy your application to the environment:\n\n\teb init --region #{region} --profile #{aws_profile}\n\teb deploy [--staged]\n\n"
@@ -1711,8 +1715,9 @@ namespace :ebs do
   task :apply, %i[
     env
     aws_profile
+    region
   ] => :environment do |_, args|
-    env, aws_profile, = Ebs::Helper.inputs(args)
+    env, aws_profile, region = Ebs::Helper.inputs(args)
 
     FileUtils.mkdir_p(Rails.root.join('terraform', env))
 
@@ -1721,6 +1726,7 @@ namespace :ebs do
     --rm \
     --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
     --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+    --env AWS_DEFAULT_REGION=#{region} \
     -v #{Rails.root.join('terraform', env)}:/workspace \
     -w /workspace \
     -it \
@@ -1732,6 +1738,7 @@ namespace :ebs do
     --rm \
     --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
     --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+    --env AWS_DEFAULT_REGION=#{region} \
     -v #{Rails.root.join('terraform', env)}:/workspace \
     -w /workspace \
     -it \
@@ -1780,6 +1787,7 @@ namespace :ebs do
       --rm \
       --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
       --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+      --env AWS_DEFAULT_REGION=#{region} \
       -v #{Rails.root.join('terraform', env)}:/workspace \
       -w /workspace \
       -it \
