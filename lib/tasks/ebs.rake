@@ -460,7 +460,6 @@ namespace :ebs do
           resource "aws_nat_gateway" "main" {
             allocation_id = aws_eip.nat.id
             subnet_id = aws_subnet.public-#{resp[:availability_zones].first.zone_name}.id
-            depends_on = ["aws_internet_gateway.main"]
 
             tags = {
               Name = "${var.project_name}${var.env}"
@@ -516,7 +515,7 @@ namespace :ebs do
           }
 
           # allow bastion to connect out into rds
-          resource "aws_security_group_rule" "ssh-bastion-rds" {
+          resource "aws_security_group_rule" "mysql-bastion-rds" {
             type = "egress"
             from_port = 3306
             to_port = 3306
@@ -862,6 +861,10 @@ namespace :ebs do
               protocol = "tcp"
               security_group_id = aws_security_group.rds.id
               source_security_group_id = aws_security_group.bastion.id
+            }
+
+            output "rds-database-url" {
+              value = "mysql2://#{username}:#{password}@${aws_db_instance.main.endpoint}/#{dbname}"
             }
 
             resource "aws_db_subnet_group" "main" {
