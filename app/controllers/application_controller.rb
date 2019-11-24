@@ -7,6 +7,30 @@ class ApplicationController < ActionController::Base
     head :ok, content_type: 'text/html'
   end
 
+  def log_test
+    env = nil
+    case Rails.env.to_sym
+    when :test, :development, :staging
+      env = :staging
+    else
+      env = Rails.env.to_sym
+    end
+
+    log = CloudWatchLogger.new(
+      {
+        access_key_id: Rails.application.credentials.dig(env, :aws, :cloudwatch_access_key_id),
+        secret_access_key: Rails.application.credentials.dig(env, :aws, :cloudwatch_secret_access_key)
+      },
+      "#{Rails.application.class.module_parent_name}-#{Rails.env}",
+      'errors',
+      region: Rails.application.credentials.dig(env, :aws, :region)
+    )
+
+    log.error('log error test')
+
+    render body: nil, status: 204 and return
+  end
+
   private
 
   def layout_by_resource

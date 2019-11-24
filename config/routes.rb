@@ -6,6 +6,10 @@ Rails.application.routes.draw do
 
   get '/healthcheck', to: 'application#healthcheck'
 
+  unless Rails.env.production?
+    get '/log-test', to: 'application#log_test'
+  end
+
   namespace :cms do
     root to: 'application#index'
     resources :posts
