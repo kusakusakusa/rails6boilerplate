@@ -2,19 +2,20 @@ require("datatables.net")
 require('datatables.net-bs4')
 require("datatables.net-bs4/css/dataTables.bootstrap4.min.css")
 
-var dataTable = null;
+const dataTables = [];
 
 document.addEventListener("turbolinks:load", () => {
-  if (dataTable == null && $('.data-table').length !== 0) {
-    dataTable = $('.data-table').DataTable({
-      pageLength: 50
+  if (dataTables.length === 0 && $('.data-table').length !== 0) {
+    $('.data-table').each((_, element) => {
+      dataTables.push($(element).DataTable({
+        pageLength: 50
+      }));
     });
   }
 });
 
 document.addEventListener("turbolinks:before-cache", () => {
-  if (dataTable != null) {
-    dataTable.destroy();
-    dataTable = null;
+  while (dataTables.length !== 0) {
+    dataTables.pop().destroy();
   }
 });

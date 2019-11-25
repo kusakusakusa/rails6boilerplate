@@ -61,11 +61,11 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
         h6.collapse-header Other Pages:
         a.collapse-item href="404.html"  404 Page
         a.collapse-item href="blank.html"  Blank Page
-  /! Nav Item - Charts
+  /! Nav Item - Posts
   li.nav-item
-    a.nav-link href="charts.html" 
+    = link_to cms_posts_path, class: 'nav-link' do
       i.fas.fa-fw.fa-chart-area
-      span Charts
+      span Posts
   /! Nav Item - Tables
   li.nav-item
     a.nav-link href="tables.html" 
