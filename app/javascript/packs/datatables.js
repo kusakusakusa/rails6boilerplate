@@ -5,8 +5,8 @@ require("datatables.net-bs4/css/dataTables.bootstrap4.min.css")
 var dataTable = null;
 
 document.addEventListener("turbolinks:load", () => {
-  if (dataTable == null && $('.dataTable').length !== 0) {
-    dataTable = $('.dataTable').DataTable({
+  if (dataTable == null && $('.data-table').length !== 0) {
+    dataTable = $('.data-table').DataTable({
       pageLength: 50
     });
   }
