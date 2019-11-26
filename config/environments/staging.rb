@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -51,7 +53,7 @@ Rails.application.configure do
   config.log_level = :error
 
   # Prepend all log lines with the following tags.
-  config.log_tags = [ :request_id ]
+  config.log_tags = [:request_id]
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -60,8 +62,12 @@ Rails.application.configure do
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "rails6boilerplate_production"
 
+  config.action_mailer.default_url_options = {
+    host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_host),
+    protocol: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_protocol)
+  }
   config.action_mailer.perform_caching = false
-  config.action_mailer.asset_host = 'TODO'
+  config.action_mailer.asset_host = Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_asset_host)
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

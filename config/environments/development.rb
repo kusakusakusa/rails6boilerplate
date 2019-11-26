@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -37,10 +39,14 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # for sending devise emails with default url_options
-  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  config.action_mailer.default_url_options = {
+    host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_host),
+    port: 3000,
+    protocol: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_protocol)
+  }
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.asset_host = 'http://localhost:3000'
+  config.action_mailer.asset_host = Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_asset_host)
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
