@@ -9,7 +9,7 @@
       h6.m-0.font-weight-bold.text-primary
         | Change Password
     .card-body
-      = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :patch }) do |f|
+      = form_for(resource, as: resource_name, url: send("#{resource_name}_registration_path"), html: { method: :patch }) do |f|
         = render 'devise/shared/error_messages', resource: resource
 
         .form-group
