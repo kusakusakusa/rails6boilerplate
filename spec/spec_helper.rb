@@ -25,6 +25,9 @@ DEFAULT_HEADERS = {
 }
 
 RSpec.configure do |config|
+  # ensure clear mailers between tests
+  config.before { ActionMailer::Base.deliveries.clear }
+
   # custom helper to parse response.body
   # wrt https://stackoverflow.com/a/42328109/2667545
   config.include ApiHelpers, type: :request

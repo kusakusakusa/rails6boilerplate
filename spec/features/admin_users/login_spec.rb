@@ -30,5 +30,6 @@ feature 'Login admin user', js: true do
     click_on 'Login'
 
     expect(page).to have_content('Signed in successfully.')
+    expect(page).to have_current_path(cms_root_path)
   end
 end
