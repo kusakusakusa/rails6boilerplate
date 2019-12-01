@@ -1,0 +1,28 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+      "binary_file_patterns": [
+        "node_modules/*",
+        "public/packs/",
+        "public/assets/",
+        "public/packs-test/",
+        "tmp/*",
+        "*.jpg",
+        "*.jpeg",
+        "*.png",
+        "*.gif",
+        "*.ttf",
+        "*.tga",
+        "*.dds",
+        "*.ico",
+        "*.eot",
+        "*.pdf",
+        "*.swf",
+        "*.jar",
+        "*.zip"
+      ]
+		}
+	],
+}

@@ -86,3 +86,6 @@ terraform/*/.terraform
 !.elasticbeanstalk/config.yml
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# sublime
+rails.sublime-workspace
