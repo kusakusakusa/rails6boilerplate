@@ -15,7 +15,7 @@ RSpec.describe 'Users', type: :request do
         first_name: 'newFirstName'
       }
 
-      post '/api/v1/update-profile', params: params.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
+      post '/api/v1/update-profile', params: params.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
 
       expect(response.status).to eq 200
       expect(user.reload.first_name).to eq 'newFirstName'
@@ -27,7 +27,7 @@ RSpec.describe 'Users', type: :request do
         first_name: 'newFirstName',
         last_name: 'newLastName'
       }
-      post '/api/v1/update-profile', params: params.to_json, headers: DEFAULT_HEADERS.merge!('Authorization': "Bearer #{@access_token}")
+      post '/api/v1/update-profile', params: params.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
 
       expect(response.status).to eq 200
       expect(user.reload.first_name).to eq 'newFirstName'

@@ -22,7 +22,7 @@ require 'support/token_helpers'
 DEFAULT_HEADERS = {
   'CONTENT_TYPE' => 'application/json',
   'ACCEPT' => 'application/json'
-}
+}.freeze
 
 RSpec.configure do |config|
   # ensure clear mailers between tests
