@@ -90,6 +90,8 @@ jwt:
 ```
 The `jwt[:secret]` is used to create secrets.
 
+NOTE: In the event the `master.key` is lost, go to the aws management console of the application and get a copy form the environment variables configurations.
+
 ### Rename project
 
 Run `rails g rename:into <YOUR_PROJECT_NAME` to rename the application. Note that this will rename the repository you are in as well. You will need to run `cd` commands to switch directories.

@@ -1759,6 +1759,7 @@ namespace :ebs do
     end
   end
 
+  desc 'For apply latest changes and getting outputs'
   task :apply, %i[
     env
     aws_profile
