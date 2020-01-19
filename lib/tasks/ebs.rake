@@ -1255,10 +1255,6 @@ namespace :ebs do
             name = "RACK_ENV"
             value = "#{env}"
           }
-
-          tags = {
-            Name = "eb-${var.project_name}${var.env}"
-          }
         }
 
         output "endpoint_url" {
