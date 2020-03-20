@@ -10,7 +10,7 @@ Rails.application.routes.draw do
     get '/log-test', to: 'application#log_test'
   end
 
-  root to: 'cms/application#index'
+  root to: 'application#homepage'
 
   namespace :cms do
     root to: 'application#index'

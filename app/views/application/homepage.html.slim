@@ -1,0 +1,787 @@
+/! Intro Section
+section#intro
+  .intro-container.wow.fadeIn
+    h1.mb-4.pb-0
+      | The Annual
+      br
+      span Marketing
+      |  Conference
+    p.mb-4.pb-0 11 November, Laugh Tale, Raftel
+    a.venobox.play-btn.mb-4 data-autoplay="true" data-vbtype="video" href="https://www.youtube.com/watch?v=7Orjss318Io"
+    a.about-btn.scrollto href="#about"  About The Event
+/! End Intro Section
+main#main
+  /! About Section
+  section#about
+    .container
+      .row
+        .col-lg-6
+          h2 About The Event
+          p
+            | Sed nam ut dolor qui repellendus iusto odit. Possimus inventore eveniet accusamus error amet eius aut
+            | accusantium et. Non odit consequatur repudiandae sequi ea odio molestiae. Enim possimus sunt inventore in
+            | est ut optio sequi unde.
+        .col-lg-3
+          h3 Where
+          p Downtown Conference Center, New York
+        .col-lg-3
+          h3 When
+          p
+            | Monday to Wednesday
+            br>/
+            | 10-12 December
+  /! End About Section
+  /! Speakers Section
+  section#speakers.wow.fadeInUp
+    .container
+      .section-header
+        h2 Event Speakers
+        p Here are some of our speakers
+      .row
+        .col-lg-4.col-md-6
+          .speaker
+            = image_pack_tag 'luffy.jpg', class: 'img-fluid'
+            .details
+              h3
+                a href="speaker-details.html" Monkey D. Luffy
+              p Captain
+              .social
+                a.mr-2 href="" 
+                  i.fab.fa.fa-twitter
+                a.mr-2 href="" 
+                  i.fab.fa.fa-facebook
+                a.mr-2 href="" 
+                  i.fab.fa.fa-google-plus
+                a.mr-2 href="" 
+                  i.fab.fa.fa-linkedin
+        .col-lg-4.col-md-6
+          .speaker
+            = image_pack_tag 'zoro.jpg', class: 'img-fluid'
+            .details
+              h3
+                a href="speaker-details.html" Roronoa Zoro
+              p Swordsman
+              .social
+                a.mr-2 href="" 
+                  i.fab.fa.fa-twitter
+                a.mr-2 href="" 
+                  i.fab.fa.fa-facebook
+                a.mr-2 href="" 
+                  i.fab.fa.fa-google-plus
+                a.mr-2 href="" 
+                  i.fab.fa.fa-linkedin
+        .col-lg-4.col-md-6
+          .speaker
+            = image_pack_tag 'nami.jpg', class: 'img-fluid'
+            .details
+              h3
+                a href="speaker-details.html" Nami
+              p Navigator
+              .social
+                a.mr-2 href="" 
+                  i.fab.fa.fa-twitter
+                a.mr-2 href="" 
+                  i.fab.fa.fa-facebook
+                a.mr-2 href="" 
+                  i.fab.fa.fa-google-plus
+                a.mr-2 href="" 
+                  i.fab.fa.fa-linkedin
+        .col-lg-4.col-md-6
+          .speaker
+            = image_pack_tag 'usopp.jpg', class: 'img-fluid'
+            .details
+              h3
+                a href="speaker-details.html" Usopp
+              p Sniper
+              .social
+                a.mr-2 href="" 
+                  i.fab.fa.fa-twitter
+                a.mr-2 href="" 
+                  i.fab.fa.fa-facebook
+                a.mr-2 href="" 
+                  i.fab.fa.fa-google-plus
+                a.mr-2 href="" 
+                  i.fab.fa.fa-linkedin
+        .col-lg-4.col-md-6
+          .speaker
+            = image_pack_tag 'sanji.jpg', class: 'img-fluid'
+            .details
+              h3
+                a href="speaker-details.html" Sanji
+              p Cook
+              .social
+                a.mr-2 href="" 
+                  i.fab.fa.fa-twitter
+                a.mr-2 href="" 
+                  i.fab.fa.fa-facebook
+                a.mr-2 href="" 
+                  i.fab.fa.fa-google-plus
+                a.mr-2 href="" 
+                  i.fab.fa.fa-linkedin
+        .col-lg-4.col-md-6
+          .speaker
+            = image_pack_tag 'chopper.jpg', class: 'img-fluid'
+            .details
+              h3
+                a href="speaker-details.html" Chopper
+              p Doctor
+              .social
+                a.mr-2 href="" 
+                  i.fab.fa.fa-twitter
+                a.mr-2 href="" 
+                  i.fab.fa.fa-facebook
+                a.mr-2 href="" 
+                  i.fab.fa.fa-google-plus
+                a.mr-2 href="" 
+                  i.fab.fa.fa-linkedin
+  /! End Speakers Section
+
+  /! Schedule Section
+  section#schedule.section-with-bg
+    .container.wow.fadeInUp
+      .section-header
+        h2 Event Schedule
+        p Here is our event schedule
+      ul.nav.nav-tabs role="tablist" 
+        li.nav-item
+          a.nav-link.active data-toggle="tab" href="#day-1" role="tab"  Day 1
+        li.nav-item
+          a.nav-link data-toggle="tab" href="#day-2" role="tab"  Day 2
+        li.nav-item
+          a.nav-link data-toggle="tab" href="#day-3" role="tab"  Day 3
+      h3.sub-heading
+        | Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum
+      .tab-content.row.justify-content-center
+        /! Schdule Day 1
+        #day-1.col-lg-9.tab-pane.fade.show.active role="tabpanel" 
+          .row.schedule-item
+            .col-md-2
+              time 09:30 AM
+            .col-md-10
+              h4 Registration
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 10:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'luffy.jpg'
+              h4 Keynote <span>Luffy</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 11:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'zoro.jpg'
+              h4 Keynote <span>Zoro</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 12:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'nami.jpg'
+              h4 Keynote <span>Nami</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 02:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'sanji.jpg'
+              h4 Keynote <span>Sanji</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 03:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'usopp.jpg'
+              h4 Keynote <span>Usopp</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 04:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'chopper.jpg'
+              h4 Keynote <span>Chopper</span>
+              p Lorem Ipsum
+        /! End Schdule Day 1
+        /! Schdule Day 2
+        #day-2.col-lg-9.tab-pane.fade role="tabpanel" 
+          .row.schedule-item
+            .col-md-2
+              time 10:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'luffy.jpg'
+              h4 Keynote <span>Luffy</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 11:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'zoro.jpg'
+              h4 Keynote <span>Zoro</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 12:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'nami.jpg'
+              h4 Keynote <span>Nami</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 02:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'sanji.jpg'
+              h4 Keynote <span>Sanji</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 03:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'usopp.jpg'
+              h4 Keynote <span>Usopp</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 04:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'chopper.jpg'
+              h4 Keynote <span>Chopper</span>
+              p Lorem Ipsum
+        /! End Schdule Day 2
+        /! Schdule Day 3
+        #day-3.col-lg-9.tab-pane.fade role="tabpanel" 
+          .row.schedule-item
+            .col-md-2
+              time 10:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'zoro.jpg'
+              h4 Keynote <span>Zoro</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 11:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'nami.jpg'
+              h4 Keynote <span>Nami</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 12:00 AM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'luffy.jpg'
+              h4 Keynote <span>Luffy</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 02:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'sanji.jpg'
+              h4 Keynote <span>Sanji</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 03:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'usopp.jpg'
+              h4 Keynote <span>Usopp</span>
+              p Lorem Ipsum
+          .row.schedule-item
+            .col-md-2
+              time 04:00 PM
+            .col-md-10
+              .speaker
+                = image_pack_tag 'chopper.jpg'
+              h4 Keynote <span>Chopper</span>
+              p Lorem Ipsum
+        /! End Schdule Day 2
+  /! End Schedule Section
+  /! Venue Section
+  section#venue.wow.fadeInUp
+    .container-fluid
+      .section-header
+        h2 Event Venue
+        p Event venue location info and gallery
+      .row.no-gutters
+        .col-lg-6.venue-map
+          iframe allowfullscreen="" frameborder="0" src="https://www.google.com/maps/embed/v1/view?zoom=14&center=-33.8523%2C151.2108&key=todo" style="border:0" 
+        .col-lg-6.venue-info
+          .row.justify-content-center
+            .col-11.col-lg-8
+              h3 Laugh Tale, Raftel
+              p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    .container-fluid.venue-gallery-container
+      .row.no-gutters
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'luffy.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'zoro.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'nami.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'usopp.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'sanji.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'chopper.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'robin.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4
+          .venue-gallery
+            = link_to '#', data: { gallery: 'venue-gallery' }, class: 'venobox' do
+              = image_pack_tag 'franky.jpg', class: 'img-fluid'
+  /! End Venue Section
+  /! Islands Section
+  section#islands.section-with-bg.wow.fadeInUp
+    .container
+      .section-header
+        h2 Islands
+        p Here are islands that you can visit!
+      .row
+        .col-lg-4.col-md-6
+          .island
+            .island-img
+              = image_pack_tag 'punk_hazard.jpg', class: 'img-fluid'
+            h3
+              a href="#" Punk Hazard
+            .stars
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+            p 0.4 Mile from the Venue
+        .col-lg-4.col-md-6
+          .island
+            .island-img
+              = image_pack_tag 'drum_island.jpg', class: 'img-fluid'
+            h3
+              a href="#" Drum Island
+            .stars
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star-half-full
+            p 0.5 Mile from the Venue
+        .col-lg-4.col-md-6
+          .island
+            .island-img
+              = image_pack_tag 'shabody_park.jpg', class: 'img-fluid'
+            h3
+              a href="#" Shabody Park
+            .stars
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+              i.fa.fa-star
+            p 0.6 Mile from the Venue
+  /! End Islands Section
+
+  /! Gallery Section
+  section#gallery.wow.fadeInUp
+    .container
+      .section-header
+        h2 Team
+        p Check our team
+    .owl-carousel.gallery-carousel
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'luffy.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'zoro.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'nami.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'usopp.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'sanji.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'chopper.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'robin.jpg'
+      = link_to '#', datra: { gallery: 'gallery-carousel' }, class: 'venobox' do
+        = image_pack_tag 'franky.jpg'
+  /! End Gallery Section
+
+  /! Characters Section
+  section#characters.section-with-bg.wow.fadeInUp
+    .container
+      .section-header
+        h2 Characters
+      .row.no-gutters.characters-wrap.clearfix
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'luffy.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'zoro.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'nami.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'usopp.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'sanji.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'chopper.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'robin.jpg', class: 'img-fluid'
+        .col-lg-3.col-md-4.col-xs-6
+          .character-logo
+            = image_pack_tag 'franky.jpg', class: 'img-fluid'
+  /! End Characters Section
+
+  /!  F.A.Q Section
+  section#faq.wow.fadeInUp
+    .container
+      .section-header
+        h2 F.A.Q
+      .row.justify-content-center
+        .col-lg-9
+          ul#faq-list
+            li
+              a.collapsed data-toggle="collapse" href="#faq1" 
+                | Lorem Ipsum
+                i.fa.fa-minus-circle
+              #faq1.collapse data-parent="#faq-list" 
+                p
+                  | Lorem Ipsum
+            li
+              a.collapsed data-toggle="collapse" href="#faq2" 
+                | Lorem Ipsum
+                i.fa.fa-minus-circle
+              #faq2.collapse data-parent="#faq-list" 
+                p
+                  | Lorem Ipsum
+            li
+              a.collapsed data-toggle="collapse" href="#faq3" 
+                | Lorem Ipsum
+                i.fa.fa-minus-circle
+              #faq3.collapse data-parent="#faq-list" 
+                p
+                  | Lorem Ipsum
+            li
+              a.collapsed data-toggle="collapse" href="#faq4" 
+                | Lorem Ipsum
+                i.fa.fa-minus-circle
+              #faq4.collapse data-parent="#faq-list" 
+                p
+                  | Lorem Ipsum
+            li
+              a.collapsed data-toggle="collapse" href="#faq5" 
+                | Lorem Ipsum
+                i.fa.fa-minus-circle
+              #faq5.collapse data-parent="#faq-list" 
+                p
+                  | Lorem Ipsum
+            li
+              a.collapsed data-toggle="collapse" href="#faq6" 
+                | Lorem Ipsum
+                i.fa.fa-minus-circle
+              #faq6.collapse data-parent="#faq-list" 
+                p
+                  | Lorem Ipsum
+  /! End  F.A.Q Section
+  /! Subscribe Section
+  section#subscribe
+    .container.wow.fadeInUp
+      .section-header
+        h2 Newsletter
+        p Rerum numquam illum recusandae quia mollitia consequatur.
+      form action="#" method="POST" 
+        .form-row.justify-content-center
+          .col-auto
+            input.form-control placeholder=("Enter your Email") type="text"
+          .col-auto
+            button type="submit"  Subscribe
+  /! End Subscribe Section
+  /! Buy Ticket Section
+  section#buy-tickets.section-with-bg.wow.fadeInUp
+    .container
+      .section-header
+        h2 Plans
+        p Lorem Ipsum
+      .row
+        .col-lg-4
+          .card.mb-5.mb-lg-0
+            .card-body
+              h5.card-title.text-muted.text-uppercase.text-center Free
+              h6.card-price.text-center $0
+              hr
+              ul.fa-ul
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li.text-muted
+                  span.fa-li
+                    i.fa.fa-times
+                  | Lorem Ipsum
+                li.text-muted
+                  span.fa-li
+                    i.fa.fa-times
+                  | Lorem Ipsum
+                li.text-muted
+                  span.fa-li
+                    i.fa.fa-times
+                  | Lorem Ipsum
+              hr
+              .text-center
+                button.btn data-target="#buy-ticket-modal" data-ticket-type="standard-access" data-toggle="modal" type="button"  Buy Now
+        .col-lg-4
+          .card.mb-5.mb-lg-0
+            .card-body
+              h5.card-title.text-muted.text-uppercase.text-center Gold
+              h6.card-price.text-center $111
+              hr
+              ul.fa-ul
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li.text-muted
+                  span.fa-li
+                    i.fa.fa-times
+                  | Lorem Ipsum
+                li.text-muted
+                  span.fa-li
+                    i.fa.fa-times
+                  | Lorem Ipsum
+              hr
+              .text-center
+                button.btn data-target="#buy-ticket-modal" data-ticket-type="pro-access" data-toggle="modal" type="button"  Buy Now
+        /! Pro Tier
+        .col-lg-4
+          .card
+            .card-body
+              h5.card-title.text-muted.text-uppercase.text-center Platinum
+              h6.card-price.text-center $999
+              hr
+              ul.fa-ul
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+                li
+                  span.fa-li
+                    i.fa.fa-check
+                  | Lorem Ipsum
+              hr
+              .text-center
+                button.btn data-target="#buy-ticket-modal" data-ticket-type="premium-access" data-toggle="modal" type="button"  Buy Now
+    /! Modal Order Form
+    #buy-ticket-modal.modal.fade
+      .modal-dialog role="document" 
+        .modal-content
+          .modal-header
+            h4.modal-title Buy Tickets
+            button.close aria-label="Close" data-dismiss="modal" type="button" 
+              span aria-hidden="true"  &times;
+          .modal-body
+            form action="#" method="POST" 
+              .form-group
+                input.form-control name="your-name" placeholder=("Your Name") type="text"
+              .form-group
+                input.form-control name="your-email" placeholder=("Your Email") type="text"
+              .form-group
+                select#ticket-type.form-control name="ticket-type" 
+                  option value=""  -- Select Your Ticket Type --
+                  option value="standard-access"  Standard Access
+                  option value="pro-access"  Pro Access
+                  option value="premium-access"  Premium Access
+              .text-center
+                button.btn type="submit"  Buy Now
+        /! /.modal-content
+      /! /.modal-dialog
+    /! /.modal
+  /! End Buy Ticket Section
+  /! Contact Section
+  section#contact.section-bg.wow.fadeInUp
+    .container
+      .section-header
+        h2 Contact Us
+        p Lorem Ipsum
+      .row.contact-info
+        .col-md-4
+          .contact-address
+            i.ion-ios-location-outline
+            h3 Address
+            address 2003 Conifer Drive, WA 98122, USA
+        .col-md-4
+          .contact-phone
+            i.ion-ios-telephone-outline
+            h3 Phone Number
+            p
+              a href="tel:+14254458051"  +1 425-445-8051
+        .col-md-4
+          .contact-email
+            i.ion-ios-email-outline
+            h3 Email
+            p
+              a href="mailto:admin@test.com" admin@test.com
+      .form
+        form action="forms/contact.php" method="post" role="form" 
+          .form-row
+            .form-group.col-md-6
+              input#name.form-control data-msg=("Please enter at least 4 chars") data-rule="minlen:4" name="name" placeholder=("Your Name") type="text"
+              .validate
+            .form-group.col-md-6
+              input#email.form-control data-msg=("Please enter a valid email") data-rule="email" name="email" placeholder=("Your Email") type="email"
+              .validate
+          .form-group
+            input#subject.form-control data-msg=("Please enter at least 8 chars of subject") data-rule="minlen:4" name="subject" placeholder="Subject" type="text"
+            .validate
+          .form-group
+            textarea.form-control data-msg=("Please write something for us") data-rule="required" name="message" placeholder="Message" rows="5" 
+            .validate
+          .mb-3
+            .loading Loading
+            .error-message
+            .sent-message Your message has been sent. Thank you!
+          .text-center
+            button type="submit"  Send Message
+  /! End Contact Section
+/! End #main
+/! Footer
+footer#footer
+  .footer-top
+    .container
+      .row
+        .col-lg-3.col-md-6.footer-info
+          = image_pack_tag 'logo.jpg'
+          p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        .col-lg-3.col-md-6.footer-links
+          h4 Useful Links
+          ul
+            li
+              i.fa.fa-angle-right
+              a href="#"  Home
+            li
+              i.fa.fa-angle-right
+              a href="#"  About us
+            li
+              i.fa.fa-angle-right
+              a href="#"  Services
+            li
+              i.fa.fa-angle-right
+              a href="#"  Terms of service
+            li
+              i.fa.fa-angle-right
+              a href="#"  Privacy policy
+        .col-lg-3.col-md-6.footer-links
+          h4 Useful Links
+          ul
+            li
+              i.fa.fa-angle-right
+              a href="#"  Home
+            li
+              i.fa.fa-angle-right
+              a href="#"  About us
+            li
+              i.fa.fa-angle-right
+              a href="#"  Services
+            li
+              i.fa.fa-angle-right
+              a href="#"  Terms of service
+            li
+              i.fa.fa-angle-right
+              a href="#"  Privacy policy
+        .col-lg-3.col-md-6.footer-contact
+          h4 Contact Us
+          p
+            | 2003 Conifer Drive
+            br/
+            | Seattle, WA 98122
+            br/
+            | United States
+            br/
+            strong Phone:
+            | +1 425 445 8051
+            br/
+            strong Email:
+            | admin@test.com
+            br/
+          .social-links
+            a.twitter href="#" 
+              i.fab.fa.fa-twitter
+            a.facebook href="#" 
+              i.fab.fa.fa-facebook
+            a.instagram href="#" 
+              i.fab.fa.fa-instagram
+            a.google-plus href="#" 
+              i.fab.fa.fa-google-plus
+            a.linkedin href="#" 
+              i.fab.fa.fa-linkedin
+/! End  Footer
+a.back-to-top href="#" 
+  i.fa.fa-angle-up

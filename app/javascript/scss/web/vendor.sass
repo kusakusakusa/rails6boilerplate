@@ -1,0 +1,1095 @@
+// DON'T TOUCH
+
+body
+  background: #fff
+  color: #2f3138
+  font-family: "Open Sans", sans-serif
+  &.mobile-nav-active
+    overflow: hidden
+    #mobile-nav
+      left: 0
+    #mobile-nav-toggle
+      color: #fff
+a
+  color: $color-primary
+  transition: 0.5s
+a:hover, a:active, a:focus
+  color: #f8234a
+  outline: none
+  text-decoration: none
+p
+  padding: 0
+  margin: 0 0 30px 0
+h1, h2, h3, h4, h5, h6
+  font-family: "Raleway", sans-serif
+  font-weight: 400
+  margin: 0 0 20px 0
+  padding: 0
+  color: #0e1b4d
+.main-page
+  margin-top: 70px
+.wow
+  visibility: hidden
+#preloader
+  position: fixed
+  left: 0
+  top: 0
+  z-index: 999
+  width: 100%
+  height: 100%
+  overflow: visible
+  background: #fff url("../../images/brook.jpg") no-repeat center center
+.back-to-top
+  position: fixed
+  display: none
+  background: $color-primary
+  color: #fff
+  width: 40px
+  height: 40px
+  text-align: center
+  border-radius: 50px
+  right: 15px
+  bottom: 15px
+  transition: background 0.5s ease-in-out
+  i
+    font-size: 24px
+    padding-top: 6px
+  &:focus
+    background: #e0072f
+    color: #fff
+    outline: none
+  &:hover
+    background: #e0072f
+    color: #fff
+.section-header
+  margin-bottom: 60px
+  position: relative
+  padding-bottom: 20px
+  &::before
+    content: ''
+    position: absolute
+    display: block
+    width: 60px
+    height: 5px
+    background: $color-primary
+    bottom: 0
+    left: calc(50% - 25px)
+  h2
+    font-size: 36px
+    text-transform: uppercase
+    text-align: center
+    font-weight: 700
+    margin-bottom: 10px
+  p
+    text-align: center
+    padding: 0
+    margin: 0
+    font-size: 18px
+    font-weight: 500
+    color: #9195a2
+.section-with-bg
+  background-color: #f6f7fd
+#header
+  height: 90px
+  padding: 25px 0
+  position: fixed
+  left: 0
+  top: 0
+  right: 0
+  transition: all 0.5s
+  z-index: 997
+  #logo
+    display: inline-block
+    h1
+      font-size: 36px
+      margin: 0
+      padding: 6px 0
+      line-height: 1
+      font-family: "Raleway", sans-serif
+      font-weight: 700
+      letter-spacing: 3px
+      text-transform: uppercase
+      span
+        color: $color-primary
+    img
+      padding: 0
+      margin: 0
+      max-height: 40px
+#header.header-scrolled, #header.header-fixed
+  background: rgba(6, 12, 34, 0.98)
+  height: 70px
+  padding: 15px 0
+  transition: all 0.5s
+#header #logo h1 a, #header #logo h1 a:hover
+  color: #fff
+.nav-menu, .nav-menu *
+  margin: 0
+  padding: 0
+  list-style: none
+.nav-menu
+  ul
+    position: absolute
+    display: none
+    top: 100%
+    left: 0
+    z-index: 99
+    margin: 4px 0 0 0
+    padding: 10px
+    box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25)
+    background: #fff
+    border-radius: 3px
+    ul
+      top: 0
+      left: 100%
+      margin: 0
+    li
+      min-width: 180px
+      transition: 0.3s
+      a
+        padding: 10px
+        color: #060c22
+        transition: 0.3s
+        display: block
+        font-size: 13px
+        text-transform: none
+        border-radius: 3px
+      &:hover
+        & > a
+          background: $color-primary
+          color: #fff
+  li
+    position: relative
+    white-space: nowrap
+    &.buy-tickets
+      a
+        color: #fff
+        background: $color-primary
+        padding: 7px 22px
+        border-radius: 50px
+        border: 2px solid $color-primary
+        transition: all ease-in-out 0.3s
+        font-weight: 500
+        margin-left: 8px
+        margin-top: 2px
+        line-height: 1
+        font-size: 13px
+        &:hover
+          background: none
+  & > li
+    float: left
+    margin-left: 8px
+    & > a
+      &:before
+        content: ""
+        position: absolute
+        width: 0
+        height: 2px
+        bottom: 0
+        left: 0
+        background-color: $color-primary
+        visibility: hidden
+        transition: all 0.3s ease-in-out 0s
+  a
+    padding: 8px
+    text-decoration: none
+    display: inline-block
+    color: rgba(202, 206, 221, 0.8)
+    font-family: "Raleway", sans-serif
+    font-weight: 600
+    font-size: 14px
+    outline: none
+.nav-menu li:hover > ul,
+.nav-menu li.sfHover > ul
+  display: block
+.sf-arrows
+  .sf-with-ul
+    padding-right: 30px
+    &:after
+      content: "\f107"
+      position: absolute
+      right: 15px
+      font-family: 'Font Awesome 5 Free'
+      font-style: normal
+      font-weight: normal
+  ul
+    .sf-with-ul
+      &:after
+        content: "\f105"
+#nav-menu-container
+  float: right
+  margin: 0
+.nav-menu .menu-active a, .nav-menu a:hover
+  color: #fff
+.nav-menu a:hover:before, .nav-menu li:hover > a:before, .nav-menu .menu-active > a:before
+  visibility: visible
+  width: 100%
+.nav-menu li.buy-tickets:hover a:before, .nav-menu li.buy-tickets.menu-active a:before
+  visibility: hidden
+#mobile-nav-toggle
+  position: fixed
+  right: 0
+  top: 0
+  z-index: 999
+  margin: 15px 15px 0 0
+  border: 0
+  background: none
+  font-size: 24px
+  display: none
+  transition: all 0.4s
+  outline: none
+  cursor: pointer
+  i
+    color: #fff
+#mobile-nav
+  position: fixed
+  top: 0
+  padding-top: 18px
+  bottom: 0
+  z-index: 998
+  background: rgba(6, 12, 34, 0.9)
+  left: -260px
+  width: 260px
+  overflow-y: auto
+  transition: 0.4s
+  ul
+    padding: 0
+    margin: 0
+    list-style: none
+    li
+      position: relative
+      a
+        color: #fff
+        font-size: 17px
+        overflow: hidden
+        padding: 10px 22px 10px 15px
+        position: relative
+        text-decoration: none
+        width: 100%
+        display: block
+        outline: none
+        &:hover
+          color: $color-primary
+      li
+        padding-left: 30px
+    .menu-has-children
+      i
+        position: absolute
+        right: 0
+        z-index: 99
+        padding: 15px
+        cursor: pointer
+        color: #fff
+        &.fa-chevron-up
+          color: $color-primary
+    .menu-item-active
+      color: $color-primary
+#mobile-body-overly
+  width: 100%
+  height: 100%
+  z-index: 997
+  top: 0
+  left: 0
+  position: fixed
+  background: rgba(6, 12, 34, 0.8)
+  display: none
+#intro
+  z-index: 1
+  width: 100%
+  height: 100vh
+  background: url("../../images/brook.jpg") top center
+  background-size: cover
+  overflow: hidden
+  position: relative
+  &:before
+    content: ""
+    background: rgba(6, 12, 34, 0.8)
+    position: absolute
+    bottom: 0
+    top: 0
+    left: 0
+    right: 0
+  .intro-container
+    position: absolute
+    bottom: 0
+    left: 0
+    top: 90px
+    right: 0
+    display: flex
+    justify-content: center
+    align-items: center
+    flex-direction: column
+    text-align: center
+    padding: 0 15px
+  h1
+    color: #fff
+    font-family: "Raleway", sans-serif
+    font-size: 56px
+    font-weight: 600
+    text-transform: uppercase
+    span
+      color: $color-primary
+  p
+    color: #ebebeb
+    font-weight: 700
+    font-size: 20px
+  .play-btn
+    width: 94px
+    height: 94px
+    background: radial-gradient($color-primary 50%, rgba(101, 111, 150, 0.15) 52%)
+    border-radius: 50%
+    display: block
+    position: relative
+    overflow: hidden
+    &::after
+      content: ''
+      position: absolute
+      left: 50%
+      top: 50%
+      transform: translateX(-40%) translateY(-50%)
+      width: 0
+      height: 0
+      border-top: 10px solid transparent
+      border-bottom: 10px solid transparent
+      border-left: 15px solid #fff
+      z-index: 100
+      transition: all 400ms cubic-bezier(0.55, 0.055, 0.675, 0.19)
+    &:before
+      content: ''
+      position: absolute
+      width: 120px
+      height: 120px
+      -webkit-animation-delay: 0s
+      animation-delay: 0s
+      -webkit-animation: btn-pulse 2s
+      animation: btn-pulse 2s
+      -webkit-animation-direction: forwards
+      animation-direction: forwards
+      -webkit-animation-iteration-count: infinite
+      animation-iteration-count: infinite
+      -webkit-animation-timing-function: steps
+      animation-timing-function: steps
+      opacity: 1
+      border-radius: 50%
+      border: 2px solid rgba(163, 163, 163, 0.4)
+      top: -15%
+      left: -15%
+      background: rgba(198, 16, 0, 0)
+    &:hover
+      &::after
+        border-left: 15px solid $color-primary
+        transform: scale(20)
+      &::before
+        content: ''
+        position: absolute
+        left: 50%
+        top: 50%
+        transform: translateX(-40%) translateY(-50%)
+        width: 0
+        height: 0
+        border: none
+        border-top: 10px solid transparent
+        border-bottom: 10px solid transparent
+        border-left: 15px solid #fff
+        z-index: 200
+        -webkit-animation: none
+        animation: none
+        border-radius: 0
+  .about-btn
+    font-family: "Raleway", sans-serif
+    font-weight: 500
+    font-size: 14px
+    letter-spacing: 1px
+    display: inline-block
+    padding: 12px 32px
+    border-radius: 50px
+    transition: 0.5s
+    line-height: 1
+    margin: 10px
+    color: #fff
+    -webkit-animation-delay: 0.8s
+    animation-delay: 0.8s
+    border: 2px solid $color-primary
+    &:hover
+      background: $color-primary
+      color: #fff
+  #about
+    background: url("../../images/brook.jpg")
+    background-size: cover
+    overflow: hidden
+    position: relative
+    color: #fff
+    padding: 60px 0 40px 0
+  #footer
+    background: #101522
+    padding: 0 0 25px 0
+    color: #eee
+    font-size: 14px
+#about
+  &:before
+    content: ""
+    background: rgba(13, 20, 41, 0.8)
+    position: absolute
+    bottom: 0
+    top: 0
+    left: 0
+    right: 0
+  h2
+    font-size: 36px
+    font-weight: bold
+    margin-bottom: 10px
+    color: #fff
+  h3
+    font-size: 18px
+    font-weight: bold
+    text-transform: uppercase
+    margin-bottom: 10px
+    color: #fff
+  p
+    font-size: 14px
+    margin-bottom: 20px
+    color: #fff
+#speakers
+  padding: 60px 0 30px 0
+  .speaker
+    position: relative
+    overflow: hidden
+    margin-bottom: 30px
+    .details
+      background: rgba(6, 12, 34, 0.76)
+      position: absolute
+      left: 0
+      bottom: -30px
+      right: 0
+      text-align: center
+      padding-top: 10px
+      transition: all 300ms cubic-bezier(0.645, 0.045, 0.355, 1)
+      h3
+        color: #fff
+        font-size: 22px
+        font-weight: 600
+        margin-bottom: 5px
+      p
+        color: #fff
+        font-size: 15px
+        margin-bottom: 10px
+        font-style: italic
+      .social
+        height: 30px
+      a
+        color: #fff
+        &:hover
+          color: $color-primary
+    &:hover
+      .details
+        bottom: 0
+#speakers-details
+  padding: 60px 0
+  .details
+    h2
+      color: #112363
+      font-size: 28px
+      font-weight: 700
+      margin-bottom: 10px
+    .social
+      margin-bottom: 15px
+      a
+        background: #e9edfb
+        color: #112363
+        line-height: 1
+        display: inline-block
+        text-align: center
+        border-radius: 50%
+        width: 36px
+        height: 36px
+        padding-top: 9px
+        &:hover
+          background: $color-primary
+          color: #fff
+        i
+          font-size: 18px
+    p
+      color: #112363
+      font-size: 15px
+      margin-bottom: 10px
+#schedule
+  padding: 60px 0 60px 0
+  .nav-tabs
+    text-align: center
+    margin: auto
+    display: block
+    border-bottom: 0
+    margin-bottom: 30px
+    li
+      display: inline-block
+      margin-bottom: 0
+    a
+      border: none
+      border-radius: 50px
+      font-weight: 600
+      background-color: #0e1b4d
+      color: #fff
+      padding: 10px 100px
+      &.active
+        background-color: $color-primary
+        color: #fff
+  .sub-heading
+    text-align: center
+    font-size: 18px
+    font-style: italic
+    margin: 0 auto 30px auto
+  .tab-pane
+    transition: ease-in-out .2s
+  .schedule-item
+    border-bottom: 1px solid #cad4f6
+    padding-top: 15px
+    padding-bottom: 15px
+    transition: background-color ease-in-out 0.3s
+    &:hover
+      background-color: #fff
+    time
+      padding-bottom: 5px
+      display: inline-block
+    .speaker
+      width: 60px
+      height: 60px
+      overflow: hidden
+      border-radius: 50%
+      float: left
+      margin: 0 10px 10px 0
+      img
+        height: 100%
+        transform: translateX(-50%)
+        margin-left: 50%
+        transition: all ease-in-out 0.3s
+    h4
+      font-size: 18px
+      font-weight: 600
+      margin-bottom: 5px
+      span
+        font-style: italic
+        color: #19328e
+        font-weight: normal
+        font-size: 16px
+    p
+      font-style: italic
+      color: #152b79
+      margin-bottom: 0
+#venue
+  padding: 60px 0
+  .container-fluid
+    margin-bottom: 3px
+  .venue-map
+    iframe
+      width: 100%
+      height: 100%
+      min-height: 300px
+  .venue-info
+    background: url("../../images/brook.jpg") top center no-repeat
+    background-size: cover
+    position: relative
+    padding-top: 60px
+    padding-bottom: 60px
+    &:before
+      content: ""
+      background: rgba(13, 20, 41, 0.8)
+      position: absolute
+      bottom: 0
+      top: 0
+      left: 0
+      right: 0
+    h3
+      font-size: 36px
+      font-weight: 700
+      color: #fff
+    p
+      color: #fff
+      margin-bottom: 0
+  .venue-gallery-container
+    padding-right: 12px
+  .venue-gallery
+    overflow: hidden
+    border-right: 3px solid #fff
+    border-bottom: 3px solid #fff
+    img
+      transition: all ease-in-out 0.4s
+    &:hover
+      img
+        transform: scale(1.1)
+#islands
+  padding: 60px 0
+  .island
+    border: 1px solid #e0e5fa
+    background: #fff
+    margin-bottom: 30px
+    &:hover
+      .island-img
+        img
+          transform: scale(1.1)
+  .island-img
+    overflow: hidden
+    margin-bottom: 15px
+    img
+      transition: 0.3s ease-in-out
+  h3
+    font-weight: 600
+    font-size: 20px
+    margin-bottom: 5px
+    padding: 0 20px
+  a
+    color: #152b79
+    &:hover
+      color: $color-primary
+  .stars
+    padding: 0 20px
+    margin-bottom: 5px
+    i
+      color: #ffc31d
+  p
+    padding: 0 20px
+    margin-bottom: 20px
+    color: #060c22
+    font-style: italic
+    font-size: 15px
+#gallery
+  padding: 60px
+  overflow: hidden
+  .owl-item
+    border-left: 2px solid #fff
+    border-right: 2px solid #fff
+  .owl-dot
+    display: inline-block
+    margin: 0 5px
+    width: 12px
+    height: 12px
+    border-radius: 50%
+    background-color: #ddd
+    &.active
+      background-color: $color-primary
+  .gallery-carousel
+    .owl-stage-outer
+      overflow: visible
+    .center
+      border: 6px solid $color-primary
+      margin: -10px
+      box-sizing: content-box
+      padding: 4px
+      background: #fff
+      z-index: 1
+#gallery .owl-nav, #gallery .owl-dots
+  margin-top: 25px
+  text-align: center
+#characters
+  padding: 60px 0
+  .characters-wrap
+    border-top: 1px solid #e0e5fa
+    border-left: 1px solid #e0e5fa
+    margin-bottom: 30px
+  .character-logo
+    padding: 30px
+    display: flex
+    justify-content: center
+    align-items: center
+    border-right: 1px solid #e0e5fa
+    border-bottom: 1px solid #e0e5fa
+    overflow: hidden
+    background: rgba(255, 255, 255, 0.5)
+    height: 160px
+    &:hover
+      img
+        transform: scale(1.2)
+  img
+    transition: all 0.4s ease-in-out
+#faq
+  padding: 60px 0
+  #faq-list
+    padding: 0
+    list-style: none
+    li
+      border-bottom: 1px solid #ddd
+    a
+      padding: 18px 0
+      display: block
+      position: relative
+      font-family: "Raleway", sans-serif
+      font-size: 16px
+      line-height: 24px
+      font-weight: 600
+      padding-right: 20px
+      &.collapse
+        color: $color-primary
+      &.collapsed
+        color: #000
+        i
+          &::before
+            content: "\f055" !important
+    i
+      font-size: 24px
+      position: absolute
+      right: 0
+      top: 16px
+    p
+      margin-bottom: 20px
+#subscribe
+  padding: 60px
+  // background: url(../img/subscribe-bg.jpg) center center no-repeat
+  background-size: cover
+  overflow: hidden
+  position: relative
+  &:before
+    content: ""
+    background: rgba(6, 12, 34, 0.6)
+    position: absolute
+    bottom: 0
+    top: 0
+    left: 0
+    right: 0
+  input
+    background: #fff
+    color: #060c22
+    border: 0
+    outline: none
+    margin: 0
+    padding: 9px 20px
+    border-radius: 50px
+    font-size: 14px
+  button
+    border: 0
+    padding: 9px 25px
+    cursor: pointer
+    background: $color-primary
+    color: #fff
+    transition: all 0.3s ease
+    outline: none
+    font-size: 14px
+    border-radius: 50px
+    &:hover
+      background: #e0072f
+#subscribe .section-header h2, #subscribe p
+  color: #fff
+#buy-tickets
+  padding: 60px 0
+  .card
+    border: none
+    border-radius: 5px
+    transition: all  0.3s ease-in-out
+    box-shadow: 0 10px 25px 0 rgba(6, 12, 34, 0.1)
+    &:hover
+      box-shadow: 0 10px 35px 0 rgba(6, 12, 34, 0.2)
+    hr
+      margin: 25px 0
+    .card-title
+      margin: 10px 0
+      font-size: 14px
+      letter-spacing: 1px
+      font-weight: bold
+    .card-price
+      font-size: 48px
+      margin: 0
+    ul
+      li
+        margin-bottom: 20px
+    .text-muted
+      opacity: 0.7
+    .btn
+      font-size: 15px
+      border-radius: 50px
+      padding: 10px 40px
+      transition: all 0.2s
+      background-color: $color-primary
+      border: 0
+      color: #fff
+      &:hover
+        background-color: #e0072f
+  #buy-ticket-modal
+    .btn
+      font-size: 15px
+      border-radius: 50px
+      padding: 10px 40px
+      transition: all 0.2s
+      background-color: $color-primary
+      border: 0
+      color: #fff
+      &:hover
+        background-color: #e0072f
+#buy-tickets #buy-ticket-modal input, #buy-tickets #buy-ticket-modal select
+  border-radius: 0
+#contact
+  padding: 60px 0
+  .contact-info
+    margin-bottom: 20px
+    text-align: center
+    i
+      font-size: 48px
+      display: inline-block
+      margin-bottom: 10px
+      color: $color-primary
+    h3
+      font-size: 18px
+      margin-bottom: 15px
+      font-weight: bold
+      text-transform: uppercase
+      color: #112363
+    a
+      color: #4869df
+      &:hover
+        color: $color-primary
+  form
+    .validate
+      display: none
+      color: red
+      margin: 0 0 15px 0
+      font-weight: 400
+      font-size: 13px
+    .error-message
+      display: none
+      color: #fff
+      background: #ed3c0d
+      text-align: center
+      padding: 15px
+      font-weight: 600
+    .sent-message
+      display: none
+      color: #fff
+      background: #18d26e
+      text-align: center
+      padding: 15px
+      font-weight: 600
+    .loading
+      display: none
+      background: #fff
+      text-align: center
+      padding: 15px
+      &:before
+        content: ""
+        display: inline-block
+        border-radius: 50%
+        width: 24px
+        height: 24px
+        margin: 0 10px -6px 0
+        border: 3px solid #18d26e
+        border-top-color: #eee
+        -webkit-animation: loading 1s linear infinite
+        animation: loading 1s linear infinite
+    input
+      padding: 20px 15px
+    textarea
+      padding: 12px 15px
+    button[type="submit"]
+      background: $color-primary
+      border: 0
+      padding: 10px 40px
+      color: #fff
+      transition: 0.4s
+      border-radius: 50px
+      cursor: pointer
+    button[type="submit"]:hover
+      background: #e0072f
+#contact .contact-info address, #contact .contact-info p
+  margin-bottom: 0
+  color: #112363
+#contact .contact-address, #contact .contact-phone, #contact .contact-email
+  margin-bottom: 20px
+#contact form input, #contact form textarea
+  border-radius: 0
+  box-shadow: none
+  font-size: 14px
+#contact form input::focus, #contact form textarea::focus
+  background-color: $color-primary
+#footer
+  .footer-top
+    background: #040919
+    padding: 60px 0 30px 0
+    .footer-info
+      margin-bottom: 30px
+      h3
+        font-size: 26px
+        margin: 0 0 20px 0
+        padding: 2px 0 2px 0
+        line-height: 1
+        font-family: "Raleway", sans-serif
+        font-weight: 700
+        color: #fff
+      img
+        height: 40px
+        margin-bottom: 10px
+      p
+        font-size: 14px
+        line-height: 24px
+        margin-bottom: 0
+        font-family: "Raleway", sans-serif
+        color: #fff
+    .social-links
+      a
+        font-size: 18px
+        display: inline-block
+        background: #222636
+        color: #eee
+        line-height: 1
+        padding: 8px 0
+        margin-right: 4px
+        border-radius: 50%
+        text-align: center
+        width: 36px
+        height: 36px
+        transition: 0.3s
+        &:hover
+          background: $color-primary
+          color: #fff
+    h4
+      font-size: 14px
+      font-weight: bold
+      color: #fff
+      text-transform: uppercase
+      position: relative
+      padding-bottom: 12px
+      border-bottom: 2px solid $color-primary
+    .footer-links
+      margin-bottom: 30px
+      ul
+        list-style: none
+        padding: 0
+        margin: 0
+        i
+          padding-right: 5px
+          color: $color-primary
+          font-size: 18px
+        li
+          border-bottom: 1px solid #262c44
+          padding: 10px 0
+          &:first-child
+            padding-top: 0
+        a
+          color: #eee
+          &:hover
+            color: $color-primary
+    .footer-contact
+      margin-bottom: 30px
+      p
+        line-height: 26px
+    .footer-newsletter
+      margin-bottom: 30px
+      input[type="email"]
+        border: 0
+        padding: 6px 8px
+        width: 65%
+      input[type="submit"]
+        background: $color-primary
+        border: 0
+        width: 35%
+        padding: 6px 0
+        text-align: center
+        color: #fff
+        transition: 0.3s
+        cursor: pointer
+      input[type="submit"]:hover
+        background: #e0072f
+  .copyright
+    text-align: center
+    padding-top: 30px
+  .credits
+    text-align: center
+    font-size: 13px
+    color: #ddd
+
+// media query
+@media (max-width: 1199px)
+  #header .container
+    max-width: 100%
+  .nav-menu a
+    padding: 8px 4px
+
+@media (min-width: 1024px)
+  #subscribe
+    background-attachment: fixed
+  #about
+    background-attachment: fixed
+  #intro
+    background-attachment: fixed
+
+@media (min-width: 991px)
+  #schedule .sub-heading
+    width: 75%
+
+@media (max-width: 991px)
+  #mobile-nav-toggle
+    display: inline
+  #schedule .nav-tabs a
+    padding: 8px 60px
+  #intro p
+    font-size: 16px
+  #intro h1
+    font-size: 34px
+  #intro .intro-container
+    top: 70px
+  #nav-menu-container
+    display: none
+  #header
+    background: rgba(6, 12, 34, 0.98)
+    height: 70px
+    padding: 15px 0
+    transition: all 0.5s
+
+@media (max-width: 768px)
+  .back-to-top
+    bottom: 15px
+  #faq #faq-list a
+    font-size: 18px
+  #faq #faq-list i
+    top: 13px
+
+@media (min-width: 767px)
+  #subscribe input
+    min-width: 400px
+
+@media (max-width: 767px)
+  #schedule .nav-tabs a
+    padding: 8px 50px
+
+@media (min-width: 768px)
+  #contact .contact-address, #contact .contact-phone, #contact .contact-email
+    padding: 20px 0
+
+  #contact .contact-phone
+    border-left: 1px solid #ddd
+    border-right: 1px solid #ddd
+
+@media (max-width: 574px)
+  #venue .venue-info h3
+    font-size: 24px
+
+@media (max-width: 480px)
+  #schedule .nav-tabs a
+    padding: 8px 30px
+
+@media (max-width: 460px)
+  #subscribe button
+    margin-top: 10px
+
+// webkit
+@-webkit-keyframes btn-pulse
+  0%
+    transform: scale(0.6, 0.6)
+    opacity: 1
+  100%
+    transform: scale(1, 1)
+    opacity: 0
+
+@keyframes btn-pulse
+  0%
+    transform: scale(0.6, 0.6)
+    opacity: 1
+  100%
+    transform: scale(1, 1)
+    opacity: 0
+
+@-webkit-keyframes loading
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
+
+@keyframes loading
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)

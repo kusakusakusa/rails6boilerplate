@@ -1,0 +1,27 @@
+header#header
+  .container
+    #logo.pull-left
+      = link_to root_path, class: 'scrollto' do
+        = image_pack_tag 'logo.jpg'
+    nav#nav-menu-container
+      ul.nav-menu
+        li.menu-active
+          = link_to 'Home', root_path
+        li
+          a href="#about"  About
+        li
+          a href="#speakers"  Speakers
+        li
+          a href="#schedule"  Schedule
+        li
+          a href="#venue"  Venue
+        li
+          a href="#islands"  Islands
+        li
+          a href="#gallery"  Gallery
+        li
+          a href="#characters"  Characters
+        li
+          a href="#contact"  Contact
+        li.buy-tickets
+          a href="#buy-tickets"  Buy Tickets
