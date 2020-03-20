@@ -13,9 +13,10 @@ RSpec.describe 'Registrations', type: :request do
 
       post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.registrations'
       expect(response_body.response_message).to eq "#{I18n.t('activerecord.attributes.user.password')} #{I18n.t('activerecord.errors.models.user.attributes.password.too_short').gsub('%{count}', Devise.password_length.to_a.first.to_s)}"
+      expect(response.status).to eq 400
+
       expect(User.count).to eq 0
     end
 
@@ -28,9 +29,10 @@ RSpec.describe 'Registrations', type: :request do
 
       post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'devise.confirmations.send_instructions'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 200
+
       expect(User.count).to eq 1
       expect(User.first.confirmed?).to eq false
     end

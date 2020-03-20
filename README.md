@@ -333,6 +333,5 @@ Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6
 * find out how to NOT redownload providers in terraform or copy whole context into dockerfile by copy or mounting volume in correct order
 * deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
 * Use packer instead of provisioner scripts
-* rspec check for response_code before response.status for faster debug
 * add taggable
 * update ckeditor version when latest version, which contain support for ActiveStorgae, is released (https://github.com/galetahub/ckeditor/pull/853)

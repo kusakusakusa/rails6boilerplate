@@ -16,9 +16,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.invalid'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 400
     end
 
     scenario 'should fail with wrong password' do
@@ -30,9 +30,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.invalid'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 400
     end
 
     scenario 'should fail with unconfirmed user' do
@@ -44,9 +44,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/login', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'devise.failure.unconfirmed'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 400
     end
 
     scenario 'should get token with correct credentials', :show_in_doc do
@@ -77,9 +77,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
       expect(response_body.response_message).to eq I18n.t('doorkeeper.errors.messages.invalid_grant')
+      expect(response.status).to eq 400
     end
 
     scenario 'should fail with revoked refresh_token (after logout)' do
@@ -92,9 +92,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 400
     end
 
     scenario 'should fail with revoked access_token (after logout)' do
@@ -107,9 +107,9 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_grant'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 400
     end
 
     scenario 'should return new access_token with valid refresh_token', :show_in_doc do
@@ -120,14 +120,14 @@ RSpec.describe 'Authentications', type: :request do
 
       post '/api/v1/refresh', params: params.to_json, headers: DEFAULT_HEADERS
 
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t('custom.success.default')
       expect(response.status).to eq 200
 
       expect(response_body.access_token).to be_present
       expect(response_body.refresh_token).to be_present
       expect(response_body.access_token).not_to eq @access_token
       expect(response_body.refresh_token).not_to eq @refresh_token
-      expect(response_body.response_code).to eq 'custom.success.default'
-      expect(response_body.response_message).to eq I18n.t('custom.success.default')
     end
   end
 
@@ -139,17 +139,17 @@ RSpec.describe 'Authentications', type: :request do
     scenario 'should fail with invalid token' do
       post '/api/v1/logout', params: {}.to_json, headers: { 'Authorization': 'Bearer invalid' }.merge!(DEFAULT_HEADERS)
 
-      expect(response.status).to eq 401
       expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.unknown'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 401
     end
 
     scenario 'should pass with valid token' do
       post '/api/v1/logout', params: {}.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
 
-      expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response.status).to eq 200
     end
 
     scenario 'should revoke access token', :show_in_doc do
@@ -172,9 +172,9 @@ RSpec.describe 'Authentications', type: :request do
       Timecop.freeze(Time.now + Doorkeeper.configuration.access_token_expires_in.seconds + 1.day) do
         post '/api/v1/logout', params: {}.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
 
-        expect(response.status).to eq 401
         expect(response_body.response_code).to eq 'doorkeeper.errors.messages.invalid_token.expired'
         expect(response_body.response_message).to eq I18n.t response_body.response_code
+        expect(response.status).to eq 401
       end
     end
 

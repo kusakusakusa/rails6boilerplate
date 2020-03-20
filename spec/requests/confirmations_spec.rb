@@ -16,9 +16,9 @@ RSpec.describe 'Confirmations', type: :request do
 
       post '/api/v1/confirm', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.confirmations'
 
+      expect(response.status).to eq 400
       expect(response_body.response_message).to eq "#{I18n.t('activerecord.attributes.user.confirmation_token')} #{I18n.t('activerecord.errors.models.user.attributes.confirmation_token.invalid')}"
     end
 
@@ -32,9 +32,9 @@ RSpec.describe 'Confirmations', type: :request do
 
       post '/api/v1/confirm', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t('custom.success.default')
+      expect(response.status).to eq 200
 
       expect(user1.reload.confirmed?).to eq true
       expect(user2.reload.confirmed?).to eq false
@@ -51,9 +51,9 @@ RSpec.describe 'Confirmations', type: :request do
       }
       post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.confirmations'
       expect(response_body.response_message).to eq 'Email not found'
+      expect(response.status).to eq 400
     end
 
     scenario 'should fail if user already confirmed' do
@@ -62,9 +62,9 @@ RSpec.describe 'Confirmations', type: :request do
       }
       post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 400
       expect(response_body.response_code).to eq 'custom.errors.devise.confirmations'
       expect(response_body.response_message).to include I18n.t('errors.messages.already_confirmed')
+      expect(response.status).to eq 400
     end
 
     scenario 'should not change confirmation_token' do
@@ -75,9 +75,9 @@ RSpec.describe 'Confirmations', type: :request do
       }
       post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t('devise.confirmations.send_instructions')
+      expect(response.status).to eq 200
       expect(user.reload.confirmation_token).to eq initial_confirmation_token
     end
 
@@ -87,9 +87,9 @@ RSpec.describe 'Confirmations', type: :request do
       }
       post '/api/v1/resend-confirmation', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response.status).to eq 200
       expect(response_body.response_code).to eq 'custom.success.default'
       expect(response_body.response_message).to eq I18n.t('devise.confirmations.send_instructions')
+      expect(response.status).to eq 200
     end
   end
 end
