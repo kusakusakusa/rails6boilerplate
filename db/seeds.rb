@@ -6,7 +6,7 @@ admin_user = AdminUser.create!(
   email: 'admin@test.com',
   password: 'admin@test.com'
 )
-admin_user.avatar.attach(io: File.open("#{Rails.root.join('app', 'assets', 'images')}/default_avatar.jpg"), filename: 'default_avatar.jpg')
+admin_user.avatar.attach(io: File.open("#{Rails.root.join('app', 'javascript', 'images')}/default_avatar.jpg"), filename: 'default_avatar.jpg')
 admin_user.save!
 p 'Admin user created'
 
