@@ -124,13 +124,84 @@ Remove `post` related tools by:
 4. delete `has_many :posts` in user model
 5. delete `db/seeds/1_posts.rb`
 5. delete `spec/factories/post.rb`
-6. drop, create and mograte database
+6. drop, create and migrate database
 7. run APIPIE_RECORD=examples rspec
 8. run `annotate`
 
 ## Usage - Deployment
 
-### Architecture Explanation
+### Heroku
+
+Use heroku for deployment.
+
+Login heroku cli
+```
+heroku login
+```
+
+Create heroku app for staging and production
+```
+heroku create --remote staging
+heroku create --remote production
+```
+
+View heroku application information
+```
+heroku info --remote staging
+heroku info --remote production
+```
+
+Add cleardb addon for mysql. This requires verification on heroku by adding credit card details. Then setup the configurations. Refer to [here](https://devcenter.heroku.com/articles/cleardb) for more information.
+
+```
+heroku addons:add cleardb:ignite --remote staging
+heroku config --remote staging | grep CLEARDB_DATABASE_URL
+heroku addons:add cleardb:ignite --remote production
+heroku config --remote production | grep CLEARDB_DATABASE_URL
+
+# convert to mysql2 based on gem used
+heroku config:set DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote staging
+heroku config:set CLEARDB_DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote staging
+
+heroku config:set DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote production
+heroku config:set CLEARDB_DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote production
+```
+
+Set environment
+```
+heroku config:set RAILS_ENV=staging --remote staging
+heroku config:set RAILS_ENV=production --remote production
+```
+
+Deployment
+```
+git push staging master
+git push production master
+```
+
+Migrate and seed
+```
+heroku run rake db:migrate --remote staging
+heroku run rake db:seed --remote staging
+
+heroku run rake db:migrate --remote production
+heroku run rake db:seed --remote production
+```
+
+Destroy app
+```
+heroku apps:destroy --remote staging
+heroku apps:destroy --remote production
+```
+
+**Note** that this will add remote to git in the project source code.
+
+#### TODO
+use procfile to config how to start server
+
+### AWS
+
+#### Architecture Explanation
 
 Provisioning of cloud resources will be done using `Terraform`.
 
@@ -144,7 +215,7 @@ A private and its corresponding ssh key pair will be generated using `ssh-keygen
 
 Application will be deployed using `AWS Elastic Beanstalk`.
 
-### Prerequisite
+#### Prerequisite
 
 1. Do this once. This ensures the official [net-ssh-gateway](https://github.com/net-ssh/net-ssh-gateway) gem is downloaded and not a tamerped version.
 ```
@@ -157,7 +228,7 @@ $ rm -f net-ssh-public_cert.pem
 
 2. Install `docker`
 
-### Deployment Steps
+#### Deployment Steps
 
 **NOTE**: make sure to separate each environment into **different git branches**.
 
@@ -178,7 +249,7 @@ A separate `RDS` will be created in the private subnet where the EC2 instances w
 
 Public subnets will be associated with a Internet Gateway, which will be provisioned.
 
-### Deploy Application
+#### Deploy Application
 
 After deploying the infrastructure, the `eb-user` access key id and access secret key will be shown on the terminal. Use it to deploy your application to `Elastic Beanstalk`.
 
@@ -191,7 +262,7 @@ eb deploy # OR eb deploy --staged
 
 Note that `eb deploy` deploys only committed files to the server, or at the very least, staged files but that will require the `--staged` option.
 
-### Troubleshooting
+#### Troubleshooting
 
 #### Logs
 
@@ -208,7 +279,7 @@ This will only be used by the environment that requires separate instances.
 
 Communicate with the instances in the private subnet via a bastion server and ssh agent forwarding.
 
-##### Deploy bastion server
+###### Deploy bastion server
 
 This will bring up the bastion server.
 ```
@@ -218,21 +289,21 @@ rake ebs:bastion:up
 - setup bastion server in one of the public subnets that were created in the custom VPC
 - outputs bastion server public ip address
 
-##### Destroy bastion server
+###### Destroy bastion server
 
 This will bring up the bastion server.
 ```
 rake ebs:bastion:down
 ```
 
-##### Remove bastion AMI
+###### Remove bastion AMI
 
 This will remove the bastion AMI (to save on the negligible S3 storage cost for storing the image)
 ```
 rake ebs:bastion:unpack
 ```
 
-### Rails commands
+#### Rails commands
 
 Some common rails commands that can be executed on the instances/database conveniently.
 
@@ -246,7 +317,7 @@ These tasks involves tunneling through the bastion server, which means the basti
 
 If the environment created is a single instance, its RDS should be publicly accessible. Hence, you can connect from your local machine and run the commands locally instead of having to use these comands.
 
-### Logging
+#### Logging
 
 Rails logger is an instance of [cloudwatchlogger](https://github.com/zshannon/cloudwatchlogger). Log stream name is using the default generated by the gem. Setup is under the `config/environments/production.rb` file. Credentials and region uses the secrets in the `credentials.yml.enc` file.
 
@@ -262,7 +333,6 @@ Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6
 * find out how to NOT redownload providers in terraform or copy whole context into dockerfile by copy or mounting volume in correct order
 * deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
 * Use packer instead of provisioner scripts
-* Add monitoring to instances
 * rspec check for response_code before response.status for faster debug
 * add taggable
 * update ckeditor version when latest version, which contain support for ActiveStorgae, is released (https://github.com/galetahub/ckeditor/pull/853)
