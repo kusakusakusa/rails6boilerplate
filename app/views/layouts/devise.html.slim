@@ -20,10 +20,6 @@ html lang="en"
       .row.justify-content-center
         .col-xl-10.col-lg-12.col-md-9
           .card.o-hidden.border-0.shadow-lg.my-5
-            .card-body.p-0
-              /! Nested Row within Card Body
-              .row
-                .col-lg-6.d-none.d-lg-block.bg-login-image
-                .col-lg-6
-                  .p-5
-                    = yield
+            .card-body.p-5
+              = image_pack_tag 'logo.jpg', class: 'm-auto d-block'
+              = yield
