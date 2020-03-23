@@ -109,7 +109,40 @@ Remove `post` related tools by:
 6. drop, create and migrate database
 7. run APIPIE_RECORD=examples rspec
 8. run `annotate`
-9. run `EDITOR=vim rails credentials:edit` to generate `config/master.key`
+
+### Create master.key
+
+Run `EDITOR=vim rails credentials:edit` to generate `config/master.key`
+
+### For non API projects
+
+1. Remove db migration file with `rm db/migrate/*_create_doorkeeper_tables.rb`
+2. Remove API related files with
+```
+rm \
+app/concerns/api_rescues.rb \
+app/controllers/api/v1/tokens_controller.rb \
+spec/support/token_helpers.rb \
+spec/support/api_helpers.rb \
+config/initializers/apipie.rb \
+config/initializers/doorkeeper.rb \
+config/locales/doorkeeper.en.yml
+
+rm -rf \
+doc \
+app/controllers/api \
+spec/requests
+```
+3. Make changes at these files:
+```
+spec/spec_helper.rb
+config/application.rb
+config/routes.rb
+```
+4. Remove gems
+```
+bundle remove apipie-rails doorkeeper doorkeeper-jwt rack-cors
+```
 
 ### Doorkeeper
 
