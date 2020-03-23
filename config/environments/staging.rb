@@ -63,11 +63,11 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "rails6boilerplate_production"
 
   config.action_mailer.default_url_options = {
-    host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_host),
-    protocol: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_protocol)
+    host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :host),
+    protocol: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :protocol)
   }
   config.action_mailer.perform_caching = false
-  config.action_mailer.asset_host = Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer_asset_host)
+  config.action_mailer.asset_host = Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :asset_host)
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

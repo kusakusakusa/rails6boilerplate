@@ -21,8 +21,8 @@ class ApplicationController < ActionController::Base
 
     log = CloudWatchLogger.new(
       {
-        access_key_id: Rails.application.credentials.dig(env, :aws, :cloudwatch_access_key_id),
-        secret_access_key: Rails.application.credentials.dig(env, :aws, :cloudwatch_secret_access_key)
+        access_key_id: Rails.application.credentials.dig(env, :aws, :cloudwatch, :access_key_id),
+        secret_access_key: Rails.application.credentials.dig(env, :aws, :cloudwatch, :secret_access_key)
       },
       "#{Rails.application.class.module_parent_name}-#{Rails.env}",
       'errors',
