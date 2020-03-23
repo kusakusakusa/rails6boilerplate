@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5, h6
   padding: 0
   color: #0e1b4d
 .main-page
-  margin-top: 70px
+  margin-top: $header-height
 .wow
   visibility: hidden
 #preloader
@@ -89,9 +89,10 @@ h1, h2, h3, h4, h5, h6
     color: #9195a2
 .section-with-bg
   background-color: #f6f7fd
+
 #header
-  height: 90px
-  padding: 25px 0
+  height: $header-height
+  padding: $header-padding 0
   position: fixed
   left: 0
   top: 0
@@ -99,7 +100,19 @@ h1, h2, h3, h4, h5, h6
   transition: all 0.5s
   z-index: 997
   #logo
+    height: calc(#{$header-height} - #{$header-padding} - #{$header-padding})
     display: inline-block
+    a
+      position: relative
+      display: block
+      height: 100%
+      img
+        padding: 0
+        margin: 0
+        max-height: calc(#{$header-height} - #{$header-padding} - #{$header-padding})
+        position: absolute
+        top: 0
+        bottom: 0
     h1
       font-size: 36px
       margin: 0
@@ -111,13 +124,9 @@ h1, h2, h3, h4, h5, h6
       text-transform: uppercase
       span
         color: $color-primary
-    img
-      padding: 0
-      margin: 0
-      max-height: 40px
 #header.header-scrolled, #header.header-fixed
   background: rgba(6, 12, 34, 0.98)
-  height: 70px
+  height: $header-height
   padding: 15px 0
   transition: all 0.5s
 #header #logo h1 a, #header #logo h1 a:hover
@@ -1020,12 +1029,12 @@ h1, h2, h3, h4, h5, h6
   #intro h1
     font-size: 34px
   #intro .intro-container
-    top: 70px
+    top: $header-height
   #nav-menu-container
     display: none
   #header
     background: rgba(6, 12, 34, 0.98)
-    height: 70px
+    height: $header-height
     padding: 15px 0
     transition: all 0.5s
 
