@@ -96,6 +96,21 @@ NOTE: In the event the `master.key` is lost, go to the aws management console of
 
 Run `rails g rename:into <YOUR_PROJECT_NAME` to rename the application. Note that this will rename the repository you are in as well. You will need to run `cd` commands to switch directories.
 
+### Remove Post Model
+
+Remove `post` related tools by:
+
+1. run `rails d model post`
+2. run `rails d scaffold cms::posts`
+3. run `rails d scaffold_controller api::v1::posts`
+4. delete `has_many :posts` in user model
+5. delete `db/seeds/1_posts.rb`
+5. delete `spec/factories/post.rb`
+6. drop, create and migrate database
+7. run APIPIE_RECORD=examples rspec
+8. run `annotate`
+9. run `EDITOR=vim rails credentials:edit` to generate `config/master.key`
+
 ### Doorkeeper
 
 With reference to [this guide](https://naturaily.com/blog/api-authentication-devise-doorkeeper-setup), the `oauth_applications` table and all its associated indices and associations are removed. The `t.references :application, null: false` is also changed to  `t.integer :application_id`. `previous_refresh_token` column is also removed. `access_token` and `refresh_token` are set to `text` data type and have their indices removed to prevent being [too long to save in database column](https://github.com/doorkeeper-gem/doorkeeper-jwt/issues/31).
@@ -113,20 +128,6 @@ The `Api::V1::TokensController` controller inherits from `Doorkeeper::TokensCont
 `login` routes will use `application/json` `content-type` instead of `application/x-www-form-urlencoded` according to [spec](https://tools.ietf.org/html/rfc6749).
 
 Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `posts` APIs. `handle_auth_errors` is set to `:raise` in `doorkeeper.rb`, so the `Doorkeeper::Errors` will be triggered via the `before_action :doorkeeper_authorize!` in the `API::BaseController`, which should be inherited by most of, if not all, the custom controllers. Each of the `Doorkeeper::Errors` will return their specific errors.
-
-### Remove Post Model
-
-Remove `post` related tools by:
-
-1. run `rails d model post`
-2. run `rails d scaffold cms::posts`
-3. run `rails d scaffold_controller api::v1::posts`
-4. delete `has_many :posts` in user model
-5. delete `db/seeds/1_posts.rb`
-5. delete `spec/factories/post.rb`
-6. drop, create and migrate database
-7. run APIPIE_RECORD=examples rspec
-8. run `annotate`
 
 ## Usage - Deployment
 
