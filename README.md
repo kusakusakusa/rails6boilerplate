@@ -131,7 +131,8 @@ config/locales/doorkeeper.en.yml
 rm -rf \
 doc \
 app/controllers/api \
-spec/requests
+spec/requests \
+app/views/api
 ```
 3. Make changes at these files:
 ```
@@ -165,6 +166,13 @@ Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `po
 ## Usage - Deployment
 
 ### Heroku
+
+Install heroku accounts plugin to deploy to different accounts
+```
+heroku plugins:install heroku-accounts
+heroku accounts:add personal
+heroku accounts:add <client>
+```
 
 Use heroku for deployment.
 
