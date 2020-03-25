@@ -80,6 +80,10 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
     = link_to edit_admin_user_registration_path, class: 'nav-link' do
       i.fas.fa-fw.fa-lock
       span Password
+  li.nav-item
+    a.dropdown-item.nav-link data-target="#logoutModal" data-toggle="modal" href="#" 
+      i.fas.fa-sign-out-alt
+      span Logout
   /! Divider
   hr.sidebar-divider.d-none.d-md-block/
   /! Sidebar Toggler (Sidebar)
