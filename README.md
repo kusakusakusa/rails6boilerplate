@@ -212,7 +212,10 @@ heroku config:set CLEARDB_DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL
 Set environment
 ```
 heroku config:set RAILS_ENV=staging --remote staging
+heroku config:set RACK_ENV=staging --remote staging
+
 heroku config:set RAILS_ENV=production --remote production
+heroku config:set RACK_ENV=production --remote staging
 ```
 
 Deployment
