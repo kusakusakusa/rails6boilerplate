@@ -68,7 +68,7 @@ RSpec.describe 'Passwords', type: :request do
       expect(ActionMailer::Base.deliveries.count).to eq 1
       email = ActionMailer::Base.deliveries.last
       expect(email.to).to include user1.email
-      expect(email.body).to include "id='reset-password-token'"
+      expect(email.body).to include "<p id=\"reset-password-token\""
     end
 
     scenario 'should implicitly confirm unconfirmed users' do
