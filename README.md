@@ -83,12 +83,7 @@ Run `bundle` to install the files.
 
 Add password to `database.yml` for your root user to authenticate with the database.
 
-Run `EDITOR=vim rails credentials:edit` to generate `config/master.key` file and `config/credentials.yml.enc` file. Make sure to add the key:
-```
-jwt:
-  secret: <MY_VALUE>
-```
-The `jwt[:secret]` is used to create secrets.
+Run `EDITOR=vim rails credentials:edit` to generate `config/master.key` file and `config/credentials.yml.enc` file. Make sure to add the key `secret_key_base`. It is used to create secrets.
 
 NOTE: In the event the `master.key` is lost, go to the aws management console of the application and get a copy form the environment variables configurations.
 
