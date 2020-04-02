@@ -23,6 +23,8 @@ pickle-email-*.html
 
 # TODO Comment out this rule if you are OK with secrets being uploaded to the repo
 config/initializers/secret_token.rb
+
+# TODO Ignore master key for decrypting credentials and more.
 config/master.key
 
 # Only include if you have production secrets in this file, which is no longer a Rails default
@@ -71,9 +73,6 @@ yarn-debug.log*
 !/storage/.keep
 
 # End of https://www.gitignore.io/api/rails
-
-# Ignore master key for decrypting credentials and more.
-/config/master.key
 
 # Ignore startbootstrap-sb-admin-2-gh-pages folder, but not the zip file
 startbootstrap-sb-admin-2-gh-pages/
