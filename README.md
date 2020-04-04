@@ -165,8 +165,8 @@ Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `po
 Install heroku accounts plugin to deploy to different accounts
 ```
 heroku plugins:install heroku-accounts
-heroku accounts:add personal
 heroku accounts:add <client>
+heroku accounts:set <client>
 ```
 
 Use heroku for deployment.
