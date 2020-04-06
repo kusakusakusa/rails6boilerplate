@@ -11,7 +11,7 @@
     "@rails/webpacker": "^4.0.7",
     "animate.css": "^3.7.2",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
-    "bootstrap": "4.3.1",
+    "bootstrap": "^4.4.1",
     "chart.js": "^2.8.0",
     "datatables.net": "^1.10.19",
     "datatables.net-bs4": "^1.10.19",
