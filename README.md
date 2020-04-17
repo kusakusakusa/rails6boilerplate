@@ -100,10 +100,11 @@ Remove `post` related tools by:
 3. run `rails d scaffold_controller api::v1::posts`
 4. delete `has_many :posts` in user model
 5. delete `db/seeds/1_posts.rb`
-5. delete `spec/factories/post.rb`
-6. drop, create and migrate database
-7. run APIPIE_RECORD=examples rspec
-8. run `annotate`
+6. delete `spec/factories/post.rb`
+7. remove `posts` related routes in `routes.rb`
+8. drop, create and migrate database
+9. run APIPIE_RECORD=examples rspec
+10. run `annotate`
 
 ### Create master.key
 
@@ -301,6 +302,14 @@ eb deploy # OR eb deploy --staged
 ```
 
 Note that `eb deploy` deploys only committed files to the server, or at the very least, staged files but that will require the `--staged` option.
+
+#### Helpful functions
+
+Running `rails console` to single instance databases, run this command.
+```
+DATABASE_URL=mysql2://<RDS_ENDPOINT>/<DB_NAME> RAILS_ENV=<ENV> rails console
+```
+The RDS endpoint can be obtain be running in the `rake ebs:apply` to make trivial changes to the terraform state and show the output of the various resources in the infrastructure.
 
 #### Troubleshooting
 
