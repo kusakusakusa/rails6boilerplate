@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    stored_location_for(resource) || cms_root_path
+    cms_root_path
   end
 
   def after_sign_out_path_for(resource_or_scope)
