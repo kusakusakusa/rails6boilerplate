@@ -270,12 +270,16 @@ namespace :ebs do
           aws_profile: aws_profile,
           region: region
         )
-        s3_client.create_bucket(
-          bucket: tfstate_bucket_name,
-          create_bucket_configuration: {
-            location_constraint: region
-          }
-        )
+        
+        # conditional configuration for location_constraint
+        options = {
+          bucket: tfstate_bucket_name
+        }
+        unless region == 'us-east-1'
+          options[:create_bucket_configuration] = {}
+          options[:create_bucket_configuration][:location_constraint] = region
+        end
+        s3_client.create_bucket(options)
       else
         Ebs::Helper.announce "Terraform state bucket (#{tfstate_bucket_name}) already created!"
       end
