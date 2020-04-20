@@ -755,7 +755,7 @@ namespace :ebs do
 
         if args[:is_single_instance]
           file.puts <<~MSG
-            skip_final_snapshot = yes
+            skip_final_snapshot = true
           MSG
         else
           file.puts <<~MSG
