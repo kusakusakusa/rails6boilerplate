@@ -1055,7 +1055,7 @@ namespace :ebs do
         resource "aws_elastic_beanstalk_environment" "main" {
           name = "${var.project_name}-${var.env}"
           application = aws_elastic_beanstalk_application.main.name
-          solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.0 running Ruby 2.6 (Puma)"
+          solution_stack_name = "64bit Amazon Linux 2018.03 v2.11.4 running Ruby 2.6 (Puma)"
 
           ################
           # common settings
