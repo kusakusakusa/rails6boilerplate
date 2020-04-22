@@ -3,4 +3,6 @@
 @import "bootstrap/scss/bootstrap";
 @import "vendor.sass";
 
-@import "main.sass"
+@import "../utility.sass";
+
+@import "main.sass";
