@@ -1,0 +1,9 @@
+.col-xl-12
+  .card.shadow.mb-4
+    /! Card Header
+    .card-header.py-3.d-flex.flex-row.align-items-center.justify-content-between
+      h6.m-0.font-weight-bold.text-primary
+        | Editing #{@hygiene_page.id}
+    /! Card Body
+    .card-body
+      = render 'form', hygiene_page: @hygiene_page

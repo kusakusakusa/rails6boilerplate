@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
   namespace :cms do
     root to: 'application#index'
+    resources :hygiene_pages, only: %i[edit update]
     resources :posts
   end
 

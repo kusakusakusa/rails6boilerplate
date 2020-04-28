@@ -10,5 +10,12 @@ admin_user.avatar.attach(io: File.open("#{Rails.root.join('app', 'javascript', '
 admin_user.save!
 p 'Admin user created'
 
+p 'Creating hygiene page'
+HygienePage.create!(
+  slug: 'privacy-policy',
+  content: '<h1>Privacy Policy</h1><p>LoremIpsum</p>'
+)
+p 'Created hygiene page!'
+
 # seeds that DO NOT involve production environment
 Dir[File.join(Rails.root, 'db', 'seeds', '**/*.rb')].sort.each { |seed| load seed } unless Rails.env.production?

@@ -75,6 +75,15 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
   hr.sidebar-divider/
   /! Heading
   .sidebar-heading
+    | Taxonomy
+  li class="nav-item #{request.path.include?('privacy-policy') ? 'active' : ''}"
+    = link_to edit_cms_hygiene_page_path('privacy-policy'), class: 'nav-link' do
+      i.fas.fa-fw.fa-user-lock
+      span Privacy Policy
+  /! Divider
+  hr.sidebar-divider/
+  /! Heading
+  .sidebar-heading
     | Account
   li.nav-item
     = link_to edit_admin_user_registration_path, class: 'nav-link' do

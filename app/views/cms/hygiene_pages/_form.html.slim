@@ -1,0 +1,14 @@
+= form_with(model: hygiene_page, url: cms_hygiene_page_path(hygiene_page), local: true) do |form|
+  - if hygiene_page.errors.any?
+    .alert.alert-dismissible.alert-danger
+      h2
+        = pluralize(hygiene_page.errors.count, 'error')
+        | prohibited this hygiene_page from being saved:
+      ul
+        - hygiene_page.errors.full_messages.each do |message|
+          li= message
+  .form-group
+    = form.cktext_area :content, placeholder: 'Write something'
+
+  .actions
+    = form.submit 'Save', class: 'btn btn-primary'
