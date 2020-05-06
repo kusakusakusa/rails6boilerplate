@@ -24,6 +24,10 @@ require("venobox/venobox/venobox.min.css")
 require("../scss/web/web.scss")
 require("../scss/fontawesome.scss")
 
+// images
+const images = require.context('../images', true)
+const imagePath = (name) => images(name, true)
+
 import { WOW } from 'wowjs';
 
 document.addEventListener("turbolinks:load", () => {
