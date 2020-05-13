@@ -12,8 +12,8 @@ The project will bootstrap
 These steps are taken when setting up the project. It affects only the first commit of the project. They are run only once and is noted here for documentation purpose only.
 
 1. Run `rvm get stable` to get latest version of `rvm`
-2. Run `rvm install ruby-2.6.4` to get latest version of `ruby` at time of making this project
-3. Run `rvm use 2.6.4 && rvm gemset create rails6boilerplate` in the parent folder of the app folder that will be created
+2. Run `rvm install ruby-2.6.6` to get latest version of `ruby` at time of making this project
+3. Run `rvm use 2.6.6 && rvm gemset create rails6boilerplate` in the parent folder of the app folder that will be created
 4. Run `gem install rails -v 6` to get the rails binaries
 5. Run `brew install yarn` to install yarn which is required by webpacker, the new front end management tool for rails 6
 6. Run `rails new rails6boilerplate --database=mysql --webpack=react` to setup project
