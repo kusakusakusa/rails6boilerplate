@@ -8,6 +8,7 @@
         "public/packs/",
         "public/assets/",
         "public/packs-test/",
+        "storage/",
         "tmp/*",
         "*.jpg",
         "*.jpeg",
