@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(version: 2020_04_27_225655) do
     t.index ["type"], name: "index_ckeditor_assets_on_type"
   end
 
-  create_table "hygiene_pages", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "hygiene_pages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "slug", limit: 191
     t.text "content"
     t.datetime "created_at", precision: 6, null: false

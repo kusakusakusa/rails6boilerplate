@@ -4,7 +4,7 @@ class Cms::HygienePagesController < Cms::BaseController
   rescue_from ActiveRecord::RecordNotFound, with: :handle_record_not_found
 
   def edit
-    @hygiene_page = HygienePage.find(params[:id])
+    @hygiene_page = HygienePage.find_by(slug: params[:id])
   end
 
   def update

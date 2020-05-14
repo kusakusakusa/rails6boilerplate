@@ -12,5 +12,4 @@
 
 
 class HygienePage < ApplicationRecord
-  self.primary_key = 'slug'
 end

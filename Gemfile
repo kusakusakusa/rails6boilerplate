@@ -25,7 +25,8 @@ gem 'jbuilder', '~> 2.7'
 # gem 'bcrypt', '~> 3.1.7'
 
 # Use Active Storage variant
-# gem 'image_processing', '~> 1.2'
+# for ckeditor
+gem 'image_processing', '~> 1.10.3'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
@@ -70,8 +71,8 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'apipie-rails', '~> 0.5.16'
-gem 'aws-sdk-s3', '~> 1.48.0'
-gem 'ckeditor', github: 'galetahub/ckeditor'
+gem 'aws-sdk-s3', '~> 1.64.0'
+gem 'ckeditor', '~> 5.1.0'
 gem 'cloudwatchlogger', '~> 0.2.1'
 gem 'devise', '~> 4.7.1'
 gem 'doorkeeper', '~> 5.2.1'
