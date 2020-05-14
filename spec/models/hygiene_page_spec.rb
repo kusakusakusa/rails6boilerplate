@@ -11,7 +11,4 @@
 require 'rails_helper'
 
 RSpec.describe HygienePage, type: :model do
-  scenario 'should have primary_key as slug' do
-    expect(HygienePage.primary_key).to eq 'slug'
-  end
 end
