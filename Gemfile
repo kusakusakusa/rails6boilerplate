@@ -75,7 +75,7 @@ gem 'aws-sdk-s3', '~> 1.64.0'
 gem 'ckeditor', '~> 5.1.0'
 gem 'cloudwatchlogger', '~> 0.2.1'
 gem 'devise', '~> 4.7.1'
-gem 'doorkeeper', '~> 5.2.1'
+gem 'doorkeeper', '~> 5.2.5'
 gem 'doorkeeper-jwt', '~> 0.3.0'
 gem 'faker', '~> 2.2.1' # for seeding in non development/test env
 gem 'jquery-rails', '~> 4.3.5' # required for old gems still relying on assets pipeline
