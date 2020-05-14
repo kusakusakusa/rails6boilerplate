@@ -20,7 +20,7 @@ feature 'Forgot password admin user', js: true do
     end
 
     scenario 'should fail if email is not valid' do
-      fill_in 'Enter Email Address...', with: 'wrongadmin@mailinator.com'
+      fill_in 'Enter Email Address...', with: 'wrongcms@mailinator.com'
       click_on 'Send me reset password instructions'
 
       expect(page).to have_content('Email not found')

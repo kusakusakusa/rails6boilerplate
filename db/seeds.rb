@@ -3,8 +3,8 @@
 # seeds that also involves production environment
 p 'Creating admin user'
 admin_user = AdminUser.create!(
-  email: 'admin@mailinator.com',
-  password: 'admin@mailinator.com'
+  email: 'cms@mailinator.com',
+  password: 'cms@mailinator.com'
 )
 admin_user.avatar.attach(io: File.open("#{Rails.root.join('app', 'javascript', 'images')}/default_avatar.jpg"), filename: 'default_avatar.jpg')
 admin_user.save!
