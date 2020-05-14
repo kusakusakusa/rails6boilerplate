@@ -745,7 +745,7 @@ namespace :ebs do
             storage_type = "gp2"
             engine = "mysql"
             engine_version = "5.7"
-            instance_class = "db.t2.micro"
+            instance_class = "#{args[:is_single_instance] ? 'db.t3.micro' : 'db.t2.micro'}"
             identifier = "rds-${var.project_name}${var.env}"
             name = "#{dbname}"
             username = "#{username}"
