@@ -122,6 +122,7 @@ spec/support/token_helpers.rb \
 spec/support/api_helpers.rb \
 config/initializers/apipie.rb \
 config/initializers/doorkeeper.rb \
+db/migrate/20190905013830_create_doorkeeper_tables.rb \
 config/locales/doorkeeper.en.yml
 
 rm -rf \
@@ -135,6 +136,11 @@ app/views/api
 spec/spec_helper.rb
 config/application.rb
 config/routes.rb
+config/locales/custom.en.yml
+app/views/layouts/_sidebar.html.slim
+app/controllers/api/base_controller.rb
+app/models/user.rb
+
 ```
 4. Remove gems
 ```
