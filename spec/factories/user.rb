@@ -4,8 +4,8 @@ FactoryBot.define do
   factory :user do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
-    email { Faker::Internet.email }
-    password { '12345678' }
+     email { 'user1@mailinator.com' }
+    password { 'password' }
 
     # default users are confirmed
     before :create do |user|

@@ -4,13 +4,13 @@ require 'rails_helper'
 
 RSpec.describe 'Authentications', type: :request do
   let!(:user) { create(:user) }
-  let(:unconfirmed_user) { create(:user, :unconfirmed) }
+  let(:unconfirmed_user) { create(:user, :unconfirmed, email: 'user2@mailinator.com') }
 
   describe 'POST /api/v1/login' do
     scenario 'should fail with wrong email' do
       params = {
         email: 'wrong@email.com',
-        password: '12345678',
+        password: 'password',
         grant_type: 'password'
       }
 
@@ -38,7 +38,7 @@ RSpec.describe 'Authentications', type: :request do
     scenario 'should fail with unconfirmed user' do
       params = {
         email: unconfirmed_user.email,
-        password: '12345678',
+        password: 'password',
         grant_type: 'password'
       }
 
@@ -52,7 +52,7 @@ RSpec.describe 'Authentications', type: :request do
     scenario 'should get token with correct credentials', :show_in_doc do
       params = {
         email: user.email,
-        password: '12345678',
+        password: 'password',
         grant_type: 'password'
       }
 

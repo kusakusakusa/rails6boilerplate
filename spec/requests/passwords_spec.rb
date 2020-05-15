@@ -4,8 +4,8 @@ require 'rails_helper'
 
 RSpec.describe 'Passwords', type: :request do
   let(:user1) { create(:user) }
-  let(:user2) { create(:user) }
-  let(:unconfirmed_user) { create(:user, :unconfirmed) }
+  let(:user2) { create(:user, email: 'user2@mailinator.com') }
+  let(:unconfirmed_user) { create(:user, :unconfirmed, email: 'user3@mailinator.com') }
 
   describe 'POST /api/v1/forgot-password' do
     scenario 'should fail on invalid email' do

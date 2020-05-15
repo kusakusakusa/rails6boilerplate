@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Confirmations', type: :request do
   describe 'POST /api/v1/confirm' do
     let(:user1) { create(:user, :unconfirmed) }
-    let(:user2) { create(:user, :unconfirmed) }
+    let(:user2) { create(:user, :unconfirmed, email: 'user2@mailinator.com') }
 
     scenario 'should fail with invalid confirmation_token' do
       expect(user1.confirmed?).to eq false

@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Posts', type: :request do
   describe 'GET /api/v1/posts' do
     let!(:user1) { create(:user) }
-    let(:user2) { create(:user) }
+    let(:user2) { create(:user, email: 'user2@mailinator.com') }
     let(:post1) { create(:post, user: user1) }
     let(:post2) { create(:post, user: user2) }
 
