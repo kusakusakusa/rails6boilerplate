@@ -7,6 +7,8 @@ RSpec.describe 'Registrations', type: :request do
     scenario 'should fail with too short a password' do
       expect(User.count).to eq 0
       params = {
+        first_name: 'firstname',
+        last_name: 'lastname',
         email: 'test@test.com',
         password: SecureRandom.alphanumeric(Devise.password_length.to_a.first - 1)
       }
@@ -23,6 +25,8 @@ RSpec.describe 'Registrations', type: :request do
     scenario 'should pass, create unconfirmed user and return user object with proper inputs', :show_in_doc do
       expect(User.count).to eq 0
       params = {
+        first_name: 'firstname',
+        last_name: 'lastname',
         email: 'test@test.com',
         password: SecureRandom.alphanumeric(Devise.password_length.to_a.first)
       }

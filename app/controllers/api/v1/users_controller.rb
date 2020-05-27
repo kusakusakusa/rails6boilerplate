@@ -17,6 +17,8 @@ module Api
       header 'Accept', 'application/json'
       param :email, URI::MailTo::EMAIL_REGEXP, required: true
       param :password, String, desc: "Length #{Devise.password_length.to_a.first} to #{Devise.password_length.to_a.last}", required: true
+      param :first_name, String, required: true
+      param :last_name, String, required: true
       # overwrite devise/registrations#create
       def register
         user = User.new(register_params)
