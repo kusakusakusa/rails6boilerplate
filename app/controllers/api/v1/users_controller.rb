@@ -24,7 +24,7 @@ module Api
         user = User.new(register_params)
         user.save
         if user.persisted?
-          @response_code = 'devise.confirmations.send_instructions'
+          @response_code = 'custom.success.default'
           @response_message = I18n.t('devise.confirmations.send_instructions')
         else
           @response_code = 'custom.errors.devise.registrations'

@@ -33,8 +33,8 @@ RSpec.describe 'Registrations', type: :request do
 
       post '/api/v1/register', params: params.to_json, headers: DEFAULT_HEADERS
 
-      expect(response_body.response_code).to eq 'devise.confirmations.send_instructions'
-      expect(response_body.response_message).to eq I18n.t(response_body.response_code)
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t('devise.confirmations.send_instructions')
       expect(response.status).to eq 200
 
       expect(User.count).to eq 1
