@@ -328,6 +328,11 @@ eb logs --all
 
 The logs for all the components of Elastic beanstalk will be downloaded into `.elasticbeanstalk/logs` folder
 
+Sometimes the application fails to deploy right at the start. You will have to ssh into the instance and do a tail of the all the logs:
+```
+tail -f /var/log/**/*log* /var/log/*log*
+```
+
 #### Bastion
 
 This will only be used by the environment that requires separate instances.
