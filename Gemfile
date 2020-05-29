@@ -82,3 +82,4 @@ gem 'jquery-rails', '~> 4.3.5' # required for old gems still relying on assets p
 gem 'mini_magick', '~> 4.9.5'
 gem 'rack-cors', '~> 1.0.3'
 gem 'slim-rails', '~> 3.2.0'
+gem 'active_storage_validations', '~> 0.8.9'
