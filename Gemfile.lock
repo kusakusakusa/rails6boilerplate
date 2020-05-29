@@ -366,7 +366,7 @@ DEPENDENCIES
   mysql2 (>= 0.4.4)
   net-ssh-gateway (~> 2.0.0)
   pry
-  puma (~> 4.3.3)
+  puma (= 4.3.3)
   rack-cors (~> 1.0.3)
   rails (~> 6.0.3)
   rename (~> 1.0.6)
