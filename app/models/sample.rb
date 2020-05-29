@@ -15,7 +15,7 @@
 #
 
 class Sample < ApplicationRecord
-  belongs_to :user #, inverse_of: :samples
+  belongs_to :user, optional: true #, inverse_of: :samples
 
   has_one_attached :featured_image
   has_many_attached :images

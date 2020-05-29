@@ -3,10 +3,9 @@
     /! Card Header
     .card-header.py-3
       h6.m-0.font-weight-bold.text-primary
-        | Editing Post #{@cms_post.id}
+        | Editing Sample #{@sample.id}: #{@sample.title}
         .float-right
-          = link_to cms_post_path(@cms_post) do
+          = link_to cms_sample_path(@sample) do
             i.fas.fa-fw.fa-info-circle
-    /! Card Body
     .card-body
-      = render 'form', cms_post: @cms_post
+      = render 'form', sample: @sample

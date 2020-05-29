@@ -5,6 +5,7 @@ class CreateSamples < ActiveRecord::Migration[6.0]
       t.string :title
       t.text :description
       t.date :publish_date
+      t.integer :price, limit: 3
       t.boolean :featured, default: false, null: false
 
       t.timestamps

@@ -31,7 +31,9 @@ html lang="en"
         #content
           = render 'layouts/topbar'
           /! Begin Page Content
-          = yield
+          .container-fluid
+            = render 'layouts/flash'
+            = yield
           /! End of Page Content
         /! End of Main Content
         /! Footer

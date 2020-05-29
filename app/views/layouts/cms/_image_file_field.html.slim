@@ -1,0 +1,4 @@
+.form-group
+  = image_tag form.object.public_send(key).attachment ? rails_blob_url(form.object.public_send(key)) : '', class: 'image-input-preview w-25', data: { field_name: "#{form.object.class.name.parameterize(separator: '_')}[#{key}]" }, alt: ''
+  = form.file_field key, class: 'image-input form-control-file', required: form.object.new_record?
+  = form.label key, 'Browse Image', class: 'btn btn-secondary'

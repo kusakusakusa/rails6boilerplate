@@ -24,7 +24,8 @@ module Cms
       @sample = Sample.new(sample_params)
       @sample.save
       if @sample.errors.empty?
-        redirect_to cms_samples_path
+        flash[:success] = "Sample successfully created"
+        redirect_to cms_sample_path(@sample)
       else
         flash[:danger] = @sample.errors.full_messages.to_sentence
         render :new
@@ -36,8 +37,8 @@ module Cms
       @sample.attributes = sample_params
       @sample.save
       if @sample.errors.empty?
-        flash[:success] = "#{@sample.title} successfully updated!"
-        redirect_to cms_samples_path
+        flash[:success] = "Sample successfully updated"
+        redirect_to cms_sample_path(@sample)
       else
         render :new
       end
@@ -67,8 +68,8 @@ module Cms
         :description,
         :publish_date,
         :featured,
-        :content,
-        :cover_image
+        :price,
+        :featured_image
       )
     end
   end

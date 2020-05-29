@@ -1,0 +1,4 @@
+.form-group
+  - unless form.object.new_record?
+    = form.label key, class: 'small font-weight-bold'
+  = form.text_field key, { placeholder: key.to_s.titlecase, class: 'form-control' }.merge((defined? options) ? options : {})

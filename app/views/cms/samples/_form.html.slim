@@ -1,38 +1,23 @@
-= form_with(model: cms_post, url: cms_post.new_record? ? cms_samples_path : cms_post_path(cms_post), local: true) do |form|
-  - if cms_post.errors.any?
+= form_with(model: sample, url: sample.new_record? ? cms_samples_path : cms_sample_path(sample), local: true) do |form|
+  - if sample.errors.any?
     .alert.alert-dismissible.alert-danger
       h2
-        = pluralize(cms_post.errors.count, 'error')
-        | prohibited this cms_post from being saved:
+        = pluralize(sample.errors.count, 'error')
+        | prohibited this sample from being saved:
       ul
-        - cms_post.errors.full_messages.each do |message|
+        - sample.errors.full_messages.each do |message|
           li= message
+
+  = render 'layouts/cms/text_field', form: form, key: :title
+  = render 'layouts/cms/text_area', form: form, key: :description, options: { rows: 5 }
   .form-group
-    - unless cms_post.new_record?
-      = form.label :title, class: 'small font-weight-bold'
-    = form.text_field :title, placeholder: 'Title', class: 'form-control'
-  .form-group
-    - unless cms_post.new_record?
-      = form.label :publish_date, class: 'small font-weight-bold'
-    = form.text_field :publish_date, placeholder: 'Publish Date', data: { behavior: 'flatpickr' }, class: 'form-control'
-  .form-group
-    - unless cms_post.new_record?
-      = form.label :content, class: 'small font-weight-bold'
-    = form.cktext_area :content, placeholder: 'Write something'
-  .row
-    .col-md-4
-      .card.shadow.mb-4
-        .card-header.py-3.d-flex.flex-row.align-items-center.justify-content-between
-          h4.small.m-0.font-weight-bold
-            | Cover Image
-          .float-right
-            .btn.btn-danger.btn-circle.btn-sm.image-delete data-field-name='post[cover_image]'
-              i.fas.fa-times
-        .card-body.pb-0
-          .form-group
-            = image_tag form.object.cover_image.attachment ? rails_blob_url(form.object.cover_image) : '', class: 'image-input-preview', data: { field_name: 'post[cover_image]' }, alt: ''
-            = form.file_field :cover_image, class: 'image-input form-control-file', required: true
-            = form.label :cover_image, 'Browse Image', class: 'btn btn-secondary'
+    - unless form.object.new_record?
+      = form.label :featured, class: 'small font-weight-bold'
+    - [true, false].each do |featured|
+      = render 'layouts/cms/radio', form: form, key: :featured, value: featured, label: featured ? 'Feature' : "Don't feature", required: true
+  = render 'layouts/cms/date_field', form: form, key: :publish_date
+  = render 'layouts/cms/number_field', form: form, key: :price
+  = render 'layouts/cms/image_file_field', form: form, key: :featured_image
 
   .actions
     = form.submit class: 'btn btn-primary'

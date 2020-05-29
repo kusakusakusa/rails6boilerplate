@@ -1,91 +1,38 @@
-/! Begin Page Content
-.container-fluid
-  = render 'layouts/flash'
-  /! Page Heading
-  h1.h3.mb-2.text-gray-800 Posts
-  p.mb-4
-    | DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
-    a href="https://datatables.net" target="_blank"  official DataTables documentation
-  /! DataTales Example
-  .row
-    .col-md-6
-      .card.shadow.mb-4
-        .card-header.py-3
-          h6.m-0.font-weight-bold.text-primary
-            | Total: #{@cms_posts.count}
-            .float-right
-              = link_to new_cms_post_path do
-                i.fas.fa-fw.fa-plus
-        .card-body
-          .table-responsive
-            table.table.table-bordered.data-table width="100%" 
-              thead
+h1.h3.mb-2.text-gray-800 Samples
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-header.py-3
+        h6.m-0.font-weight-bold.text-primary
+          | Total: #{@samples.count}
+          .float-right
+            = link_to new_cms_sample_path do
+              i.fas.fa-fw.fa-plus
+      .card-body
+        .table-responsive
+          table.table.table-bordered.data-table width="100%" 
+            thead
+              tr
+                th ID
+                th Title
+                th Publish Date
+                th
+            tbody
+              - @samples.each do |sample|
                 tr
-                  th ID
-                  th Title
-                  th Publish Date
-                  th
-              tfoot
-                tr
-                  td ID
-                  td Title
-                  td Publish Date
                   td
-              tbody
-                - @cms_posts.each do |cms_post|
-                  tr
-                    td
-                      = cms_post.id
-                    td
-                      = cms_post.title
-                    td
-                      = cms_post.publish_date.strftime('%b %d, %Y')
-                    td
-                      = link_to cms_post_path(cms_post) do
-                        i.fas.fa-fw.fa-info-circle
-                      = link_to edit_cms_post_path(cms_post) do
-                        i.fas.fa-fw.fa-edit
-                      = link_to cms_post_path(cms_post), method: :delete, data: { confirm: 'Are you sure?' } do
-                        i.fas.fa-fw.fa-trash-alt
-    .col-md-6
-      .card.shadow.mb-4
-        .card-header.py-3
-          h6.m-0.font-weight-bold.text-primary
-            | Total: #{@cms_posts.count}
-            .float-right
-              = link_to new_cms_post_path do
-                i.fas.fa-fw.fa-plus
-        .card-body
-          .table-responsive
-            table.table.table-bordered.data-table width="100%" 
-              thead
-                tr
-                  th ID
-                  th Title
-                  th Publish Date
-                  th
-              tfoot
-                tr
-                  td ID
-                  td Title
-                  td Publish Date
+                    = sample.id
                   td
-              tbody
-                - @cms_posts.each do |cms_post|
-                  tr
-                    td
-                      = cms_post.id
-                    td
-                      = cms_post.title
-                    td
-                      = cms_post.publish_date.strftime('%b %d, %Y')
-                    td
-                      = link_to cms_post_path(cms_post) do
-                        i.fas.fa-fw.fa-info-circle
-                      = link_to edit_cms_post_path(cms_post) do
-                        i.fas.fa-fw.fa-edit
-                      = link_to cms_post_path(cms_post), method: :delete, data: { confirm: 'Are you sure?' } do
-                        i.fas.fa-fw.fa-trash-alt            
-/! End of Page Content
+                    = sample.title
+                  td
+                    = sample.publish_date.strftime('%b %d, %Y')
+                  td
+                    = link_to cms_sample_path(sample) do
+                      i.fas.fa-fw.fa-info-circle
+                    = link_to edit_cms_sample_path(sample) do
+                      i.fas.fa-fw.fa-edit
+                    = link_to cms_sample_path(sample), method: :delete, data: { confirm: 'Are you sure?' } do
+                      i.fas.fa-fw.fa-trash-alt
+
 - content_for :javascript_in_head do
   = javascript_pack_tag 'datatables', 'data-turbolinks-track': 'reload'
