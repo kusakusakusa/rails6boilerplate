@@ -128,41 +128,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "annika.veum@hartmann.biz",
-        "password": "12345678",
+        "email": "user1@mailinator.com",
+        "password": "password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMCwianRpIjoiMDAwN2EyMDUtZTlmZC00Mjg5LTg5NTgtODhlZGYzNzIzMjI0IiwidXNlciI6eyJpZCI6NDc3LCJlbWFpbCI6ImFubmlrYS52ZXVtQGhhcnRtYW5uLmJpeiJ9fQ.adXhJdLUlxiInfkpqrCqZqFStTmQyIf7OGZtd2xLBTnHFi8PJN5PEGerQmptVdmQmWEVs9CB4-OcxGXfJ8puHQ",
-        "token_type": "Bearer",
-        "expires_in": 7199,
-        "refresh_token": "EjYAsCGIoWtxtvCceGnOyx8iltY0_YaYviO1dj8o95w",
-        "created_at": 1569452420,
-        "response_code": "custom.success.default",
-        "response_message": "Success!"
-      },
-      "code": 200,
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/login",
-      "versions": [
-        "v1"
-      ],
-      "query": null,
-      "request_data": {
-        "email": "mario@kreiger.org",
-        "password": "12345678",
-        "grant_type": "password"
-      },
-      "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMSwianRpIjoiYzI0ZTVhMWUtMDY3Zi00YTZmLWE0Y2MtNTRkYmIyMjY0Yzg5IiwidXNlciI6eyJpZCI6NDc5LCJlbWFpbCI6Im1hcmlvQGtyZWlnZXIub3JnIn19.mKi0Tl-Wb3uF_fvqyKzQZHVrYuJ5WeassAPcE3VR1AWpS6NpiI_5-2akwlGrXdz7NmxlxIw2QrSiqbT-yuGdxw",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MDc3MDc3MywianRpIjoiODA1OGQ4N2EtMWQ2NS00OTM4LTljNzQtMWQ4NDdhZTMyYTlkIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJ1c2VyMUBtYWlsaW5hdG9yLmNvbSJ9fQ.rLXkyrVIe8QIy9mjbKfE1GDZ8YqBXecztDREnLYc9MCHJllZXz2D9aTazscWdAgyP7JA7CUIMeWbX4u-VohM5Q",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "NP2m1G6nHZf-9hGR-U6xXZZkm99Zha2effAsSF4jQNg",
-        "created_at": 1569452421,
+        "refresh_token": "mMV84i5YOo3puQ_SuiGDPJ0WobGolY7GV0z2ZGa9its",
+        "created_at": 1590770773,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -178,91 +153,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "sylvester@hayesmitchell.info",
-        "password": "12345678",
-        "grant_type": "password"
-      },
-      "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMSwianRpIjoiMGVjZDVkYTItZmU1NS00Njg5LTg2MWEtNzEwZGYzNmVlNmY4IiwidXNlciI6eyJpZCI6NDgwLCJlbWFpbCI6InN5bHZlc3RlckBoYXllc21pdGNoZWxsLmluZm8ifX0.j-sqw6WpSCazjZPqW0jP3GkGlOlNDxYE4CO7u2QFU9Cf0wDckOZj2xOJeeXvB2nV4Lc4xwTZhxaNdMFQhp0brw",
-        "token_type": "Bearer",
-        "expires_in": 7200,
-        "refresh_token": "u75AqWk2WyfSSIsNB8YQm1s5DfvgGgI0Xfq_hbhbSgY",
-        "created_at": 1569452421,
-        "response_code": "custom.success.default",
-        "response_message": "Success!"
-      },
-      "code": 200,
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/login",
-      "versions": [
-        "v1"
-      ],
-      "query": null,
-      "request_data": {
-        "email": "donnie@legros.org",
-        "password": "12345678",
-        "grant_type": "password"
-      },
-      "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMSwianRpIjoiYmNjZGFlN2MtNWRjYS00MTkwLWEyNzktMDI1NjI1MTI0NTU1IiwidXNlciI6eyJpZCI6NDgxLCJlbWFpbCI6ImRvbm5pZUBsZWdyb3Mub3JnIn19.CTUQUiD2AQj6NA5ySNJF6GbAoQXQhKqg3tWE_TQf5yVFvoSeIiD8N9FJg0WmUAY50i6KhCtkb1LME-pcqhuyhQ",
-        "token_type": "Bearer",
-        "expires_in": 7200,
-        "refresh_token": "odtco4laJsqN5GpTphcH4EtuyXsUMLMx1W9oXRodkik",
-        "created_at": 1569452421,
-        "response_code": "custom.success.default",
-        "response_message": "Success!"
-      },
-      "code": 200,
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/login",
-      "versions": [
-        "v1"
-      ],
-      "query": null,
-      "request_data": {
-        "email": "junior@davis.biz",
-        "password": "12345678",
-        "grant_type": "password"
-      },
-      "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMSwianRpIjoiYTlmYWI0MzAtYWIyZC00YmUzLTliMmUtNDU0ZjM4YjJlNDczIiwidXNlciI6eyJpZCI6NDgyLCJlbWFpbCI6Imp1bmlvckBkYXZpcy5iaXoifX0.ygLeY-nlMpJYh1zHrXl3bNaCBZqzOJWYTKoU71ZhLvGtVW5I5FuHsnva_S4AiZVvFYZbmEtKH5nGsOUOVIxO0g",
-        "token_type": "Bearer",
-        "expires_in": 7200,
-        "refresh_token": "WDnVTASq6_P6vKclstQwZD1n2VoKR3jctHMQbnhsEwU",
-        "created_at": 1569452421,
-        "response_code": "custom.success.default",
-        "response_message": "Success!"
-      },
-      "code": 200,
-      "show_in_doc": 1,
-      "recorded": true
-    },
-    {
-      "verb": "POST",
-      "path": "/api/v1/login",
-      "versions": [
-        "v1"
-      ],
-      "query": null,
-      "request_data": {
-        "email": "rosann_toy@stark.name",
+        "email": "user1@mailinator.com",
         "password": "new_password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMSwianRpIjoiYmI3NzQzNTEtMDJlMy00ZWIxLTkxY2MtNjI2N2YyYTc1YTc5IiwidXNlciI6eyJpZCI6NDg4LCJlbWFpbCI6InJvc2Fubl90b3lAc3RhcmsubmFtZSJ9fQ.1U9DFD8VbO8scI8pvAm4HXGvd0gociW_eUG77tckKMdYInmTHeyyvMP0dUrhNrrIwfCtX_0ZnfWCzxlwlDvZbA",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MDc3MDc3MywianRpIjoiNDUyYjg2MDgtMTEzOS00OTVmLWFhZTktZTAxYjUxYTkzYzRkIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJ1c2VyMUBtYWlsaW5hdG9yLmNvbSJ9fQ.rLa2w5eVZOgm0SDz_h2AETglY4LduQmzRoxpSLVyqAaGYEs0Jkrt1QwYjF5JugA3ox9jSqlO_BifFzC4adF8HQ",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "5BB3LGzbeZQlDI7cG5OTpjmItdX_mIDaZrDBw9FFx-Q",
-        "created_at": 1569452421,
+        "refresh_token": "b1tvHQe0t9NpyNjkAWwt2K-2jjFLEI-Mn-8mVOqjCkg",
+        "created_at": 1590770773,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -280,15 +180,15 @@
       ],
       "query": null,
       "request_data": {
-        "refresh_token": "odtco4laJsqN5GpTphcH4EtuyXsUMLMx1W9oXRodkik",
+        "refresh_token": "htf4RUm4uKOCZKj33GAVI_BI1-By3_fPRaevbU8s6PE",
         "grant_type": "refresh_token"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU2OTQ1MjQyMSwianRpIjoiNTU0Zjc4MzEtYTRhYi00NTA2LWI1YzItNTNiYTg2NDM1OTVlIiwidXNlciI6eyJpZCI6NDgxLCJlbWFpbCI6ImRvbm5pZUBsZWdyb3Mub3JnIn19.F15-SYxygv-bgj_GlJ5qSOY1Yf6VYgK-RJN3kRVoGeK50BCqq48whb9qxEopDqc7Z5htJHj-6P9jC48hHsc-JA",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MDc3MDc3MywianRpIjoiMTE0MzhkYmEtMjEzNy00ZjliLWIxMmUtZDJmNDIyNWUyMDZhIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJ1c2VyMUBtYWlsaW5hdG9yLmNvbSJ9fQ.Y4IIBz-7BNjx0fT8XE5CzFPaO0in07UEL3LSsZV4Ecw2tRO7f2-nJHNovG7Xfa0bB9NJACpXFeRDBBKaXkMnIA",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "T0KkwaXD0n_iBcuFmL05mVS5sKJm3gBUjAtkO65tyIo",
-        "created_at": 1569452421,
+        "refresh_token": "lCPIia412lFhPEuQq6fcglmHfumQQajFHqhMjaVSBeA",
+        "created_at": 1590770773,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -312,6 +212,57 @@
         "response_message": "Success!"
       },
       "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/logout",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/logout",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "response_code": "doorkeeper.errors.messages.invalid_token.revoked",
+        "response_message": "The access token was revoked"
+      },
+      "code": 401,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/logout",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+      },
+      "response_data": {
+        "response_code": "doorkeeper.errors.messages.invalid_token.expired",
+        "response_message": "The access token expired"
+      },
+      "code": 401,
       "show_in_doc": 1,
       "recorded": true
     }
@@ -345,6 +296,36 @@
       "recorded": true
     }
   ],
+  "Samples#index": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/samples",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": null,
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "data": [
+          {
+            "id": 1,
+            "user_id": 1,
+            "title": "possimus non eveniet voluptas",
+            "description": "Consequuntur ut et. Quasi qui enim. Corporis quasi dolorem. Quisquam odit iste. Sunt praesentium omnis. Perferendis non quisquam.",
+            "publish_date": "2019-08-13",
+            "featured": false,
+            "created_at": "2020-05-29T16:46:13.002Z",
+            "updated_at": "2020-05-29T16:46:13.007Z"
+          }
+        ]
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
   "Users#confirm": [
     {
       "verb": "POST",
@@ -354,7 +335,7 @@
       ],
       "query": null,
       "request_data": {
-        "confirmation_token": "KEgcuQ"
+        "confirmation_token": "nfYc62"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -374,7 +355,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "stanford@townerolfson.name"
+        "email": "user1@mailinator.com"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -392,7 +373,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "rosann_toy@stark.name"
+        "email": "user1@mailinator.com"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -412,11 +393,13 @@
       ],
       "query": null,
       "request_data": {
+        "first_name": "firstname",
+        "last_name": "lastname",
         "email": "test@test.com",
-        "password": "IkOD0U"
+        "password": "3CKlg2"
       },
       "response_data": {
-        "response_code": "devise.confirmations.send_instructions",
+        "response_code": "custom.success.default",
         "response_message": "You will receive an email with instructions for how to confirm your email address in a few minutes."
       },
       "code": 200,
@@ -433,7 +416,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "patrick_hoeger@hartmann.name"
+        "email": "user1@mailinator.com"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -453,7 +436,7 @@
       ],
       "query": null,
       "request_data": {
-        "reset_password_token": "lfuVOi",
+        "reset_password_token": "E8aCQ3",
         "password": "new_password"
       },
       "response_data": {
@@ -483,10 +466,10 @@
         "user": {
           "first_name": "newFirstName",
           "last_name": "newLastName",
-          "id": 479,
-          "email": "mario@kreiger.org",
-          "created_at": "2019-09-25T23:00:21.051Z",
-          "updated_at": "2019-09-25T23:00:21.092Z"
+          "id": 1,
+          "email": "user1@mailinator.com",
+          "created_at": "2020-05-29T16:46:13.095Z",
+          "updated_at": "2020-05-29T16:46:13.126Z"
         }
       },
       "code": 200,

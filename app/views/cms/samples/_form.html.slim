@@ -1,4 +1,4 @@
-= form_with(model: cms_post, url: cms_post.new_record? ? cms_posts_path : cms_post_path(cms_post), local: true) do |form|
+= form_with(model: cms_post, url: cms_post.new_record? ? cms_samples_path : cms_post_path(cms_post), local: true) do |form|
   - if cms_post.errors.any?
     .alert.alert-dismissible.alert-danger
       h2

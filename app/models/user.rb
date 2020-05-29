@@ -39,7 +39,7 @@ class User < ApplicationRecord
            foreign_key: :resource_owner_id,
            dependent: :delete_all # or :destroy if you need callbacks
 
-  has_many :posts
+  has_many :samples
 
   def json_attributes
     custom_attributes = attributes.clone

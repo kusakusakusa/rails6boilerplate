@@ -91,17 +91,17 @@ NOTE: In the event the `master.key` is lost, go to the aws management console of
 
 Run `rails g rename:into <YOUR_PROJECT_NAME` to rename the application. Note that this will rename the repository you are in as well. You will need to run `cd` commands to switch directories.
 
-### Remove Post Model
+### Remove Sample Model
 
-Remove `post` related tools by:
+Remove `sample` related tools by:
 
-1. run `rails d model post`
-2. run `rails d scaffold cms::posts`
-3. run `rails d scaffold_controller api::v1::posts`
-4. delete `has_many :posts` in user model
-5. delete `db/seeds/1_posts.rb`
-6. delete `spec/factories/post.rb`
-7. remove `posts` related routes in `routes.rb`
+1. run `rails d model sample`
+2. run `rails d scaffold cms::samples`
+3. run `rails d scaffold_controller api::v1::samples`
+4. delete `has_many :samples` in user model
+5. delete `db/seeds/1_samples.rb`
+6. delete `spec/factories/sample.rb`
+7. remove `samples` related routes in `routes.rb`
 8. drop, create and migrate database
 9. run APIPIE_RECORD=examples rspec
 10. run `annotate`

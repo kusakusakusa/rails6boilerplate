@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   namespace :cms do
     root to: 'application#index'
     resources :hygiene_pages, only: %i[edit update]
-    resources :posts
+    resources :samples
   end
 
   devise_for :admin_users, skip: [:registrations]
@@ -41,7 +41,7 @@ Rails.application.routes.draw do
       post 'refresh', to: 'tokens#refresh'
       post 'logout', to: 'tokens#revoke'
 
-      resources :posts, only: [:index], defaults: { format: :json }
+      resources :samples, only: [:index], defaults: { format: :json }
 
       # users
       post 'update-profile', to: 'users#update_profile'

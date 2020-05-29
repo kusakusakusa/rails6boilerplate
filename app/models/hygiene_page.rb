@@ -4,7 +4,8 @@
 #
 # Table name: hygiene_pages
 #
-#  slug       :string(191)      primary key
+#  id         :bigint           not null, primary key
+#  slug       :string(191)
 #  content    :text(65535)
 #  created_at :datetime         not null
 #  updated_at :datetime         not null

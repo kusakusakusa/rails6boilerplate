@@ -88,14 +88,15 @@ ActiveRecord::Schema.define(version: 2020_04_27_225655) do
     t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
   end
 
-  create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "samples", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "user_id"
     t.string "title"
+    t.text "description"
     t.date "publish_date"
-    t.text "content"
+    t.boolean "featured", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_posts_on_user_id"
+    t.index ["user_id"], name: "index_samples_on_user_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
