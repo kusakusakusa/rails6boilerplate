@@ -4,6 +4,22 @@
 # http://www.jeremyaldrich.net/en/latest/rspec_automated_browser_testing.html
 
 module FileHelpers
+  def attach_ruby_file selector
+    attach_file(selector, File.join(Rails.root, 'config', 'application.rb'), visible: false)
+  end
+
+  def attach_image_file selector
+    attach_file(selector, File.join(Rails.root, 'spec', 'support', 'sample.jpg'), visible: false)
+  end
+
+  def attach_video_file selector
+    attach_file(selector, File.join(Rails.root, 'spec', 'support', 'sample.mp4'), visible: false)
+  end
+
+  def attach_audio_file selector
+    attach_file(selector, File.join(Rails.root, 'spec', 'support', 'sample.mp3'), visible: false)
+  end
+
   def image_base64
     'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD//gATQ3JlYXRlZCB3aXRoIEdJTVD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAC//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AP/B//9k='
   end

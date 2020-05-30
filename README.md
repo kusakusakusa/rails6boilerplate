@@ -387,6 +387,12 @@ Rails logger is an instance of [cloudwatchlogger](https://github.com/zshannon/cl
 
 Refer to [this gist](https://gist.github.com/jrunestone/2fbe5d6d5e425b7c046168b6d6e74e95#file-jquery-datatables-webpack).
 
+### ordering of has_many_attached
+
+Order is in descending order using `created_at` attribute of `ActiveStorage::Attachment` model (since `updated_at` is not present by default). The `created_at` is artificially tweaked when admin changes the order in the cms to maintain psuedo order.
+
+Which means any new image will be the latest created.
+
 ## TODO
 * use https://registry.terraform.io/modules/trussworks/logs/aws/3.0.0 to add logs bucket instead of aws cli
 * dockerignore file

@@ -17,6 +17,7 @@ require("../scss/sb-admin-2/sb-admin-2.scss")
 require("../scss/fields.sass")
 require("../scss/fontawesome.scss")
 require("../scss/floating-labels.sass")
+require("plyr");
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
@@ -42,6 +43,34 @@ document.addEventListener("turbolinks:load", () => {
 
       reader.onload = function(e) {
         element.previousSibling.src = e.target.result
+      }
+      
+      reader.readAsDataURL(element.files[0]);
+    }
+  });
+
+  $('.video-input').on('change', function() {
+    const element = this;
+    if (element.files && element.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        element.previousSibling.src = e.target.result;
+        Plyr.setup('.video-input-preview');
+      }
+      
+      reader.readAsDataURL(element.files[0]);
+    }
+  });
+
+  $('.audio-input').on('change', function() {
+    const element = this;
+    if (element.files && element.files[0]) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        element.previousSibling.src = e.target.result;
+        Plyr.setup('.audio-input-preview');
       }
       
       reader.readAsDataURL(element.files[0]);

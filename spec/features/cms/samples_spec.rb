@@ -12,10 +12,6 @@ feature 'Samples', js: true do
     "/cms/samples/_sample_id_",
     "/cms/samples/_sample_id_/edit"
   ].each do |route|
-    before :each do
-      sign_in admin_user
-    end
-
     scenario 'should not allow user to enter' do
       sign_in user
       visit route.gsub('_sample_id_', sample.id.to_s)
@@ -33,6 +29,7 @@ feature 'Samples', js: true do
     else
       scenario 'should show correct sample' do
         another_sample = create(:sample)
+        sign_in admin_user
         visit route.gsub('_sample_id_', another_sample.id.to_s)
         expect(page).to have_content(another_sample.title)
         expect(page).not_to have_content(sample.title)

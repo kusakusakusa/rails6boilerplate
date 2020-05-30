@@ -1,0 +1,9 @@
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-header.py-3
+        h6.m-0.font-weight-bold.text-primary
+          | New #{link_to "#{@record.class.name.titlecase} #{@record.id}", public_send("cms_#{@record.class.name.underscore}_path", @record), class: 'text-dark'} #{params[:resource].singularize.titlecase}
+          
+      .card-body
+        = render 'form', attachment: @attachment, record: @record

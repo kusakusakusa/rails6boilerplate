@@ -1,0 +1,53 @@
+- attachment_containers = capture do
+  - @attachments.each do |attachment|
+    .card.mb-2.attachment-container
+      .card-body
+        .row
+          - case
+          - when attachment.blob.content_type =~ /image/
+            .col-1
+              = link_to rails_blob_path(attachment, only_path: true), class: 'venobox' do
+                = image_tag rails_blob_path(attachment, only_path: true), class: 'w-100'
+          - when attachment.blob.content_type =~ /video/
+            .col-3
+              video.video controls="" playsinline="" 
+                source src="#{rails_blob_path(attachment, only_path: true)}" type="#{attachment.blob.content_type}" 
+          - when attachment.blob.content_type =~ /audio/
+            .col-6
+              audio.audio controls=""
+                source src="#{rails_blob_path(attachment, only_path: true)}" type="#{attachment.blob.content_type}" 
+          - else
+            p TODO
+          .col
+            p Attachment ID: <span class="attachment-id">#{attachment.id}</span>
+            = link_to 'Edit', public_send("edit_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path", @record, attachment)
+
+h1.h3.mb-2.text-gray-800
+  | #{link_to "#{@record.class.name.titlecase} #{@record.id}", public_send("cms_#{@record.class.name.underscore}_path", @record), class: 'font-weight-bold'} #{params[:resource].titlecase}
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-header.py-3
+        h6.m-0.font-weight-bold.text-primary
+          | Total: #{@attachments.count}
+          .float-right
+            = link_to public_send("new_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path") do
+              i.fas.fa-fw.fa-plus
+      .card-body
+        - if respond_to? "update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path"
+          p Drag and drop to set the order of appearance
+
+        - if respond_to? "update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path"
+          #sortable
+            = attachment_containers
+        - else
+          = attachment_containers
+
+        - if respond_to? "update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path"
+          = form_with(url: public_send("update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record), local: true) do |form|
+            = hidden_field_tag :ordering, @attachments.pluck(:id).join(',')
+            = form.submit 'Update Order', class: 'btn btn-primary'
+
+- content_for :javascript_in_head do
+  = stylesheet_pack_tag 'attachments', 'data-turbolinks-track': 'reload'
+  = javascript_pack_tag 'attachments', 'data-turbolinks-track': 'reload'

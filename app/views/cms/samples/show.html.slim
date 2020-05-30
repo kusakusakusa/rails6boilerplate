@@ -4,17 +4,23 @@
       /! Card Header
       .card-header.py-3
         h6.m-0.font-weight-bold.text-primary
-          | Post #{@sample.id}
+          | Sample #{@sample.id}
           .float-right
             = link_to edit_cms_sample_path(@sample) do
               i.fas.fa-fw.fa-edit
             = link_to cms_sample_path(@sample), method: :delete, data: { confirm: 'Are you sure?' } do
               i.fas.fa-fw.fa-trash-alt
+            = link_to cms_sample_images_path(@sample) do
+              i.fas.fa-fw.fa-file-image
       /! Card Body
       .card-body
+
         h4.small.font-weight-bold ID
         p= @sample.id
         h4.small.font-weight-bold Title
         p= @sample.title
         h4.small.font-weight-bold Publish Date
         p= @sample.publish_date.strftime('%b %d, %Y')
+        = link_to 'Manage Images', cms_sample_images_path(@sample), class: 'btn btn-primary'
+        = link_to 'Manage Videos', cms_sample_videos_path(@sample), class: 'btn btn-primary'
+        = link_to 'Manage Audio', cms_sample_audios_path(@sample), class: 'btn btn-primary'

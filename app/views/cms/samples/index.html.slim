@@ -31,8 +31,11 @@ h1.h3.mb-2.text-gray-800 Samples
                       i.fas.fa-fw.fa-info-circle
                     = link_to edit_cms_sample_path(sample) do
                       i.fas.fa-fw.fa-edit
+                    = link_to cms_sample_images_path(sample) do
+                      i.fas.fa-fw.fa-file-image
                     = link_to cms_sample_path(sample), method: :delete, data: { confirm: 'Are you sure?' } do
                       i.fas.fa-fw.fa-trash-alt
 
 - content_for :javascript_in_head do
+  = stylesheet_pack_tag 'datatables', 'data-turbolinks-track': 'reload'
   = javascript_pack_tag 'datatables', 'data-turbolinks-track': 'reload'

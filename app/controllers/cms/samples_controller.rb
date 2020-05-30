@@ -58,7 +58,7 @@ module Cms
     private
 
     def handle_record_not_found
-      flash[:danger] = 'Post not found!'
+      flash[:danger] = 'Sample not found!'
       redirect_to cms_samples_path
     end
 

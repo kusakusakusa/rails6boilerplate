@@ -15,7 +15,17 @@ Rails.application.routes.draw do
   namespace :cms do
     root to: 'application#index'
     resources :hygiene_pages, only: %i[edit update]
-    resources :samples
+    resources :samples do
+      resources :images, controller: 'attachments', resource: 'images', content_type: 'image', except: :show do
+        collection do
+          post '/update_order', to: 'attachments#update_order', resource: 'images'
+        end
+      end
+
+      resources :videos, controller: 'attachments', resource: 'videos', content_type: 'video', except: :show
+
+      resources :audios, controller: 'attachments', resource: 'audios', content_type: 'audio', except: :show
+    end
   end
 
   devise_for :admin_users, skip: [:registrations]
