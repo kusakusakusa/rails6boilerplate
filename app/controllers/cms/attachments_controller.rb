@@ -46,6 +46,12 @@ module Cms
       end
     end
 
+    def destroy
+      @record.public_send("#{params[:resource]}_attachments").find(params[:id]).purge
+      flash[:success] = "#{params[:resource].singularize.titlecase} successfully deleted"
+      redirect_to public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record)
+    end
+
     def update_order
       ActiveRecord::Base.transaction do
         desired_order.each_with_index do |id, index|

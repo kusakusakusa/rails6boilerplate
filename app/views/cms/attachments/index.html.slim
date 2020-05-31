@@ -21,6 +21,8 @@
           .col
             p Attachment ID: <span class="attachment-id">#{attachment.id}</span>
             = link_to 'Edit', public_send("edit_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path", @record, attachment)
+            br
+            = link_to 'Delete', public_send("cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path", @record, attachment), class: 'text-danger delete-attachment', method: :delete, data: { confirm: 'Are you sure?' }
 
 h1.h3.mb-2.text-gray-800
   | #{link_to "#{@record.class.name.titlecase} #{@record.id}", public_send("cms_#{@record.class.name.underscore}_path", @record), class: 'font-weight-bold'} #{params[:resource].titlecase}

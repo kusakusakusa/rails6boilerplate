@@ -19,4 +19,8 @@ module CommonHelpers
   def set_date selector, date_str
     page.execute_script("document.querySelector('#{selector}').flatpickr().setDate('#{date_str}');")
   end
+
+  def alert_text
+    page.driver.browser.switch_to.alert.text
+  end
 end
