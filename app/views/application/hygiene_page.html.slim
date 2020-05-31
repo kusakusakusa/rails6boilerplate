@@ -1,0 +1,10 @@
+.header-padding
+
+= render 'layouts/flash'
+
+main#main
+  section
+    .container
+      .row
+        .col-12
+          = @hygiene_page.content.html_safe

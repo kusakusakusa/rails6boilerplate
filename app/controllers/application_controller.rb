@@ -34,6 +34,14 @@ class ApplicationController < ActionController::Base
     render body: nil, status: 204 and return
   end
 
+  def hygiene_page
+    begin
+      @hygiene_page = HygienePage.find_by!(slug: params[:id])
+    rescue
+      raise ActionController::RoutingError.new('Not Found')
+    end
+  end
+
   private
 
   def layout_by_resource
