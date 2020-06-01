@@ -1898,4 +1898,29 @@ namespace :ebs do
 
     Ebs::Helper.announce 'END - Destroyed infrastructure!'
   end
+
+  desc 'For Pushing terraform error state'
+  task :push_error_state, %i[
+    env
+    aws_profile
+    region
+  ] => :environment do |_, args|
+    env, aws_profile, region = Ebs::Helper.inputs(args)
+
+    sh "cd #{Rails.root.join('terraform', env)} && \
+    docker run \
+    --rm \
+    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+    --env AWS_DEFAULT_REGION=#{region} \
+    -v #{Rails.root.join('terraform', env)}:/workspace \
+    -w /workspace \
+    -it \
+    hashicorp/terraform:0.12.12 \
+    state push errored.tfstate"
+
+    Ebs::Helper.announce "'terraform push errored.tfstate' completed. Continue your previous action."
+    Ebs::Helper.announce "rake ebs:destroy # if you were in the midst of destroying the infrastructure when the error happened"
+    Ebs::Helper.announce "rake ebs:apply # if you were in the midst of apply new changes to the infrastructure when the error happened"
+  end
 end
