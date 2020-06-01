@@ -12,6 +12,9 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 Rails.application.config.assets.paths << Rails.root.join('vendor')
 Rails.application.config.assets.precompile += %w[ckeditor/config.js]
 
+# for pdf
+Rails.application.config.assets.precompile += %w[pdf/*]
+
 # Precompile additional assets.
 # application.js, application.css, and all non-JS/CSS in the app/assets
 # folder are already added.

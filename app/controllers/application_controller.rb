@@ -42,6 +42,39 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def sample_pdf
+    @sample = Sample.find_by(id: 1) || Sample.new(
+      title: Faker::Lorem.words(number: 4).join(' '),
+      description: Faker::Lorem.paragraph(sentence_count: 6),
+      publish_date: Faker::Date.between(from: 1.year.ago, to: Date.today),
+      featured: [true, false].sample,
+      price: 1000,
+      user: User.find_by(id: 1) || User.new(
+        first_name: Faker::Name.first_name,
+        last_name: Faker::Name.last_name,
+        email: Faker::Internet.email,
+        password: 'password',
+        confirmed_at: Time.now.utc
+      )
+    )
+    render  pdf: "sample_pdf",   # Excluding ".pdf" extension.
+          template: "layouts/pdf/sample_pdf.html.slim",
+          layout: false,
+          footer:  {
+                      html: { 
+                        template: 'layouts/pdf/footer.html.slim',
+                        layout: false,
+                        locals: { sample: @sample }
+                      }
+                    },
+          margin:  {   
+                      top: 10,
+                      bottom: 20,
+                      left: 10,
+                      right: 10
+                    }
+  end
+
   private
 
   def layout_by_resource

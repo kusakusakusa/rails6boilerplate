@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   apipie
 
   get '/healthcheck', to: 'application#healthcheck'
+  get '/sample_pdf', to: 'application#sample_pdf', defaults: { format: :pdf }
 
   unless Rails.env.production?
     get '/log-test', to: 'application#log_test'
