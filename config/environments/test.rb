@@ -35,6 +35,9 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  # https://github.com/seattlerb/minitest/issues/744
+  config.active_job.queue_adapter = :inline
+
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.
