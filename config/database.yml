@@ -13,13 +13,16 @@ development:
   database: <%= Rails.application.class.module_parent_name.downcase %>_development
 
 test:
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
-  adapter: sqlite3
-  database: db/test.sqlite3
+  <<: *default
+  username: root
+  password: password
+  socket: /tmp/mysql.sock
+  database: <%= Rails.application.class.module_parent_name.downcase %>_test
 
 staging:
+  <<: *default
   url: <%= ENV['DATABASE_URL'] %>
 
 production:
+  <<: *default
   url: <%= ENV['DATABASE_URL'] %>
