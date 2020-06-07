@@ -23,4 +23,8 @@ module CommonHelpers
   def alert_text
     page.driver.browser.switch_to.alert.text
   end
+
+  def validation_text selector
+    page.find(selector).native.attribute("validationMessage")
+  end
 end
