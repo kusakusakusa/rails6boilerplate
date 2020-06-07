@@ -30,7 +30,7 @@ module Api
           @response_code = 'custom.errors.devise.registrations'
           @response_message = user.errors.full_messages.to_sentence.capitalize
 
-          render status: 400
+          render :default, status: 400
         end
       end
 
@@ -44,14 +44,14 @@ module Api
         if Devise.paranoid # just send even if not confirmed
           user.errors.clear
           @response_message = I18n.t('devise.confirmations.send_paranoid_instructions')
-          render status: 200
+          render :default, status: 200
         elsif user.errors.empty?
           @response_message = I18n.t('devise.confirmations.send_instructions')
-          render status: 200
+          render :default, status: 200
         else
           @response_code = 'custom.errors.devise.confirmations'
           @response_message = user.errors.full_messages.to_sentence
-          render status: 400
+          render :default, status: 400
         end
       end
 
@@ -63,11 +63,11 @@ module Api
       def confirm
         user = User.confirm_by_token(confirm_params[:confirmation_token])
         if user.errors.empty?
-          render status: 200
+          render :default, status: 200
         else
           @response_code = 'custom.errors.devise.confirmations'
           @response_message = user.errors.full_messages.to_sentence
-          render status: 400
+          render :default, status: 400
         end
       end
 
@@ -98,13 +98,13 @@ module Api
           user.errors.clear
           @response_message = I18n.t('devise.passwords.send_paranoid_instructions')
 
-          render status: 200
+          render :default, status: 200
         elsif user.errors.empty?
-          render status: 200
+          render :default, status: 200
         else
           @response_code = 'custom.errors.devise.passwords'
           @response_message = user.errors.full_messages.to_sentence
-          render status: 400
+          render :default, status: 400
         end
       end
 
@@ -130,11 +130,11 @@ module Api
           # Devise.sign_in_after_reset_password is set to false
           # so ignore scenario
 
-          render status: 200
+          render :default, status: 200
         else
           @response_code = 'custom.errors.devise.passwords'
           @response_message = user.errors.full_messages.to_sentence
-          render status: 400
+          render :default, status: 400
         end
       end
 
