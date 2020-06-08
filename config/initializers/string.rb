@@ -2,8 +2,6 @@
 
 # wrt https://sebastiandobrincu.com/blog/how-to-upload-images-to-rails-api-using-s3
 
-# TODO test
-
 class String
   def split_base64
     return nil if self.blank?
