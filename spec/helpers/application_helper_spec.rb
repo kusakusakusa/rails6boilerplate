@@ -9,7 +9,6 @@ RSpec.describe ApplicationHelper do
     end
 
     scenario 'should return date in format' do
-      binding.pry
       expect(helper.display_date(Date.parse('2020-12-31'))).to eq "Dec 31, 2020"
     end
   end

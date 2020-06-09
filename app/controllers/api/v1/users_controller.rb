@@ -3,7 +3,11 @@
 module Api
   module V1
     class UsersController < Api::BaseController
-      before_action :doorkeeper_authorize!, only: [:update_profile]
+      before_action :doorkeeper_authorize!, only: %i[
+        update_profile
+        get_profile
+        update_password
+      ]
 
       resource_description do
         name 'Users'
@@ -71,6 +75,16 @@ module Api
         end
       end
 
+      api :GET, '/get-profile', 'Get profile'
+      description 'Get profile'
+      header 'Authorization', 'Bearer [your_access_token]', required: true
+      header 'Content-Type', 'application/json'
+      header 'Accept', 'application/json'
+      def get_profile
+        current_user # initialize @current_user
+        render :update_profile, status: 200
+      end
+
       api :POST, '/update-profile', 'Update profile'
       description 'Update profile'
       header 'Authorization', 'Bearer [your_access_token]', required: true
@@ -84,7 +98,32 @@ module Api
         unless current_user.errors.empty?
           @response_code = 'custom.errors.users.update_profile'
           @response_message = current_user.errors.full_messages.to_sentence
+          render :default, status: 400 and return
         end
+      end
+
+      api :POST, '/update-password', 'Update password'
+      description 'Update password'
+      param :current_password, String, required: true
+      param :password, String, required: true
+      header 'Authorization', 'Bearer [your_access_token]', required: true
+      header 'Content-Type', 'application/json'
+      header 'Accept', 'application/json'
+      def update_password
+        unless current_user.valid_password?(update_password_params[:current_password])
+          @response_code = 'custom.errors.users.wrong_current_password'
+          @response_message = I18n.t(@response_code)
+          render :default, status: 403 and return
+        end
+
+        current_user.update(password: update_password_params[:password])
+        unless current_user.errors.empty?
+          @response_code = 'custom.errors.users.update_password'
+          @response_message = current_user.errors.full_messages.to_sentence
+          render :default, status: 400 and return
+        end
+
+        render :default, status: 200
       end
 
       api :POST, '/forgot-password', 'Send reset passsword email'
@@ -175,6 +214,13 @@ module Api
       def resend_confirmation_params
         params.permit(
           :email
+        )
+      end
+
+      def update_password_params
+        params.permit(
+          :password,
+          :current_password
         )
       end
     end

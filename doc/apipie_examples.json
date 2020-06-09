@@ -128,16 +128,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "user1@mailinator.com",
+        "email": "junior_reichel@predovic.org",
         "password": "password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MDc3MDc3MywianRpIjoiODA1OGQ4N2EtMWQ2NS00OTM4LTljNzQtMWQ4NDdhZTMyYTlkIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJ1c2VyMUBtYWlsaW5hdG9yLmNvbSJ9fQ.rLXkyrVIe8QIy9mjbKfE1GDZ8YqBXecztDREnLYc9MCHJllZXz2D9aTazscWdAgyP7JA7CUIMeWbX4u-VohM5Q",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTcxOTk3NiwianRpIjoiYTU5Yjg5YTgtYmE5ZC00OWU4LWJlZTktMWVjNDk4Y2I3MDFmIiwidXNlciI6eyJpZCI6NzAsImVtYWlsIjoianVuaW9yX3JlaWNoZWxAcHJlZG92aWMub3JnIn19.TVRgOsdLgWDswZiaZ9zbmg53tg2tPp0k2INpOE27sweJgDUNvBJIxuyUaIAUtJNi5A5zUUlLEvarTYFN3koh5g",
         "token_type": "Bearer",
-        "expires_in": 7200,
-        "refresh_token": "mMV84i5YOo3puQ_SuiGDPJ0WobGolY7GV0z2ZGa9its",
-        "created_at": 1590770773,
+        "expires_in": 7199,
+        "refresh_token": "3zCb7FTETbfHJRJqKcSudth6Z5ALfAXpIRpq8645k4A",
+        "created_at": 1591719976,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -153,16 +153,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "user1@mailinator.com",
+        "email": "roseline_stroman@marquardthilpert.io",
         "password": "new_password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MDc3MDc3MywianRpIjoiNDUyYjg2MDgtMTEzOS00OTVmLWFhZTktZTAxYjUxYTkzYzRkIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJ1c2VyMUBtYWlsaW5hdG9yLmNvbSJ9fQ.rLa2w5eVZOgm0SDz_h2AETglY4LduQmzRoxpSLVyqAaGYEs0Jkrt1QwYjF5JugA3ox9jSqlO_BifFzC4adF8HQ",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTcxOTk3NywianRpIjoiN2ZlZTA2NTgtZjQwYS00OWUxLTllN2EtMTQ1ZTg3MzM4MTBiIiwidXNlciI6eyJpZCI6ODAsImVtYWlsIjoicm9zZWxpbmVfc3Ryb21hbkBtYXJxdWFyZHRoaWxwZXJ0LmlvIn19.6XoQUcSEL3CXUD80-P6IBDfVYeFO6h3qP-_nqKzXqHqzcmcg1f0kx-SFvVcHIwZ1S_TiMiqTsQO7nCQfoxZYXg",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "b1tvHQe0t9NpyNjkAWwt2K-2jjFLEI-Mn-8mVOqjCkg",
-        "created_at": 1590770773,
+        "refresh_token": "ucU38wYXQlY0Gwx3NLBzGtUdWwaXZVriVGdfhuqiKXc",
+        "created_at": 1591719977,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -180,15 +180,15 @@
       ],
       "query": null,
       "request_data": {
-        "refresh_token": "htf4RUm4uKOCZKj33GAVI_BI1-By3_fPRaevbU8s6PE",
+        "refresh_token": "-SbH1dybsV0DcAXYmbNhEcC4OjlzQbV7vEg0Ml4gQC0",
         "grant_type": "refresh_token"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MDc3MDc3MywianRpIjoiMTE0MzhkYmEtMjEzNy00ZjliLWIxMmUtZDJmNDIyNWUyMDZhIiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJ1c2VyMUBtYWlsaW5hdG9yLmNvbSJ9fQ.Y4IIBz-7BNjx0fT8XE5CzFPaO0in07UEL3LSsZV4Ecw2tRO7f2-nJHNovG7Xfa0bB9NJACpXFeRDBBKaXkMnIA",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTcxOTk3NiwianRpIjoiNTQ3OTdiODEtZTYzZC00N2M1LWFlODEtN2RlZTUwM2M2Y2IzIiwidXNlciI6eyJpZCI6NzEsImVtYWlsIjoiZHJld0BjYWludHJldXRlbC5vcmcifX0.tp-fQomiJT35UxN6ExrM9fx7ktIeb5LexPZC4pdlWDxepY7VEY_H35JJRrBBQIB4OWXvURGGYC-ml3HRnM53Yw",
         "token_type": "Bearer",
-        "expires_in": 7200,
-        "refresh_token": "lCPIia412lFhPEuQq6fcglmHfumQQajFHqhMjaVSBeA",
-        "created_at": 1590770773,
+        "expires_in": 7199,
+        "refresh_token": "Yb5eg6zMJVoOJqNF7lpWpiGeLmiAPL7ZsLThSAQs6Us",
+        "created_at": 1591719976,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -310,14 +310,15 @@
         "response_message": "Success!",
         "data": [
           {
-            "id": 1,
-            "user_id": 1,
-            "title": "possimus non eveniet voluptas",
-            "description": "Consequuntur ut et. Quasi qui enim. Corporis quasi dolorem. Quisquam odit iste. Sunt praesentium omnis. Perferendis non quisquam.",
-            "publish_date": "2019-08-13",
+            "id": 3,
+            "user_id": 59,
+            "title": "libero numquam ab quia",
+            "description": "Libero ipsum dolores. Qui ipsa quibusdam. Tenetur asperiores autem. Doloribus distinctio et. Quidem cupiditate quo. Necessitatibus dicta et.",
+            "publish_date": "2020-01-24",
+            "price": null,
             "featured": false,
-            "created_at": "2020-05-29T16:46:13.002Z",
-            "updated_at": "2020-05-29T16:46:13.007Z"
+            "created_at": "2020-06-09T16:26:16.463Z",
+            "updated_at": "2020-06-09T16:26:16.487Z"
           }
         ]
       },
@@ -335,7 +336,7 @@
       ],
       "query": null,
       "request_data": {
-        "confirmation_token": "nfYc62"
+        "confirmation_token": "xhJzgG2BPLuE8bkjvFGA"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -355,7 +356,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "user1@mailinator.com"
+        "email": "leann_oberbrunner@braun.io"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -373,11 +374,77 @@
       ],
       "query": null,
       "request_data": {
-        "email": "user1@mailinator.com"
+        "email": "roseline_stroman@marquardthilpert.io"
       },
       "response_data": {
         "response_code": "custom.success.default",
         "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "Users#get_profile": [
+    {
+      "verb": "GET",
+      "path": "/api/v1/get-profile",
+      "versions": [
+        "v1"
+      ],
+      "query": "%7B%7D",
+      "request_data": null,
+      "response_data": {
+        "response_code": "doorkeeper.errors.messages.invalid_token.unknown",
+        "response_message": "The access token is invalid"
+      },
+      "code": 401,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/get-profile",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": null,
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "user": {
+          "id": 64,
+          "email": "xochitl@ohara.co",
+          "created_at": "2020-06-09T16:26:16.726Z",
+          "updated_at": "2020-06-09T16:26:16.726Z",
+          "first_name": "Suzi",
+          "last_name": "Jast"
+        }
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "GET",
+      "path": "/api/v1/get-profile",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": null,
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "user": {
+          "id": 65,
+          "email": "deb_greenfelder@dicki.io",
+          "created_at": "2020-06-09T16:26:16.735Z",
+          "updated_at": "2020-06-09T16:26:16.735Z",
+          "first_name": "Launa",
+          "last_name": "Nitzsche"
+        }
       },
       "code": 200,
       "show_in_doc": 1,
@@ -396,7 +463,7 @@
         "first_name": "firstname",
         "last_name": "lastname",
         "email": "test@test.com",
-        "password": "3CKlg2"
+        "password": "V7bCdn"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -416,7 +483,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "user1@mailinator.com"
+        "email": "kacie_gerlach@stiedemann.io"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -436,7 +503,7 @@
       ],
       "query": null,
       "request_data": {
-        "reset_password_token": "E8aCQ3",
+        "reset_password_token": "bdBT-UatCWnFz4rs6AEH",
         "password": "new_password"
       },
       "response_data": {
@@ -448,7 +515,103 @@
       "recorded": true
     }
   ],
+  "Users#update_password": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-password",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "current_password": "password",
+        "password": "newpassword"
+      },
+      "response_data": {
+        "response_code": "doorkeeper.errors.messages.invalid_token.unknown",
+        "response_message": "The access token is invalid"
+      },
+      "code": 401,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-password",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "current_password": "wrongpassword",
+        "password": "newpassword"
+      },
+      "response_data": {
+        "response_code": "custom.errors.users.wrong_current_password",
+        "response_message": "Your current password is wrong"
+      },
+      "code": 403,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-password",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "current_password": "password",
+        "password": "n5jho"
+      },
+      "response_data": {
+        "response_code": "custom.errors.users.update_password",
+        "response_message": "Your password is too short (minimum is 6 characters)"
+      },
+      "code": 400,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-password",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "current_password": "password",
+        "password": "newpassword"
+      },
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!"
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
   "Users#update_profile": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-profile",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "first_name": "First Name"
+      },
+      "response_data": {
+        "response_code": "doorkeeper.errors.messages.invalid_token.unknown",
+        "response_message": "The access token is invalid"
+      },
+      "code": 401,
+      "show_in_doc": 1,
+      "recorded": true
+    },
     {
       "verb": "POST",
       "path": "/api/v1/update-profile",
@@ -466,10 +629,10 @@
         "user": {
           "first_name": "newFirstName",
           "last_name": "newLastName",
-          "id": 1,
-          "email": "user1@mailinator.com",
-          "created_at": "2020-05-29T16:46:13.095Z",
-          "updated_at": "2020-05-29T16:46:13.126Z"
+          "id": 66,
+          "email": "queen@wildermanbaumbach.io",
+          "created_at": "2020-06-09T16:26:16.792Z",
+          "updated_at": "2020-06-09T16:26:16.816Z"
         }
       },
       "code": 200,

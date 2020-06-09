@@ -13,3 +13,5 @@ en:
         passwords: ""
       users:
         update_profile: ""
+        update_password: ""
+        wrong_current_password: "Your current password is wrong"
