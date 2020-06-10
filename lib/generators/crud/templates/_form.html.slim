@@ -1,0 +1,19 @@
+= form_with(model: <%= underscored %>, url: <%= underscored %>.new_record? ? cms_<%= file_name.pluralize %>_path : cms_<%= underscored %>_path(<%= underscored %>), local: true) do |form|
+  - if <%= underscored %>.errors.any?
+    .alert.alert-dismissible.alert-danger
+      h2
+        = pluralize(<%= underscored %>.errors.count, 'error')
+        | prohibited this <%= underscored %> from being saved:
+      ul
+        - <%= underscored %>.errors.full_messages.each do |message|
+          li= message
+
+  = render 'layouts/cms/text_field', form: form, key: :something
+  = render 'layouts/cms/text_area', form: form, key: :something, options: { rows: 5 }
+  = render 'layouts/cms/radio', form: form, key: :featured, options: [{value: true,label: 'True'}, {value: false,label: "False"}], required: true
+  = render 'layouts/cms/date_field', form: form, key: :something
+  = render 'layouts/cms/number_field', form: form, key: :something
+  = render 'layouts/cms/image_file_field', form: form, key: :something
+
+  .actions
+    = form.submit class: 'btn btn-primary'

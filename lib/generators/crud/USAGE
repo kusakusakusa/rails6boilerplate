@@ -1,0 +1,16 @@
+Description:
+    Generate the CRUD files for a model in the CMS
+
+Example:
+    rails generate crud ModelSingularName
+
+    This will create:
+        app/views/cms/#{ModelSingularName}/index.html.slim
+        app/views/cms/#{ModelSingularName}/edit.html.slim
+        app/views/cms/#{ModelSingularName}/show.html.slim
+        app/views/cms/#{ModelSingularName}/new.html.slim
+        app/views/cms/#{ModelSingularName}/_form.html.slim
+        app/controllers/cms/#{ModelSingularName}_controller.rb
+
+    This will edit these files:
+        app/config.routes.rb

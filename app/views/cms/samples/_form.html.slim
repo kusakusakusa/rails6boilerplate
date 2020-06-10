@@ -10,11 +10,7 @@
 
   = render 'layouts/cms/text_field', form: form, key: :title
   = render 'layouts/cms/text_area', form: form, key: :description, options: { rows: 5 }
-  .form-group
-    - unless form.object.new_record?
-      = form.label :featured, class: 'small font-weight-bold'
-    - [true, false].each do |featured|
-      = render 'layouts/cms/radio', form: form, key: :featured, value: featured, label: featured ? 'Feature' : "Don't feature", required: true
+  = render 'layouts/cms/radio', form: form, key: :featured, options: [{value: true,label: 'Feature'}, {value: false,label: "Don't Feature"}], required: true
   = render 'layouts/cms/date_field', form: form, key: :publish_date
   = render 'layouts/cms/number_field', form: form, key: :price
   = render 'layouts/cms/image_file_field', form: form, key: :featured_image

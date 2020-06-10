@@ -20,7 +20,7 @@
         h4.small.font-weight-bold Title
         p= @sample.title
         h4.small.font-weight-bold Publish Date
-        p= @sample.publish_date.display
+        p= display_date @sample.publish_date
         = link_to 'Manage Images', cms_sample_images_path(@sample), class: 'btn btn-primary'
         = link_to 'Manage Videos', cms_sample_videos_path(@sample), class: 'btn btn-primary'
         = link_to 'Manage Audio', cms_sample_audios_path(@sample), class: 'btn btn-primary'

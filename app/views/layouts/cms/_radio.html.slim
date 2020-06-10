@@ -1,3 +1,6 @@
-.custom-control.custom-radio
-  = form.radio_button key, value, class: 'custom-control-input', required: required
-  label.custom-control-label id="label_#{form.object.class.name.downcase}_#{key}_#{value}" for="#{form.object.class.name.downcase}_#{key}_#{value}"= label
+.form-group
+  = form.label key, class: 'small font-weight-bold'
+  - options.each do |hash|
+    .custom-control.custom-radio
+      = form.radio_button key, hash[:value], class: 'custom-control-input', required: required
+      label.custom-control-label id="label_#{form.object.class.name.downcase}_#{key}_#{hash[:value]}" for="#{form.object.class.name.downcase}_#{key}_#{hash[:value]}"= hash[:label]

@@ -40,7 +40,8 @@ module Cms
         flash[:success] = "Sample successfully updated"
         redirect_to cms_sample_path(@sample)
       else
-        render :new
+        flash[:danger] = @sample.errors.full_messages.to_sentence
+        render :edit
       end
     end
 

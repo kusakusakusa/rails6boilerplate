@@ -1,0 +1,15 @@
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-header.py-3
+        h6.m-0.font-weight-bold.text-primary
+          | <%= name.humanize.capitalize %> #{@<%= underscored %>.id}
+          .float-right
+            = link_to edit_cms_<%= underscored %>_path(@<%= underscored %>) do
+              i.fas.fa-fw.fa-edit
+            = link_to cms_<%= underscored %>_path(@<%= underscored %>), method: :delete, data: { confirm: 'Are you sure?' } do
+              i.fas.fa-fw.fa-trash-alt
+      .card-body
+
+        h4.small.font-weight-bold ID
+        p= @<%= underscored %>.id
