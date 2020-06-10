@@ -16,6 +16,8 @@
 #
 
 class Sample < ApplicationRecord
+  include NaturalSortable
+
   belongs_to :user, optional: true #, inverse_of: :samples
 
   has_one_attached :featured_image
