@@ -15,6 +15,7 @@
     "chart.js": "^2.8.0",
     "datatables.net": "^1.10.19",
     "datatables.net-bs4": "^1.10.19",
+    "datatables.net-plugins": "^1.10.20",
     "flatpickr": "^4.6.2",
     "imports-loader": "^0.8.0",
     "jquery": "^3.5.0",
