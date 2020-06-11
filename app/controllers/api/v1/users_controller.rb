@@ -102,6 +102,31 @@ module Api
         end
       end
 
+      api :POST, '/update-avatar', 'Update avatar'
+      description 'Update avatar'
+      param :avatar, String, required: true, desc: 'Base64'
+      header 'Authorization', 'Bearer [your_access_token]', required: true
+      header 'Content-Type', 'application/json'
+      header 'Accept', 'application/json'
+      def update_avatar
+        begin
+          ActiveRecord::Base.transaction do
+            current_user.attach_avatar(avatar_params[:avatar])
+            current_user.save
+            raise ActiveRecord::RecordInvalid.new(current_user) unless current_user.errors.empty?
+            render :update_profile, status: 200
+          end
+        rescue ArgumentError => error
+          @response_code = 'custom.errors.users.update_avatar'
+          @response_message = error.message
+          render :default, status: 400 and return
+        rescue ActiveRecord::RecordInvalid => error
+          @response_code = 'custom.errors.users.update_avatar'
+          @response_message = current_user.errors.full_messages.to_sentence
+          render :default, status: 400 and return
+        end
+      end
+
       api :POST, '/update-password', 'Update password'
       description 'Update password'
       param :current_password, String, required: true
@@ -180,7 +205,16 @@ module Api
       private
 
       def udpate_profile_params
-        params.fetch(:user, {}).permit(:first_name,:last_name)
+        params.permit(
+          :first_name,
+          :last_name
+        )
+      end
+
+      def avatar_params
+        params.permit(
+          :avatar
+        )
       end
 
       def register_params

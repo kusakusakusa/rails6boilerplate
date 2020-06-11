@@ -128,16 +128,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "junior_reichel@predovic.org",
+        "email": "traci.kuhlman@stanton.name",
         "password": "password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTcxOTk3NiwianRpIjoiYTU5Yjg5YTgtYmE5ZC00OWU4LWJlZTktMWVjNDk4Y2I3MDFmIiwidXNlciI6eyJpZCI6NzAsImVtYWlsIjoianVuaW9yX3JlaWNoZWxAcHJlZG92aWMub3JnIn19.TVRgOsdLgWDswZiaZ9zbmg53tg2tPp0k2INpOE27sweJgDUNvBJIxuyUaIAUtJNi5A5zUUlLEvarTYFN3koh5g",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTg4NTc1NCwianRpIjoiYWY1ZDdlNTQtZmVjZi00N2Q1LThkYjMtMzE4ZTRmZmY0ODhmIiwidXNlciI6eyJpZCI6NzQxLCJlbWFpbCI6InRyYWNpLmt1aGxtYW5Ac3RhbnRvbi5uYW1lIn19.JDXloV9tsB6W5Hkwa47UuWaAQTkpKtm7ZkeHhkC3oImeKPYyXgceNi63LSy6Suc6Rrh95SGcZm7eq3iZYVm_9g",
         "token_type": "Bearer",
         "expires_in": 7199,
-        "refresh_token": "3zCb7FTETbfHJRJqKcSudth6Z5ALfAXpIRpq8645k4A",
-        "created_at": 1591719976,
+        "refresh_token": "r_m-l4TMZZVoH7zRDqT0I867NCCPC5a0cqi-JTaBUN0",
+        "created_at": 1591885754,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -153,16 +153,16 @@
       ],
       "query": null,
       "request_data": {
-        "email": "roseline_stroman@marquardthilpert.io",
+        "email": "stacia@rohan.name",
         "password": "new_password",
         "grant_type": "password"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTcxOTk3NywianRpIjoiN2ZlZTA2NTgtZjQwYS00OWUxLTllN2EtMTQ1ZTg3MzM4MTBiIiwidXNlciI6eyJpZCI6ODAsImVtYWlsIjoicm9zZWxpbmVfc3Ryb21hbkBtYXJxdWFyZHRoaWxwZXJ0LmlvIn19.6XoQUcSEL3CXUD80-P6IBDfVYeFO6h3qP-_nqKzXqHqzcmcg1f0kx-SFvVcHIwZ1S_TiMiqTsQO7nCQfoxZYXg",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTg4NTc1NSwianRpIjoiNmQ3NDI5MTktYjUwNC00MDlmLWFkZmYtYTdmYjU5YmZmYzhjIiwidXNlciI6eyJpZCI6NzUxLCJlbWFpbCI6InN0YWNpYUByb2hhbi5uYW1lIn19.Q8VGlHU3RbgotZHUcl6RXkuViqA_pisLiyys7UUb17yDaIRfH-WmkZqRzsBo9U-cYQoz3LEfDYr8ggl_It5KjA",
         "token_type": "Bearer",
         "expires_in": 7200,
-        "refresh_token": "ucU38wYXQlY0Gwx3NLBzGtUdWwaXZVriVGdfhuqiKXc",
-        "created_at": 1591719977,
+        "refresh_token": "3bcj5pNx4BXhLfNBeYmUoS-GawFjwoxvWJJNTEFghs8",
+        "created_at": 1591885755,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -180,15 +180,15 @@
       ],
       "query": null,
       "request_data": {
-        "refresh_token": "-SbH1dybsV0DcAXYmbNhEcC4OjlzQbV7vEg0Ml4gQC0",
+        "refresh_token": "0TSN5yCSzb_B6sp0-rYYoC9s9KURPPl_VBkglbj8z14",
         "grant_type": "refresh_token"
       },
       "response_data": {
-        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTcxOTk3NiwianRpIjoiNTQ3OTdiODEtZTYzZC00N2M1LWFlODEtN2RlZTUwM2M2Y2IzIiwidXNlciI6eyJpZCI6NzEsImVtYWlsIjoiZHJld0BjYWludHJldXRlbC5vcmcifX0.tp-fQomiJT35UxN6ExrM9fx7ktIeb5LexPZC4pdlWDxepY7VEY_H35JJRrBBQIB4OWXvURGGYC-ml3HRnM53Yw",
+        "access_token": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJSYWlsczZib2lsZXJwbGF0ZSIsImlhdCI6MTU5MTg4NTc1NCwianRpIjoiN2Q5ZmRlZWEtNTExOS00NGVhLWE3NGEtNmYwYjIyZjg1YzYwIiwidXNlciI6eyJpZCI6NzQyLCJlbWFpbCI6Impvc2VwaEBjcm9va3N3aWVnYW5kLmJpeiJ9fQ.ASZCwnrMKxLN27LkyKXFApEj4S7a84Cf9nbj3CYrW5ulaGDTtWjeMQ8ZZtS7aytdzNCflDszDCJZdEasHesTJQ",
         "token_type": "Bearer",
         "expires_in": 7199,
-        "refresh_token": "Yb5eg6zMJVoOJqNF7lpWpiGeLmiAPL7ZsLThSAQs6Us",
-        "created_at": 1591719976,
+        "refresh_token": "2fwoN6VsIk6-UsZiOQyaC1DXlbEZyuk08g1vDzXihIA",
+        "created_at": 1591885754,
         "response_code": "custom.success.default",
         "response_message": "Success!"
       },
@@ -310,15 +310,15 @@
         "response_message": "Success!",
         "data": [
           {
-            "id": 3,
-            "user_id": 59,
-            "title": "libero numquam ab quia",
-            "description": "Libero ipsum dolores. Qui ipsa quibusdam. Tenetur asperiores autem. Doloribus distinctio et. Quidem cupiditate quo. Necessitatibus dicta et.",
-            "publish_date": "2020-01-24",
+            "id": 259,
+            "user_id": 727,
+            "title": "consectetur aperiam voluptatem natus",
+            "description": "Ab voluptas nam. Sunt velit consectetur. Facilis iste consequuntur. Alias omnis et. Enim ut culpa. Aliquid molestias repellat.",
+            "publish_date": "2018-09-10",
             "price": null,
             "featured": false,
-            "created_at": "2020-06-09T16:26:16.463Z",
-            "updated_at": "2020-06-09T16:26:16.487Z"
+            "created_at": "2020-06-11T14:29:13.972Z",
+            "updated_at": "2020-06-11T14:29:14.012Z"
           }
         ]
       },
@@ -336,7 +336,7 @@
       ],
       "query": null,
       "request_data": {
-        "confirmation_token": "xhJzgG2BPLuE8bkjvFGA"
+        "confirmation_token": "N5-6qm3Unz33U_TQGd8J"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -356,7 +356,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "leann_oberbrunner@braun.io"
+        "email": "vernetta.pollich@sengerkihn.com"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -374,7 +374,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "roseline_stroman@marquardthilpert.io"
+        "email": "stacia@rohan.name"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -414,12 +414,13 @@
         "response_code": "custom.success.default",
         "response_message": "Success!",
         "user": {
-          "id": 64,
-          "email": "xochitl@ohara.co",
-          "created_at": "2020-06-09T16:26:16.726Z",
-          "updated_at": "2020-06-09T16:26:16.726Z",
-          "first_name": "Suzi",
-          "last_name": "Jast"
+          "id": 732,
+          "email": "brianna.grant@osinski.net",
+          "created_at": "2020-06-11T14:29:14.313Z",
+          "updated_at": "2020-06-11T14:29:14.313Z",
+          "first_name": "Andrea",
+          "last_name": "Kihn",
+          "avatar": null
         }
       },
       "code": 200,
@@ -438,12 +439,13 @@
         "response_code": "custom.success.default",
         "response_message": "Success!",
         "user": {
-          "id": 65,
-          "email": "deb_greenfelder@dicki.io",
-          "created_at": "2020-06-09T16:26:16.735Z",
-          "updated_at": "2020-06-09T16:26:16.735Z",
-          "first_name": "Launa",
-          "last_name": "Nitzsche"
+          "id": 733,
+          "email": "alycia.steuber@moen.biz",
+          "created_at": "2020-06-11T14:29:14.323Z",
+          "updated_at": "2020-06-11T14:29:14.323Z",
+          "first_name": "Gregorio",
+          "last_name": "Hegmann",
+          "avatar": null
         }
       },
       "code": 200,
@@ -463,7 +465,7 @@
         "first_name": "firstname",
         "last_name": "lastname",
         "email": "test@test.com",
-        "password": "V7bCdn"
+        "password": "Gl6oAF"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -483,7 +485,7 @@
       ],
       "query": null,
       "request_data": {
-        "email": "kacie_gerlach@stiedemann.io"
+        "email": "adalberto@feil.info"
       },
       "response_data": {
         "response_code": "custom.success.default",
@@ -503,12 +505,77 @@
       ],
       "query": null,
       "request_data": {
-        "reset_password_token": "bdBT-UatCWnFz4rs6AEH",
+        "reset_password_token": "sd7d7i-1bYCERpLvzfSx",
         "password": "new_password"
       },
       "response_data": {
         "response_code": "custom.errors.devise.passwords",
         "response_message": "Email was already confirmed, please try signing in"
+      },
+      "code": 400,
+      "show_in_doc": 1,
+      "recorded": true
+    }
+  ],
+  "Users#update_avatar": [
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-avatar",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "avatar": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD//gATQ3JlYXRlZCB3aXRoIEdJTVD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAC//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AP/B//9k="
+      },
+      "response_data": {
+        "response_code": "custom.success.default",
+        "response_message": "Success!",
+        "user": {
+          "id": 735,
+          "email": "ed@stokes.biz",
+          "created_at": "2020-06-11T14:29:14.428Z",
+          "updated_at": "2020-06-11T14:29:14.461Z",
+          "first_name": "Barrett",
+          "last_name": "Dach",
+          "avatar": "http://localhost:3333/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBamdJIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--c146e8c093cf3b4c29f052fc1c634c3e55c35576/User-avatar.jpeg"
+        }
+      },
+      "code": 200,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-avatar",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "avatar": "/9j/4AAQSkZJRgABAQEASABIAAD//gATQ3JlYXRlZCB3aXRoIEdJTVD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDAREAAhEBAxEB/8QAFAABAAAAAAAAAAAAAAAAAAAAC//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AP/B//9k="
+      },
+      "response_data": {
+        "response_code": "custom.errors.users.update_avatar",
+        "response_message": "no extension"
+      },
+      "code": 400,
+      "show_in_doc": 1,
+      "recorded": true
+    },
+    {
+      "verb": "POST",
+      "path": "/api/v1/update-avatar",
+      "versions": [
+        "v1"
+      ],
+      "query": null,
+      "request_data": {
+        "avatar": "data:image/jpeg;base64,_9j_4AAQSkZJRgABAQEASABIAAD__gATQ3JlYXRlZCB3aXRoIEdJTVD_2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH_2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH_wAARCAABAAEDAREAAhEBAxEB_8QAFAABAAAAAAAAAAAAAAAAAAAAC__EABQQAQAAAAAAAAAAAAAAAAAAAAD_xAAUAQEAAAAAAAAAAAAAAAAAAAAA_8QAFBEBAAAAAAAAAAAAAAAAAAAAAP_aAAwDAQACEQMRAD8AP_B__9k="
+      },
+      "response_data": {
+        "response_code": "custom.errors.users.update_avatar",
+        "response_message": "invalid base64"
       },
       "code": 400,
       "show_in_doc": 1,
@@ -563,7 +630,7 @@
       "query": null,
       "request_data": {
         "current_password": "password",
-        "password": "n5jho"
+        "password": "y5mq2"
       },
       "response_data": {
         "response_code": "custom.errors.users.update_password",
@@ -629,10 +696,11 @@
         "user": {
           "first_name": "newFirstName",
           "last_name": "newLastName",
-          "id": 66,
-          "email": "queen@wildermanbaumbach.io",
-          "created_at": "2020-06-09T16:26:16.792Z",
-          "updated_at": "2020-06-09T16:26:16.816Z"
+          "id": 734,
+          "email": "marquita@mertzchamplin.biz",
+          "created_at": "2020-06-11T14:29:14.386Z",
+          "updated_at": "2020-06-11T14:29:14.413Z",
+          "avatar": null
         }
       },
       "code": 200,

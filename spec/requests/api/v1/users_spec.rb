@@ -117,6 +117,56 @@ RSpec.describe 'Users', type: :request do
     end
   end
 
+  describe 'POST /api/v1/update-avatar' do
+    before :each do
+      expect(user.avatar.attached?).to eq false
+    end
+
+    scenario 'should pass with correct credentials', :show_in_doc do
+      params = { avatar: image_base64 }
+
+      post '/api/v1/update-avatar', params: params.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
+
+      expect(response_body.response_message).to eq 'Success!'
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response.status).to eq 200
+      expect(user.reload.avatar.attached?).to eq true
+    end
+
+    scenario 'should fail if there is no extension', :show_in_doc do
+      params = { avatar: image_no_extension_base64 }
+
+      post '/api/v1/update-avatar', params: params.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
+
+      expect(response_body.response_message).to eq 'no extension'
+      expect(response_body.response_code).to eq 'custom.errors.users.update_avatar'
+      expect(response.status).to eq 400
+      expect(user.reload.avatar.attached?).to eq false
+    end
+
+    scenario 'should fail to upload image if params is unsafeurl base64', :show_in_doc do
+      params = { avatar: image_unsafe_base64 }
+
+      post '/api/v1/update-avatar', params: params.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
+
+      expect(response_body.response_message).to eq 'invalid base64'
+      expect(response_body.response_code).to eq "custom.errors.users.update_avatar"
+      expect(response.status).to eq 400
+      expect(user.reload.avatar.attached?).to eq false
+    end
+
+    scenario 'should fail if non image is uploaded' do
+      params = { avatar: video_base64 }
+
+      post '/api/v1/update-avatar', params: params.to_json, headers: { 'Authorization': "Bearer #{@access_token}" }.merge!(DEFAULT_HEADERS)
+
+      expect(response_body.response_message).to eq 'Avatar has an invalid content type'
+      expect(response_body.response_code).to eq "custom.errors.users.update_avatar"
+      expect(response.status).to eq 400
+      expect(user.reload.avatar.attached?).to eq false
+    end
+  end
+
   describe 'POST /api/v1/update-password' do
     before :each do
       @params = {

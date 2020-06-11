@@ -20,6 +20,8 @@
 #
 
 class User < ApplicationRecord
+  include Avatarable
+
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable,
