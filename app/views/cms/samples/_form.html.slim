@@ -3,7 +3,7 @@
     .alert.alert-dismissible.alert-danger
       h2
         = pluralize(sample.errors.count, 'error')
-        | prohibited this sample from being saved:
+        |  prohibited this sample from being saved:
       ul
         - sample.errors.full_messages.each do |message|
           li= message

@@ -3,7 +3,7 @@
     .alert.alert-dismissible.alert-danger
       h2
         = pluralize(hygiene_page.errors.count, 'error')
-        | prohibited this hygiene_page from being saved:
+        |  prohibited this hygiene_page from being saved:
       ul
         - hygiene_page.errors.full_messages.each do |message|
           li= message

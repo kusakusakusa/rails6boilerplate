@@ -3,7 +3,7 @@
     .alert.alert-dismissible.alert-danger
       h2
         = pluralize(<%= underscored %>.errors.count, 'error')
-        | prohibited this <%= underscored %> from being saved:
+        |  prohibited this <%= underscored %> from being saved:
       ul
         - <%= underscored %>.errors.full_messages.each do |message|
           li= message
