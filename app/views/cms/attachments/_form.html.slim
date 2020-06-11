@@ -1,21 +1,18 @@
 = form_with(model: attachment, url: attachment.new_record? ? public_send("cms_#{record.class.name.underscore}_#{params[:resource]}_path", record) : public_send("cms_#{record.class.name.underscore}_#{params[:resource].singularize}_path", record, attachment), local: true) do |form|
   
-  .form-group
-    - case params[:content_type]
-    - when 'image'
-      = image_tag attachment.new_record? ? asset_pack_path('media/images/placeholder-image.jpg') : rails_blob_path(form.object, only_path: true), class: 'image-input-preview w-25', data: { field_name: "attachment[file]" }, alt: ''
-      = form.file_field :file, class: 'image-input file-input form-control-file', required: form.object.new_record?
-    - when 'video'
-      video.video-input-preview controls="" playsinline="" 
-        source src="#{attachment.new_record? ? '' : rails_blob_path(attachment, only_path: true)}"
-      = form.file_field :file, class: 'video-input file-input form-control-file', required: form.object.new_record?
-    - when 'audio'
-      audio.audio-input-preview controls=""
-        source src="#{attachment.new_record? ? '' : rails_blob_path(attachment, only_path: true)}"
-      = form.file_field :file, class: 'audio-input file-input form-control-file', required: form.object.new_record?
-    - else
-      p TODO
+  .form-group.w-25
+    = image_tag attachment.new_record? ? asset_pack_path('media/images/placeholder-image.jpg') : rails_blob_path(form.object, only_path: true), class: "input-preview image-input-preview w-100 #{(!form.object.new_record? && attachment.image?) ? '' : 'd-none'}", data: { field_name: "attachment[file]" }, alt: ''
+
+    video class="video-input-preview input-preview w-100 #{(!form.object.new_record? && attachment.video?) ? '' : 'd-none'}" controls="" playsinline="" 
+      source src="#{attachment.new_record? ? '' : rails_blob_path(attachment, only_path: true)}"
+
+    audio class="audio-input-preview input-preview w-100 #{(!form.object.new_record? && attachment.audio?) ? '' : 'd-none'}" controls=""
+      source src="#{attachment.new_record? ? '' : rails_blob_path(attachment, only_path: true)}"
+
+    p.d-none.miscellaneous-input-preview.input-preview Uploaded
     
+    = form.file_field :file, class: 'file-input form-control-file', required: form.object.new_record?
+
     = form.label :file, 'Browse', class: 'btn btn-secondary'
 
   .actions

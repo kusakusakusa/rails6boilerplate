@@ -64,29 +64,60 @@ feature 'Attachment', js: true do
           expect(page).to have_content "#{@attachment.capitalize} successfully added"
           expect(page).to have_current_path "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}"
           expect(find_all(:css, '.attachment-container').count).to eq 3
-          expect(public_send(@record).public_send(@attachment.pluralize).count).to eq 3
+          expect(public_send(@record).reload.public_send(@attachment.pluralize).count).to eq 3
         end
 
         scenario "should return error and not create #{setting[:attachment]} on invalid content type" do
-          attach_ruby_file 'attachment[file]'
+          attach_pdf_file 'attachment[file]'
           click_on "Create #{@attachment.titlecase}"
 
           expect(page).to have_current_path "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}/new"
           expect(page).to have_content "Validation failed: #{@attachment.pluralize.humanize} has an invalid content type"
           expect(public_send(@record).reload.public_send(@attachment.pluralize).count).to eq 2
         end
+        
+        scenario 'should show alert if invalid type is uploaded' do
+          attach_ruby_file 'attachment[file]'
+          expect(alert_text).to eq 'Invalid media type'
+        end
+
+        scenario 'should change preview when different media type is uploaded' do
+          attach_audio_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: true)
+          expect(page).to have_selector('.image-input-preview', visible: false)
+          expect(page).to have_selector('.video-input-preview', visible: false)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: false)
+
+          attach_image_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: false)
+          expect(page).to have_selector('.image-input-preview', visible: true)
+          expect(page).to have_selector('.video-input-preview', visible: false)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: false)
+
+          attach_video_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: false)
+          expect(page).to have_selector('.image-input-preview', visible: false)
+          expect(page).to have_selector('.video-input-preview', visible: true)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: false)
+
+          attach_pdf_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: false)
+          expect(page).to have_selector('.image-input-preview', visible: false)
+          expect(page).to have_selector('.video-input-preview', visible: false)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: true)
+        end
       end
 
       feature 'edit' do
         before :each do
           sign_in admin_user
+          visit "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}/#{public_send(@record).public_send(@attachment.pluralize).first.id}/edit"
         end
 
         scenario "should edit #{setting[:attachment]}" do
           expect(public_send(@record).public_send(@attachment.pluralize).count).to eq 2
           initial_attachment_ids = public_send(@record).public_send(@attachment.pluralize).pluck(:id)
 
-          visit "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}/#{initial_attachment_ids.first}/edit"
           public_send("attach_#{@attachment}_file", 'attachment[file]')
           click_on "Update #{@attachment.titlecase}"
 
@@ -99,7 +130,7 @@ feature 'Attachment', js: true do
 
         scenario "should purge #{setting[:attachment]}" do
           initial_attachment_count = ActiveStorage::Attachment.count
-          visit "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}/#{public_send(@record).public_send(@attachment.pluralize).first.id}/edit"
+          
           public_send("attach_#{@attachment}_file", 'attachment[file]')
           click_on "Update #{@attachment.titlecase}"
           expect(ActiveStorage::Attachment.count - initial_attachment_count).to eq 0
@@ -109,14 +140,44 @@ feature 'Attachment', js: true do
           expect(public_send(@record).public_send(@attachment.pluralize).count).to eq 2
           initial_attachment_ids = public_send(@record).public_send(@attachment.pluralize).pluck(:id)
 
-          visit "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}/#{initial_attachment_ids.first}/edit"
-          attach_ruby_file 'attachment[file]'
+          attach_pdf_file 'attachment[file]'
           click_on "Update #{@attachment.titlecase}"
 
           expect(page).to have_current_path "/cms/#{@record.pluralize}/#{public_send(@record).id}/#{@attachment.pluralize}/#{initial_attachment_ids.first}/edit"
           expect(page).to have_content "Validation failed: #{@attachment.pluralize.humanize} has an invalid content type"
           expect(public_send(@record).reload.public_send(@attachment.pluralize).count).to eq 2
           expect((public_send(@record).reload.public_send(@attachment.pluralize).pluck(:id) - initial_attachment_ids).empty?).to eq true
+        end
+
+        scenario 'should show alert if invalid type is uploaded' do
+          attach_ruby_file 'attachment[file]'
+          expect(alert_text).to eq 'Invalid media type'
+        end
+
+        scenario 'should change preview when different media type is uploaded' do
+          attach_audio_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: true)
+          expect(page).to have_selector('.image-input-preview', visible: false)
+          expect(page).to have_selector('.video-input-preview', visible: false)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: false)
+
+          attach_image_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: false)
+          expect(page).to have_selector('.image-input-preview', visible: true)
+          expect(page).to have_selector('.video-input-preview', visible: false)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: false)
+
+          attach_video_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: false)
+          expect(page).to have_selector('.image-input-preview', visible: false)
+          expect(page).to have_selector('.video-input-preview', visible: true)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: false)
+
+          attach_pdf_file 'attachment[file]'
+          expect(page).to have_selector('.audio-input-preview', visible: false)
+          expect(page).to have_selector('.image-input-preview', visible: false)
+          expect(page).to have_selector('.video-input-preview', visible: false)
+          expect(page).to have_selector('.miscellaneous-input-preview', visible: true)
         end
       end
 

@@ -4,6 +4,10 @@
 # http://www.jeremyaldrich.net/en/latest/rspec_automated_browser_testing.html
 
 module FileHelpers
+  def attach_pdf_file selector
+    attach_file(selector, File.join(Rails.root, 'spec', 'support', 'sample.pdf'), visible: false)
+  end
+
   def attach_ruby_file selector
     attach_file(selector, File.join(Rails.root, 'config', 'application.rb'), visible: false)
   end

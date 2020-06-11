@@ -63,5 +63,10 @@ module Rails6boilerplate
       audio/vnd.wav
       audio/mp4
     ]
+
+    config.miscellaneous_types = %w[
+      text/csv
+      application/pdf
+    ]
   end
 end

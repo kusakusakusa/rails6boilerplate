@@ -17,15 +17,15 @@ Rails.application.routes.draw do
     root to: 'application#index'
     resources :hygiene_pages, only: %i[edit update]
     resources :samples do
-      resources :images, controller: 'attachments', resource: 'images', content_type: 'image', except: :show do
+      resources :images, controller: 'attachments', resource: 'images', except: :show do
         collection do
           post '/update_order', to: 'attachments#update_order', resource: 'images'
         end
       end
 
-      resources :videos, controller: 'attachments', resource: 'videos', content_type: 'video', except: :show
+      resources :videos, controller: 'attachments', resource: 'videos', except: :show
 
-      resources :audios, controller: 'attachments', resource: 'audios', content_type: 'audio', except: :show
+      resources :audios, controller: 'attachments', resource: 'audios', except: :show
     end
   end
 

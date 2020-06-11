@@ -16,9 +16,8 @@ html lang="en"
     = favicon_pack_tag 'logo.jpg'
 
     /! Custom styles for this template
-    = javascript_pack_tag 'hello_erb'
-    = stylesheet_pack_tag 'cms', 'data-turbolinks-track': 'reload'
-    = javascript_pack_tag 'cms', 'data-turbolinks-track': 'reload'
+    == stylesheet_pack_tag 'cms', 'data-turbolinks-track': 'reload'
+    == javascript_pack_tag 'cms', 'data-turbolinks-track': 'reload'
     = javascript_include_tag Ckeditor.cdn_url
     = yield :javascript_in_head
   body#page-top
