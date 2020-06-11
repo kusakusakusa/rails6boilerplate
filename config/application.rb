@@ -44,5 +44,24 @@ module Rails6boilerplate
 
     # add concerns
     config.eager_load_paths << Rails.root.join('app', 'concerns')
+
+    config.image_types = %w[
+      image/png
+      image/jpg
+      image/jpeg
+    ]
+
+    config.video_types = %w[
+      video/x-flv
+      video/mp4
+      video/x-ms-wmv
+    ]
+
+    config.audio_types = %w[
+      audio/basic
+      audio/mpeg
+      audio/vnd.wav
+      audio/mp4
+    ]
   end
 end

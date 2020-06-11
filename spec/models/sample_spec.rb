@@ -17,10 +17,10 @@ require 'rails_helper'
 
 RSpec.describe Sample, type: :model do
   it { should validate_attached_of(:featured_image) }
-  it { should validate_content_type_of(:featured_image).allowing('image/png', 'image/jpg', 'image/jpeg') }
-  it { should validate_content_type_of(:images).allowing('image/png', 'image/jpg', 'image/jpeg') }
-  it { should validate_content_type_of(:videos).allowing('video/x-flv', 'video/mp4', 'video/x-ms-wmv') }
-  it { should validate_content_type_of(:audios).allowing('audio/basic', 'audio/mpeg', 'audio/vnd.wav', 'audio/mp4') }
+  it { should validate_content_type_of(:featured_image).allowing(Rails.application.config.image_types) }
+  it { should validate_content_type_of(:images).allowing(Rails.application.config.image_types) }
+  it { should validate_content_type_of(:videos).allowing(Rails.application.config.video_types) }
+  it { should validate_content_type_of(:audios).allowing(Rails.application.config.audio_types) }
 
   feature 'scopes' do
     feature '.naturally_sorted' do
@@ -28,7 +28,7 @@ RSpec.describe Sample, type: :model do
         sample1 = create(:sample, title: '10')
         sample2 = create(:sample, title: '1')
         expect(Sample.all.first.id).to eq sample1.id 
-        expect(Sample.naturally_sorted(:title).first.id).to eq sample2.id 
+        expect(Sample.unscoped.naturally_sorted(:title).first.id).to eq sample2.id 
       end
     end
   end

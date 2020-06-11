@@ -27,28 +27,11 @@ class Sample < ApplicationRecord
 
   validates :featured_image,
             attached: true,
-            content_type: %w[
-              image/png
-              image/jpg
-              image/jpeg
-            ]
+            content_type: Rails.application.config.image_types
   validates :images,
-            content_type: %w[
-              image/png
-              image/jpg
-              image/jpeg
-            ]
+            content_type: Rails.application.config.image_types
   validates :videos,
-            content_type: %w[
-              video/x-flv
-              video/mp4
-              video/x-ms-wmv
-            ]
+            content_type: Rails.application.config.video_types
   validates :audios,
-            content_type: %w[
-              audio/basic
-              audio/mpeg
-              audio/vnd.wav
-              audio/mp4
-            ]
+            content_type: Rails.application.config.audio_types
 end
