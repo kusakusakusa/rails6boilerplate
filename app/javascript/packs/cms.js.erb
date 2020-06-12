@@ -11,8 +11,6 @@ require("jquery")
 require("chart.js")
 require("bootstrap")
 require("jquery.easing")
-require("plyr")
-require("plyr/dist/plyr.css")
 require("flatpickr")
 require("flatpickr/dist/flatpickr.css")
 
@@ -26,8 +24,6 @@ const images = require.context('../images', true)
 const imagePath = (name) => images(name, true)
 
 import flatpickr from "flatpickr"
-
-import Plyr from 'plyr';
 
 document.addEventListener("turbolinks:load", () => {
   flatpickr("[data-behavior='flatpickr']", {
@@ -59,7 +55,7 @@ document.addEventListener("turbolinks:load", () => {
           case videoTypes.includes(element.files[0].type):
             $('.video-input-preview').removeClass('d-none');
             $('.video-input-preview').find('source').attr('src', e.target.result);
-            Plyr.setup('.video-input-preview');
+            $('.video-input-preview').load();
             break;
           case imageTypes.includes(element.files[0].type):
             $('.image-input-preview').removeClass('d-none');
