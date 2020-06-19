@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def sample_pdf
-    @sample = Sample.find_by(id: 1) || Sample.new(
+    sample = Sample.find_by(id: 1) || Sample.new(
       title: Faker::Lorem.words(number: 4).join(' '),
       description: Faker::Lorem.paragraph(sentence_count: 6),
       publish_date: Faker::Date.between(from: 1.year.ago, to: Date.today),
@@ -60,11 +60,12 @@ class ApplicationController < ActionController::Base
     render  pdf: "sample_pdf",   # Excluding ".pdf" extension.
           template: "layouts/pdf/sample_pdf.html.slim",
           layout: false,
+          locals: { sample: sample },
           footer:  {
                       html: { 
                         template: 'layouts/pdf/footer.html.slim',
                         layout: false,
-                        locals: { sample: @sample }
+                        locals: { sample: sample }
                       }
                     },
           margin:  {   
@@ -73,6 +74,27 @@ class ApplicationController < ActionController::Base
                       left: 10,
                       right: 10
                     }
+  end
+
+  def sample_pdf_email
+    ApplicationMailer.sample_pdf(
+      Sample.find_by(id: 1) || Sample.new(
+        title: Faker::Lorem.words(number: 4).join(' '),
+        description: Faker::Lorem.paragraph(sentence_count: 6),
+        publish_date: Faker::Date.between(from: 1.year.ago, to: Date.today),
+        featured: [true, false].sample,
+        price: 1000,
+        user: User.find_by(id: 1) || User.new(
+          first_name: Faker::Name.first_name,
+          last_name: Faker::Name.last_name,
+          email: Faker::Internet.email,
+          password: 'password',
+          confirmed_at: Time.now.utc
+        )
+      )
+    ).deliver
+
+    render body: nil, status: 200 and return
   end
 
   private

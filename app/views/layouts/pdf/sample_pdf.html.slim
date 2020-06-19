@@ -21,17 +21,17 @@ html
                     td.label
                       | Invoice Number:
                     td
-                      = @sample.id
+                      = sample.id
                   tr
                     td.label
                       | Date of issue:
                     td
-                      = @sample.publish_date
+                      = sample.publish_date
                   tr
                     td.label
                       | Issued to:
                     td
-                      = @sample.user.first_name
+                      = sample.user.first_name
             td.details
               table.w-100.right
                 tbody
@@ -64,16 +64,16 @@ html
             - grand_total = 0
             tr
               td
-                = @sample.id
+                = sample.id
               td.description.left
-                = @sample.title
+                = sample.title
               td
-                = number_to_currency @sample.price / 100.0
+                = number_to_currency sample.price / 100.0
               td
                 = quantity
               td
-                - grand_total += quantity * @sample.price
-                = number_to_currency quantity * @sample.price / 100.0
+                - grand_total += quantity * sample.price
+                = number_to_currency quantity * sample.price / 100.0
           tfooter
             tr
               td.no-border colspan='2'
@@ -90,5 +90,5 @@ html
               td.label
                 | Issued by:
               td
-                = @sample.publish_date.display
+                = sample.publish_date.display
       br
