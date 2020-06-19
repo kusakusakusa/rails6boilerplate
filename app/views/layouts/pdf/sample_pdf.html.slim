@@ -6,31 +6,44 @@ html
     link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"
   body
     #content
-      = wicked_pdf_image_tag 'logo.jpg', class: 'logo'
-      .details
-        p 2003 Conifer Drive
-        p Seattle, WA 98122
-        p Website: www.example.com
-        p Email: cms@mailinator.com
+      table.w-100
+        thead
+          tr
+            th.logo style="text-align: center;"
+              = wicked_pdf_image_tag 'logo.jpg', class: 'logo'
+      table.w-100
+        tbody
+          tr
+            td.summary
+              table
+                tbody
+                  tr
+                    td.label
+                      | Invoice Number:
+                    td
+                      = @sample.id
+                  tr
+                    td.label
+                      | Date of issue:
+                    td
+                      = @sample.publish_date
+                  tr
+                    td.label
+                      | Issued to:
+                    td
+                      = @sample.user.first_name
+            td.details
+              table.w-100.right
+                tbody
+                  tr
+                    td 2003 Conifer Drive
+                  tr
+                    td Seattle, WA 98122
+                  tr
+                    td www.example.com
+                  tr
+                    td cms@mailinator.com
       br
-      .summary
-        table
-          tbody
-            tr
-              td.label
-                | Invoice Number:
-              td.highlighted
-                = @sample.id
-            tr
-              td.label
-                | Date of issue:
-              td.highlighted
-                = @sample.publish_date
-            tr
-              td.label
-                | Issued to:
-              td.highlighted
-                = @sample.user.first_name
       br
       .items
         table
@@ -38,7 +51,7 @@ html
             tr
               th
                 | S/N
-              th
+              th.description.left
                 | Item Description
               th
                 | Unit Price
@@ -52,7 +65,7 @@ html
             tr
               td
                 = @sample.id
-              td.description
+              td.description.left
                 = @sample.title
               td
                 = number_to_currency @sample.price / 100.0
@@ -61,18 +74,14 @@ html
               td
                 - grand_total += quantity * @sample.price
                 = number_to_currency quantity * @sample.price / 100.0
+          tfooter
             tr
               td.no-border colspan='2'
-              td.no-border colspan='2'
-                | Grand Total
+              td.no-border.right colspan='2'
+                strong Grand Total
               td
                 = number_to_currency grand_total / 100.0
       br
-      .remarks
-        .header
-          | Remarks
-        .content
-          = simple_format @sample.description
       br
       .issued-by
         table align="right" 
@@ -80,6 +89,6 @@ html
             tr
               td.label
                 | Issued by:
-              td.highlighted
+              td
                 = @sample.publish_date.display
       br

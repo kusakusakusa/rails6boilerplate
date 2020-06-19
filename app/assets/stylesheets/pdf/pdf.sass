@@ -2,25 +2,33 @@ body
   font-family: 'Roboto', 'sans-serif'
   border-top: 5px solid black
 
+table.w-100
+  width: 100%
+
+.left
+  text-align: left
+.right
+  text-align: right
+
 table
   text-align: center
+  border-spacing: 0
+  border: 0
   td,
   th
+    border: 0
     padding: 5px
-    border: 1px solid gray
+    vertical-align: top
   th
     font-weight: bold
 
-.highlighted
-  background: #cfe7f5
-
 #content
   margin-top: 10px
-  img.logo
-    position: absolute
-    left: 0
-    top: 20px
-    width: 20%
+
+  .logo
+    height: 200px
+    text-align: center
+  
   .details
     text-align: right
     p
@@ -35,20 +43,18 @@ table
         text-align: right
 
   .items
-    td
+    thead
+      th
+        border-bottom: 2px solid black
+    tfooter
+      td
+        border-top: 2px solid black
+    table
+      width: 100%
+      .description
+        width: 60%
       .no-border
         border: none
-      .description
-        text-align: left
-
-  .remarks
-    .header
-      font-weight: bold
-    .content
-      padding-left: 30px
-      padding-top: 2px
-      p
-        padding-bottom: 2px
 
   .issued-by
     table
@@ -60,9 +66,15 @@ table
         border: 0
 
 #footer
-  margin-top: 10px
   bottom: 0
   .name
     float: left
   .register-no
     text-align: right
+  .remarks
+    .header
+      font-weight: bold
+    .content
+      padding-top: 10px
+      p
+        padding-bottom: 2px

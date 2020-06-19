@@ -69,7 +69,7 @@ class ApplicationController < ActionController::Base
                     },
           margin:  {   
                       top: 10,
-                      bottom: 20,
+                      bottom: 40,
                       left: 10,
                       right: 10
                     }
