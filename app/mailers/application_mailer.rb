@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ApplicationMailer < ActionMailer::Base
+  include WithPdf
+
   layout 'mailer'
 
   def sample_pdf sample
@@ -11,27 +13,7 @@ class ApplicationMailer < ActionMailer::Base
     ) do |format|
       format.html
       format.pdf do
-        attachments['sample.pdf'] = WickedPdf.new.pdf_from_string(
-          render_to_string(
-            pdf: "sample_pdf", # Excluding ".pdf" extension.
-            template: "layouts/pdf/sample_pdf.html.slim",
-            layout: false,
-            locals: { sample: sample },
-            footer:  {
-              html: { 
-                template: 'layouts/pdf/footer.html.slim',
-                layout: false,
-                locals: { sample: sample }
-              }
-            },
-            margin:  {   
-              top: 10,
-              bottom: 40,
-              left: 10,
-              right: 10
-            }
-          )
-        )
+        attachments['sample.pdf'] = generate_pdf(sample)
       end
     end
   end

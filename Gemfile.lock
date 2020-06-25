@@ -189,6 +189,7 @@ GEM
     parallel (1.19.1)
     parser (2.7.0.4)
       ast (~> 2.4.0)
+    pdfkit (0.8.4.2)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -335,8 +336,6 @@ GEM
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
-    wicked_pdf (2.0.2)
-      activesupport
     wkhtmltopdf-binary (0.12.5.4)
     xpath (3.2.0)
       nokogiri (~> 1.8)
@@ -372,6 +371,7 @@ DEPENDENCIES
   mysql2 (>= 0.4.4)
   natural_sort (~> 0.3)
   net-ssh-gateway (~> 2.0.0)
+  pdfkit (~> 0.8.4.2)
   pry
   puma (= 4.3.5)
   rack-cors (~> 1.0.3)
@@ -390,7 +390,6 @@ DEPENDENCIES
   web-console (>= 3.3.0)
   webdrivers
   webpacker (~> 4.0)
-  wicked_pdf (~> 2.0.2)
   wkhtmltopdf-binary (~> 0.12.5.4)
 
 RUBY VERSION

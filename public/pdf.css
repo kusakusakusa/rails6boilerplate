@@ -1,0 +1,122 @@
+body {
+  font-family: 'Helvetica', 'sans-serif';
+}
+
+table.w-100 {
+  width: 100%;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+table {
+  text-align: center;
+  border-spacing: 0;
+  border: 0;
+}
+
+table td,
+  table th {
+  border: 0;
+  padding: 16px 0;
+  vertical-align: top;
+}
+
+table th {
+  font-family: 'Helvetica', 'sans-serif';
+}
+
+table td {
+  font-weight: normal;
+}
+
+#content {
+  margin-top: 10px;
+}
+
+#content .logo {
+  height: 200px;
+  text-align: center;
+  width: 200px;
+}
+
+#content .details {
+  text-align: right;
+}
+
+#content .details td {
+  padding: 8px 0;
+}
+
+#content .details p {
+  margin-bottom: 5px;
+}
+
+#content .summary table td {
+  text-align: left;
+  padding: 8px 0;
+}
+
+#content .summary table .label {
+  font-weight: bold;
+  text-align: right;
+}
+
+#content .items thead th {
+  border-bottom: 2px solid black;
+}
+
+#content .items tfooter td {
+  border-top: 2px solid black;
+}
+
+#content .items table {
+  width: 100%;
+}
+
+#content .items table .description {
+  width: 60%;
+}
+
+#content .items table .no-border {
+  border: none;
+}
+
+/* issued by */
+#content .issued-by table td {
+  text-align: left;
+}
+
+#content .issued-by .header {
+  font-weight: bold;
+  padding-left: 0;
+}
+
+#content .issued-by .content {
+  padding-left: 10px;
+}
+
+/* remarks */
+#content .remarks {
+  border-radius: 5px;
+  padding: 10px;
+  border: 2px solid black;
+}
+
+#content .remarks table td {
+  text-align: left;
+  padding: 8px 0;
+}
+
+#content .remarks .header {
+  font-weight: bold;
+}
+
+#content .remarks .content p {
+  padding-bottom: 2px;
+}

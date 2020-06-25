@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  include WithPdf
+
   layout :layout_by_resource
 
   def homepage
@@ -57,23 +59,11 @@ class ApplicationController < ActionController::Base
         confirmed_at: Time.now.utc
       )
     )
-    render  pdf: "sample_pdf",   # Excluding ".pdf" extension.
-          template: "layouts/pdf/sample_pdf.html.slim",
-          layout: false,
-          locals: { sample: sample },
-          footer:  {
-                      html: { 
-                        template: 'layouts/pdf/footer.html.slim',
-                        layout: false,
-                        locals: { sample: sample }
-                      }
-                    },
-          margin:  {   
-                      top: 10,
-                      bottom: 40,
-                      left: 10,
-                      right: 10
-                    }
+    
+    send_data generate_pdf(sample),
+      filename: 'sample.pdf',
+      type: 'application/pdf',
+      disposition: 'inline' # use 'attachment' to download instead
   end
 
   def sample_pdf_email
