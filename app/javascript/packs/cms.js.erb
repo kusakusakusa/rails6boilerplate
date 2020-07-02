@@ -26,7 +26,7 @@ const imagePath = (name) => images(name, true)
 import flatpickr from "flatpickr"
 
 document.addEventListener("turbolinks:load", () => {
-  flatpickr("[data-behavior='flatpickr']", {
+  flatpickr("[data-behavior='flatpickr']:not(.flatpickr-input)", {
     altInput: true,
     altFormat: 'F j, Y',
     dateFormat: 'Y-m-d'
