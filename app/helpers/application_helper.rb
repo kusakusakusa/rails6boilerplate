@@ -17,4 +17,8 @@ module ApplicationHelper
   def display_date date
     date&.strftime('%b %d, %Y') || '-'
   end
+
+  def display_time time
+    time&.strftime('%e %b %Y, %H:%M:%S %p') || '-'
+  end
 end
