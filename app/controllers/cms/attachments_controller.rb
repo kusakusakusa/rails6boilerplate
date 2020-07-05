@@ -2,6 +2,8 @@
 
 module Cms
   class AttachmentsController < Cms::BaseController
+    include Purgeable
+
     before_action :find_record
 
     def index
@@ -36,7 +38,7 @@ module Cms
         ActiveRecord::Base.transaction do
           @record.public_send(params[:resource]).attach(attachment_file)
           @record.save!
-          @record.public_send("#{params[:resource]}_attachments").find(params[:id]).purge
+          purge_attachment(@record.public_send("#{params[:resource]}_attachments").find(params[:id]))
           flash[:success] = "#{params[:resource].singularize.titlecase} successfully updated"
           redirect_to public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record)
         end
@@ -47,7 +49,7 @@ module Cms
     end
 
     def destroy
-      @record.public_send("#{params[:resource]}_attachments").find(params[:id]).purge
+      purge_attachment @record.public_send("#{params[:resource]}_attachments").find(params[:id])
       flash[:success] = "#{params[:resource].singularize.titlecase} successfully deleted"
       redirect_to public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record)
     end
