@@ -33,6 +33,8 @@ h1.h3.mb-2.text-gray-800
         h6.m-0.font-weight-bold.text-primary
           | Total: #{@attachments.count}
           .float-right
+            = link_to public_send("mass_upload_cms_#{@record.class.name.underscore}_#{params[:resource].underscore}_path") do
+              i.fas.fa-fw.fa-folder-plus
             = link_to public_send("new_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path") do
               i.fas.fa-fw.fa-plus
       .card-body
@@ -49,6 +51,9 @@ h1.h3.mb-2.text-gray-800
           = form_with(url: public_send("update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record), local: true) do |form|
             = hidden_field_tag :ordering, @attachments.pluck(:id).join(',')
             = form.submit 'Update Order', class: 'btn btn-primary'
+
+        br
+        = link_to "Back to #{@record.class.name} #{@record.id}", public_send("cms_#{@record.class.name.underscore}_path", @record)
 
 - content_for :javascript_in_head do
   = stylesheet_pack_tag 'attachments', 'data-turbolinks-track': 'reload'

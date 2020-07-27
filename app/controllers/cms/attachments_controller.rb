@@ -20,12 +20,16 @@ module Cms
           @record.public_send(params[:resource]).attach(attachment_file)
           @record.save!
 
-          flash[:success] = "#{params[:resource].singularize.titlecase} successfully added"
-          redirect_to public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record)
+          unless request.xhr?
+            flash[:success] = "#{params[:resource].singularize.titlecase} successfully added"
+            redirect_to public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record)
+          end
         end
       rescue ActiveRecord::RecordInvalid => e
-        flash[:danger] = e.message
-        redirect_to public_send("new_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path")
+        unless request.xhr?
+          flash[:danger] = e.message
+          redirect_to public_send("new_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path")
+        end
       end
     end
 
@@ -65,6 +69,8 @@ module Cms
       redirect_to public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record)
     end
 
+    def mass_upload; end
+
     private
 
     def find_record
@@ -87,6 +93,10 @@ module Cms
 
     def attachment_file
       params.require(:attachment).permit(:file)[:file]
+    end
+
+    def mass_attachment_files
+      params.require(:attachments).permit(files: [])[:files]
     end
   end
 end

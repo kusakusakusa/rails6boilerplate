@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :images, controller: 'attachments', resource: 'images', except: :show do
         collection do
           post '/update_order', to: 'attachments#update_order', resource: 'images'
+          get '/mass_upload', to: 'attachments#mass_upload', resource: 'images'
         end
       end
 

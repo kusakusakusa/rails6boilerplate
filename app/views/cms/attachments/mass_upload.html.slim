@@ -1,0 +1,13 @@
+h1.h3.mb-2.text-gray-800
+  | Mass upload #{link_to "#{@record.class.name.titlecase} #{@record.id}", public_send("cms_#{@record.class.name.underscore}_path", @record), class: 'font-weight-bold'} #{params[:resource].titlecase}
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-body
+        = form_with(url: public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path", @record), method: :post, class: 'dropzone', id: 'massUploads') do
+        br
+        = link_to "Back to #{params[:resource].titlecase}", public_send("cms_#{@record.class.name.underscore}_#{params[:resource]}_path")
+
+- content_for :javascript_in_head do
+  = javascript_pack_tag 'mass_upload', 'data-turbolinks-track': 'reload'
+  = stylesheet_pack_tag 'mass_upload', 'data-turbolinks-track': 'reload'
