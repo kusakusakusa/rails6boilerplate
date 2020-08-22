@@ -401,3 +401,33 @@ Which means any new image will be the latest created.
 * Use packer instead of provisioner scripts
 * add taggable
 * update ckeditor version when latest version, which contain support for ActiveStorgae, is released (https://github.com/galetahub/ckeditor/pull/853)
+
+## SSL on single instance
+
+To install SSL on single instance, do these things
+
+1. create this file `.ebextensions/00_ssl_certificates.config`
+
+```
+container_commands:
+  copy_combined_crt:
+    command: cp .ebextensions/ssl/<CRT_FILE_NAME> /home/ec2-user/<CRT_FILE_NAME>
+  copy_csr_key:
+    command: cp .ebextensions/ssl/<KEY_FILE_NAME> /home/ec2-user/<KEY_FILE_NAME>
+
+```
+
+2. Adjust `nginx.conf` to fit your needs
+3. Install the ssl files into the folder `.ebextensions/ssl`
+4. Update the `asset_host`, `host`, `protocol` etc in the credential file
+5. Open up port 443 in `rds.tf` to allow request to come in from that port.
+```
+resource "aws_security_group_rule" "https-web_server-single_instance" {
+  type = "ingress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  security_group_id = aws_security_group.web_server-single_instance.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+```
