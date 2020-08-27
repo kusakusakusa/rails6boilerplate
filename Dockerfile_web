@@ -1,9 +1,0 @@
-FROM nginx:1.17.4
-RUN apt-get update -y -qq && apt-get -y install apache2-utils
-WORKDIR /workspace
-COPY ./public public/
-COPY docker_nginx.conf /tmp/docker_nginx.conf
-RUN cat /tmp/docker_nginx.conf > /etc/nginx/conf.d/default.conf
-RUN rm /tmp/docker_nginx.conf
-
-CMD ["nginx", "-g", "daemon off;"]
