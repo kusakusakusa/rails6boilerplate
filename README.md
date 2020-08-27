@@ -167,85 +167,6 @@ Tokens will be revoked in a `logout` api. Revoked tokens will have impact on `po
 
 ## Usage - Deployment
 
-### Heroku
-
-Install heroku accounts plugin to deploy to different accounts
-```
-heroku plugins:install heroku-accounts
-heroku accounts:add <client>
-heroku accounts:set <client>
-```
-
-Use heroku for deployment.
-
-Login heroku cli
-```
-heroku login
-```
-
-Create heroku app for staging and production
-```
-heroku create --remote staging
-heroku create --remote production
-```
-
-View heroku application information
-```
-heroku info --remote staging
-heroku info --remote production
-```
-
-Add cleardb addon for mysql. This requires verification on heroku by adding credit card details. Then setup the configurations. Refer to [here](https://devcenter.heroku.com/articles/cleardb) for more information.
-
-```
-heroku addons:add cleardb:ignite --remote staging
-heroku config --remote staging | grep CLEARDB_DATABASE_URL
-heroku addons:add cleardb:ignite --remote production
-heroku config --remote production | grep CLEARDB_DATABASE_URL
-
-# convert to mysql2 based on gem used
-heroku config:set DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote staging
-heroku config:set CLEARDB_DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote staging
-
-heroku config:set DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote production
-heroku config:set CLEARDB_DATABASE_URL='mysql2://<COPY_FROM_CLEARDB_DATABASE_URL>' --remote production
-```
-
-Set environment
-```
-heroku config:set RAILS_ENV=staging --remote staging
-heroku config:set RACK_ENV=staging --remote staging
-
-heroku config:set RAILS_ENV=production --remote production
-heroku config:set RACK_ENV=production --remote staging
-```
-
-Deployment
-```
-git push staging master
-git push production master
-```
-
-Migrate and seed
-```
-heroku run rake db:migrate --remote staging
-heroku run rake db:seed --remote staging
-
-heroku run rake db:migrate --remote production
-heroku run rake db:seed --remote production
-```
-
-Destroy app
-```
-heroku apps:destroy --remote staging
-heroku apps:destroy --remote production
-```
-
-**Note** that this will add remote to git in the project source code.
-
-#### TODO
-use procfile to config how to start server
-
 ### AWS
 
 #### Architecture Explanation
@@ -395,8 +316,6 @@ Which means any new image will be the latest created.
 
 ## TODO
 * use https://registry.terraform.io/modules/trussworks/logs/aws/3.0.0 to add logs bucket instead of aws cli
-* dockerignore file
-* find out how to NOT redownload providers in terraform or copy whole context into dockerfile by copy or mounting volume in correct order
 * deployment rake task should check for `config/<ENV>.rb` and allow user to choose, instead of asking
 * Use packer instead of provisioner scripts
 * add taggable
