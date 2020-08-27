@@ -95,6 +95,7 @@ ActiveRecord::Schema.define(version: 2020_04_27_225655) do
     t.date "publish_date"
     t.integer "price", limit: 3
     t.boolean "featured", default: false, null: false
+    t.string "status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_samples_on_user_id"
