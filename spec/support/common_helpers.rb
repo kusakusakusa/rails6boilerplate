@@ -6,6 +6,11 @@ module CommonHelpers
     sleep 0.1
   end
 
+  def ajax_find_click selector
+    find(:css, selector).click
+    sleep 0.5
+  end
+
   # wrt https://stackoverflow.com/a/38085926/2667545
   def scroll_to(element)
     script = <<-JS
