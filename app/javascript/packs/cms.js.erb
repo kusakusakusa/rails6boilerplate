@@ -32,6 +32,12 @@ document.addEventListener("turbolinks:load", () => {
     dateFormat: 'Y-m-d'
   });
 
+  flatpickr("[data-behavior='flatpickr-with-time']:not(.flatpickr-input)", {
+    altInput: true,
+    enableTime: true,
+    dateFormat: 'Y-m-d H:i',
+  });
+
   $('.file-input').on('change', function() {
     const element = this;
     const imageTypes = <%= Rails.application.config.image_types %>;

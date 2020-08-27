@@ -8,12 +8,13 @@
         - sample.errors.full_messages.each do |message|
           li= message
 
-  = render 'layouts/cms/text_field', form: form, key: :title
-  = render 'layouts/cms/text_area', form: form, key: :description, options: { rows: 5 }
+  = render 'layouts/cms/text_field', form: form, key: :title, options: { required: true, placeholder: 'Change placeholder' }, form_label: 'Custom Form Label'
+  = render 'layouts/cms/text_area', form: form, key: :description, options: { rows: 5, placeholder: 'Change placeholder' }
   = render 'layouts/cms/radio', form: form, key: :featured, options: [{value: true,label: 'Feature'}, {value: false,label: "Don't Feature"}], required: true
   = render 'layouts/cms/date_field', form: form, key: :publish_date
-  = render 'layouts/cms/number_field', form: form, key: :price
+  = render 'layouts/cms/number_field', form: form, key: :price, options: { placeholder: 'Change placeholder' }
   = render 'layouts/cms/image_file_field', form: form, key: :featured_image
+  = render 'layouts/cms/select', form: form, key: :status, data: ['inactive', 'active'], html: { required: true }, options: { selected: '', disabled: '' }, form_label: 'Custom Form Label'
 
   .actions
     = form.submit class: 'btn btn-primary'
