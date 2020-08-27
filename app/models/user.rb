@@ -20,7 +20,7 @@
 #
 
 class User < ApplicationRecord
-  include Avatarable
+  include Avatarable, Userable
 
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
