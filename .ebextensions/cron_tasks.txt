@@ -1,0 +1,1 @@
+* * * * * root bash -l -c "su -m webapp; cd /var/app/current && rake logtest"
