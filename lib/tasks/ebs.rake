@@ -766,6 +766,7 @@ namespace :ebs do
             lifecycle {
               prevent_destroy = true
             }
+            backup_window = "15:00-16:00"
           MSG
         end
 
