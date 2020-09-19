@@ -12,6 +12,6 @@ feature 'Hygiene Page', js: true do
     append_ckeditor 'hygiene_page_content', with: 'New line'
     click_on 'Save'
 
-    expect(privacy_policy.reload.content).to eq "<h1>Privacy Policy</h1>\r\n\r\n<p>LoremIpsum</p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>New line</p>\r\n"
+    expect(privacy_policy.reload.content).to eq "<h1>Privacy Policy</h1>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>New lineLoremIpsum</p>\r\n"
   end
 end

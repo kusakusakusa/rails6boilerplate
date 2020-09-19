@@ -49,6 +49,7 @@ feature 'Samples', js: true do
       find('#label_sample_featured_true').click
       set_date '#sample_publish_date', '2020-01-01'
       fill_in 'sample[price]', with: '1000'
+      select "active", :from => "sample[status]"
       click_on 'Update Sample'
 
       sample.reload
@@ -64,6 +65,7 @@ feature 'Samples', js: true do
 
     scenario 'should not make sample feature image nil if sample image is not updated' do
       expect(sample.featured_image.attached?).to eq true
+      select "active", :from => "sample[status]"
       click_on 'Update Sample'
       expect(sample.reload.featured_image.attached?).to eq true
     end
@@ -71,6 +73,7 @@ feature 'Samples', js: true do
     scenario 'should change sample featured image if new file is uploaded' do
       original_featured_image_blob_id = sample.featured_image.attachment.blob_id
       attach_file('sample[featured_image]', File.join(Rails.root, 'spec', 'support', 'sample.jpg'), visible: false)
+      select "active", :from => "sample[status]"
       click_on 'Update Sample'
       expect(page).to have_content('Sample successfully updated')
       expect(sample.reload.featured_image.attachment.blob_id).not_to eq original_featured_image_blob_id
@@ -91,11 +94,12 @@ feature 'Samples', js: true do
       set_date '#sample_publish_date', '2020-01-01'
       fill_in 'sample[price]', with: '1000'
       attach_file('sample[featured_image]', File.join(Rails.root, 'spec', 'support', 'sample.jpg'), visible: false)
+      select "active", :from => "sample[status]"
       click_on 'Create Sample'
 
+      expect(page).to have_content('Sample successfully created')
       expect(Sample.count).to eq 2
       sample = Sample.last
-      expect(page).to have_content('Sample successfully created')
       expect(page).to have_current_path("/cms/samples/#{sample.id}")
       expect(sample.title).to eq 'New Title'
       expect(sample.description).to eq 'This is new sample description'

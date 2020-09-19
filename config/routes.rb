@@ -25,9 +25,19 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :videos, controller: 'attachments', resource: 'videos', except: :show
+      resources :videos, controller: 'attachments', resource: 'videos', except: :show do
+        collection do
+          post '/update_order', to: 'attachments#update_order', resource: 'videos'
+          get '/mass_upload', to: 'attachments#mass_upload', resource: 'videos'
+        end
+      end
 
-      resources :audios, controller: 'attachments', resource: 'audios', except: :show
+      resources :audios, controller: 'attachments', resource: 'audios', except: :show do
+        collection do
+          post '/update_order', to: 'attachments#update_order', resource: 'audios'
+          get '/mass_upload', to: 'attachments#mass_upload', resource: 'audios'
+        end
+      end
     end
   end
 
