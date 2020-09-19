@@ -350,3 +350,24 @@ resource "aws_security_group_rule" "https-web_server-single_instance" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 ```
+
+## Dump database from production
+
+Create the dump file in one of the private instance
+```
+rake ebs:bastion:ssh
+mysqldump  -h <RDS_ENDPOINT> -u <DB_USER> -p <DATABASE_NAME > dump.sql
+
+# Determine the private instance with the dump file
+curl http://169.254.169.254/latest/meta-data/local-ipv4
+```
+
+Download to bastion
+```
+ssh -tt -A -i <SSH_KEY> ec2-user@<BASTION_PUBLIC_IP> -o 'UserKnownHostsFile /dev/null' -o StrictHostKeyChecking=no "scp -o 'UserKnownHostsFile /dev/null' -o StrictHostKeyChecking=no ec2-user@<INSTANCE_PRIVATE_IP>:~/dump.sql ."
+```
+
+Download to local computer
+```
+scp -i <SSH_KEY> ec2-user@<BASTION_PUBLIC_IP>:~/dump.sql ./dump.sql
+```
