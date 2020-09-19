@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_27_225655) do
+ActiveRecord::Schema.define(version: 2020_09_19_223012) do
 
   create_table "active_storage_attachments", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -56,6 +56,15 @@ ActiveRecord::Schema.define(version: 2020_04_27_225655) do
     t.index ["type"], name: "index_ckeditor_assets_on_type"
   end
 
+  create_table "devices", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "token", limit: 191
+    t.string "device_type", limit: 7
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_devices_on_user_id"
+  end
+
   create_table "hygiene_pages", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "slug", limit: 191
     t.text "content"
@@ -86,6 +95,75 @@ ActiveRecord::Schema.define(version: 2020_04_27_225655) do
     t.datetime "created_at", null: false
     t.string "scopes"
     t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
+  end
+
+  create_table "rpush_apps", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "environment"
+    t.text "certificate"
+    t.string "password"
+    t.integer "connections", default: 1, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "type", null: false
+    t.string "auth_key"
+    t.string "client_id"
+    t.string "client_secret"
+    t.string "access_token"
+    t.datetime "access_token_expiration"
+    t.text "apn_key"
+    t.string "apn_key_id"
+    t.string "team_id"
+    t.string "bundle_id"
+    t.boolean "feedback_enabled", default: true
+  end
+
+  create_table "rpush_feedback", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "device_token"
+    t.timestamp "failed_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "app_id"
+    t.index ["device_token"], name: "index_rpush_feedback_on_device_token"
+  end
+
+  create_table "rpush_notifications", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.integer "badge"
+    t.string "device_token"
+    t.string "sound"
+    t.text "alert"
+    t.text "data"
+    t.integer "expiry", default: 86400
+    t.boolean "delivered", default: false, null: false
+    t.timestamp "delivered_at"
+    t.boolean "failed", default: false, null: false
+    t.timestamp "failed_at"
+    t.integer "error_code"
+    t.text "error_description"
+    t.timestamp "deliver_after"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "alert_is_json", default: false, null: false
+    t.string "type", null: false
+    t.string "collapse_key"
+    t.boolean "delay_while_idle", default: false, null: false
+    t.text "registration_ids", size: :medium
+    t.integer "app_id", null: false
+    t.integer "retries", default: 0
+    t.string "uri"
+    t.timestamp "fail_after"
+    t.boolean "processing", default: false, null: false
+    t.integer "priority"
+    t.text "url_args"
+    t.string "category"
+    t.boolean "content_available", default: false, null: false
+    t.text "notification"
+    t.boolean "mutable_content", default: false, null: false
+    t.string "external_device_id"
+    t.string "thread_id"
+    t.boolean "dry_run", default: false, null: false
+    t.boolean "sound_is_json", default: false
+    t.index ["delivered", "failed", "processing", "deliver_after", "created_at"], name: "index_rpush_notifications_multi"
   end
 
   create_table "samples", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

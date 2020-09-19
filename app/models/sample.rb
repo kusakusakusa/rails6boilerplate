@@ -11,6 +11,7 @@
 #  publish_date :date
 #  price        :integer
 #  featured     :boolean          default(FALSE), not null
+#  status       :string(255)
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
