@@ -5,5 +5,5 @@ task logtest: :environment do
   require Rails.root.join('app', 'concerns', 'loggable.rb')
   include Loggable
 
-  log "test"
+  log message: "test", log_level: :info, stream: 'test'
 end

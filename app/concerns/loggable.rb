@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 module Loggable
-  def log message, log_level = :info
+  extend ActiveSupport::Concern
+
+  def log message:, log_level: :info, stream: 'errors'
     return if Rails.env.test?
 
-    logger.send(log_level, message)
+    logger(stream: stream).send(log_level, message)
   end
 
   private
 
-  def logger
+  def logger(stream: 'errors')
     return nil if Rails.env.test?
 
     @logger ||= CloudWatchLogger.new(
@@ -18,7 +20,7 @@ module Loggable
         secret_access_key: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :cloudwatch, :secret_access_key)
       },
       "#{Rails.application.class.module_parent_name}-#{Rails.env}",
-      'errors',
+      stream || 'errors',
       region: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :region)
     )
   end
