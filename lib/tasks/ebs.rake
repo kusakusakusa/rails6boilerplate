@@ -1210,6 +1210,12 @@ namespace :ebs do
       end
 
       file.puts <<~MSG
+          setting {
+            namespace = "aws:autoscaling:launchconfiguration"
+            name = "RootVolumeSize"
+            value = "16"
+          }
+
           #################
           # enhanced health monitoring
           # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced-enable.html?icmpid=docs_elasticbeanstalk_console#health-enhanced-enable-config
