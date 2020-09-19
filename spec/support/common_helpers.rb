@@ -32,4 +32,14 @@ module CommonHelpers
   def validation_text selector, visible: true
     page.find(selector, visible: visible).native.attribute("validationMessage")
   end
+
+  def current_cookies
+     page.driver.browser.manage.all_cookies
+  end
+
+  def get_cookie key
+    current_cookies.find do |cookie|
+      cookie[:name] == key
+    end
+  end
 end
