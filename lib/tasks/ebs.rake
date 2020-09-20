@@ -221,27 +221,17 @@ namespace :ebs do
     # these keys will be used for:
     # 1. generating aws keypair
     # 2. authentication key for private git repository
-    private_key_file_name = "#{PROJECT_NAME}-#{env}"
-    filepath = "#{Rails.root}/#{private_key_file_name}"
+    filepath = "#{Rails.root}/terraform/#{env}/#{PROJECT_NAME}"
     Ebs::Helper.announce "START - Create private/public keys for #{env}"
 
     if File.exist? filepath
       puts 'Private key already created'
     else
-      `ssh-keygen -t rsa -f #{filepath} -C #{private_key_file_name} -N ''`
+      `ssh-keygen -t rsa -f #{filepath} -C #{PROJECT_NAME} -N ''`
       puts "chmod 400 private and public keys for #{env}"
       `chmod 400 #{filepath}`
       `chmod 400 #{filepath}.pub`
     end
-
-    file = File.open(Rails.root.join('terraform', env, 'keypair.tf'), 'w')
-    file.puts <<~MSG
-      resource "aws_key_pair" "main" {
-        key_name = "${var.project_name}-${var.env}"
-        public_key = "#{`cat #{filepath}.pub`.chomp}"
-      }
-    MSG
-    file.close
 
     Ebs::Helper.announce "END - Create private/public keys for #{env}"
   end
@@ -1338,10 +1328,10 @@ namespace :ebs do
         --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
         --env AWS_DEFAULT_REGION=#{region} \
         -v #{Rails.root.join('terraform', env)}:/workspace \
-        -v #{Rails.root}/#{PROJECT_NAME}-#{env}:/workspace/#{PROJECT_NAME}-#{env} \
+        -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
         -w /workspace \
         -it \
-        hashicorp/terraform:0.12.12 \
+        hashicorp/terraform:0.13.0 \
         apply -auto-approve"
 
       if File.exist?(Rails.root.join('terraform', env, 'ebs.tf'))
@@ -1400,10 +1390,10 @@ namespace :ebs do
           --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
           --env AWS_DEFAULT_REGION=#{region} \
           -v #{Rails.root.join('terraform', env)}:/workspace \
-          -v #{Rails.root}/#{PROJECT_NAME}-#{env}:/workspace/#{PROJECT_NAME}-#{env} \
+          -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
           -w /workspace \
           -it \
-          hashicorp/terraform:0.12.12 \
+          hashicorp/terraform:0.13.0 \
           apply -auto-approve"
       else
         abort("`ebs.tf` file not found!\nSetup your EBS environment first by running:\n\n  rake ebs:init\n")
@@ -1431,9 +1421,10 @@ namespace :ebs do
           --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
           --env AWS_DEFAULT_REGION=#{region} \
           -v #{Rails.root.join('terraform', env)}:/workspace \
+          -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
           -w /workspace \
           -it \
-          hashicorp/terraform:0.12.12 \
+          hashicorp/terraform:0.13.0 \
           apply -auto-approve"
       else
         abort("`bastion.tf` file not found!\nDo nothing here!\n")
@@ -1743,27 +1734,111 @@ namespace :ebs do
     is_single_instance = Ebs::Helper.is_single_instance
 
     Rake::Task['ebs:checks'].invoke(env, aws_profile, region)
-
     FileUtils.mkdir_p(Rails.root.join('terraform', env))
-
     Rake::Task['ebs:generate_ssh_keys'].invoke(env, aws_profile, region)
     Rake::Task['ebs:terraform:create_tfstate_bucket'].invoke(env, aws_profile, region)
-    Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
-    Rake::Task['ebs:terraform:create_variables_tf'].invoke(env, region)
-    Rake::Task['ebs:terraform:create_assets_tf'].invoke(env, region)
-    Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region) unless is_single_instance
-    Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region, is_single_instance)
-    Rake::Task['ebs:terraform:create_cloudwatch_tf'].invoke(env)
-    Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region, is_single_instance)
+
+    if is_single_instance
+      file = File.open(Rails.root.join('terraform', env, 'main.tf'), 'w')
+      file.puts <<~MSG
+        module "common" {
+          source = "./modules/common"
+
+          project_name = var.project_name
+          env = var.env
+          region = var.region
+          public_key = file("./${var.project_name}.pub")
+        }
+
+        module "single_instance" {
+          source = "./modules/single_instance"
+
+          project_name = var.project_name
+          env = var.env
+          db_username = var.db_username
+          db_password = var.db_password
+          db_name = var.db_name
+          master_key = var.master_key
+
+          # resources
+          aws_key_pair = module.common.aws_key_pair
+        }
+
+        output "assets-user-access_key_id" {
+          value = module.common.assets-user-access_key_id
+        }
+
+        output "assets-user-secret_access_key" {
+          value = module.common.assets-user-secret_access_key
+        }
+
+        output "assets-bucket_name" {
+          value = module.common.assets-bucket_name
+        }
+
+        output "cloudwatch-user-access_key_id" {
+          value = module.common.cloudwatch-user-access_key_id
+        }
+
+        output "cloudwatch-user-secret_access_key" {
+          value = module.common.cloudwatch-user-secret_access_key
+        }
+
+        output "endpoint_url" {
+          value = module.single_instance.endpoint_url
+        }
+
+        output "rds-database-url" {
+          value = module.single_instance.rds-database-url
+        }
+      MSG
+      file.close
+
+      file = File.open(Rails.root.join('terraform', env, 'variables.tf'), 'w')
+      file.puts <<~MSG
+        variable "project_name" {
+          type = string
+        }
+
+        variable "region" {
+          type = string
+        }
+
+        variable "env" {
+          type = string
+        }
+
+        variable "db_username" {
+          type = string
+        }
+
+        variable "db_password" {
+          type = string
+        }
+
+        variable "db_name" {
+          type = string
+        }
+
+        variable "master_key" {
+          type = string
+        }
+      MSG
+      file.close
+    else
+      # to be replaced
+      Rake::Task['ebs:terraform:create_setup_tf'].invoke(env, region)
+      Rake::Task['ebs:terraform:create_variables_tf'].invoke(env, region)
+      Rake::Task['ebs:terraform:create_assets_tf'].invoke(env, region)
+      Rake::Task['ebs:terraform:create_vpc_tf'].invoke(env, aws_profile, region) unless is_single_instance
+      Rake::Task['ebs:terraform:create_rds_tf'].invoke(env, aws_profile, region, is_single_instance)
+      Rake::Task['ebs:terraform:create_cloudwatch_tf'].invoke(env)
+      Rake::Task['ebs:terraform:create_ebs_tf'].invoke(env, aws_profile, region, is_single_instance)
+    end
 
     Rake::Task['ebs:apply'].invoke(env, aws_profile, region)
 
-    if File.exist?("#{Rails.root.join('terraform', env)}/assets.tf")
-      Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun these commands next to deploy your application to the environment:\n\n\teb init --region #{region} --profile #{aws_profile}\n\teb deploy [--staged]\n\n"
-    else
-      Ebs::Helper.announce "Run these commands next to deploy your application to the environment:\n\n\teb init --region #{region} --profile #{aws_profile}\n\teb deploy [--staged]\n\n"
-      Ebs::Helper.announce 'Run `eb init` next!'
-    end
+    Ebs::Helper.announce "Run this command to setup your production credentials for amazon_#{env} storage in your credentials file:\n\n\tEDITOR=vim rails credentials:edit\n\nRefer to `sample_credentials.yml` to see the structure.\n\nRun these commands next to deploy your application to the environment:\n\n\teb init --region #{region} --profile #{aws_profile}\n\teb deploy [--staged]\n\n"
   end
 
   desc 'For apply latest changes and getting outputs'
@@ -1776,17 +1851,9 @@ namespace :ebs do
 
     FileUtils.mkdir_p(Rails.root.join('terraform', env))
 
-    sh "cd #{Rails.root.join('terraform', env)} && \
-    docker run \
-    --rm \
-    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
-    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
-    --env AWS_DEFAULT_REGION=#{region} \
-    -v #{Rails.root.join('terraform', env)}:/workspace \
-    -w /workspace \
-    -it \
-    hashicorp/terraform:0.12.12 \
-    init"
+    db_name = Rails.application.credentials.dig(env.to_sym, :database, :db)
+    db_username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+    db_password = Rails.application.credentials.dig(env.to_sym, :database, :password)
 
     sh "cd #{Rails.root.join('terraform', env)} && \
     docker run \
@@ -1795,10 +1862,38 @@ namespace :ebs do
     --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
     --env AWS_DEFAULT_REGION=#{region} \
     -v #{Rails.root.join('terraform', env)}:/workspace \
+    -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
     -w /workspace \
     -it \
-    hashicorp/terraform:0.12.12 \
-    apply"
+    hashicorp/terraform:0.13.0 \
+    init \
+    -var='project_name=#{PROJECT_NAME}' \
+    -var='master_key=#{`cat #{Rails.root.join('config', 'master.key')}`}' \
+    -var='region=#{region}' \
+    -var='env=#{env}' \
+    -var='db_username=#{db_username}' \
+    -var='db_password=#{db_password}' \
+    -var='db_name=#{db_name}'"
+
+    sh "cd #{Rails.root.join('terraform', env)} && \
+    docker run \
+    --rm \
+    --env AWS_ACCESS_KEY_ID=#{`aws --profile #{aws_profile} configure get aws_access_key_id`.chomp} \
+    --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
+    --env AWS_DEFAULT_REGION=#{region} \
+    -v #{Rails.root.join('terraform', env)}:/workspace \
+    -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
+    -w /workspace \
+    -it \
+    hashicorp/terraform:0.13.0 \
+    apply \
+    -var='project_name=#{PROJECT_NAME}' \
+    -var='master_key=#{`cat #{Rails.root.join('config', 'master.key')}`}' \
+    -var='region=#{region}' \
+    -var='env=#{env}' \
+    -var='db_username=#{db_username}' \
+    -var='db_password=#{db_password}' \
+    -var='db_name=#{db_name}'"
   end
 
   desc 'For production-like env with proper infrastructure'
@@ -1815,27 +1910,29 @@ namespace :ebs do
     )
 
     if Dir.exist? Rails.root.join('terraform', env)
+      #  empty asset bucket first 
+      bucket_name = "#{PROJECT_NAME}-#{env}-assets"
+      begin
+        s3_client.head_bucket(bucket: bucket_name) # will check and throw error if bucket is not present
 
-      if File.exist? Rails.root.join('terraform', env, 'assets.tf')
-        bucket_name = "#{PROJECT_NAME}-#{env}-assets"
-        begin
-          s3_client.head_bucket(bucket: bucket_name) # will check and throw error if bucket is not present
-
-          result = s3_client.list_objects(bucket: bucket_name)
-          if result.contents && !result.contents.empty?
-            s3_client.delete_objects(
-              bucket: bucket_name,
-              delete: {
-                objects: result.contents.map do |object|
-                  { key: object.key }
-                end
-              }
-            )
-          end
-        rescue Aws::S3::Errors::NotFound
-          Ebs::Helper.announce "#{bucket_name} already destroyed"
+        result = s3_client.list_objects(bucket: bucket_name)
+        if result.contents && !result.contents.empty?
+          s3_client.delete_objects(
+            bucket: bucket_name,
+            delete: {
+              objects: result.contents.map do |object|
+                { key: object.key }
+              end
+            }
+          )
         end
+      rescue Aws::S3::Errors::NotFound
+        Ebs::Helper.announce "#{bucket_name} already destroyed"
       end
+
+      db_name = Rails.application.credentials.dig(env.to_sym, :database, :db)
+      db_username = Rails.application.credentials.dig(env.to_sym, :database, :username)
+      db_password = Rails.application.credentials.dig(env.to_sym, :database, :password)
 
       sh "cd #{Rails.root.join('terraform', env)} && \
       docker run \
@@ -1844,10 +1941,18 @@ namespace :ebs do
       --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
       --env AWS_DEFAULT_REGION=#{region} \
       -v #{Rails.root.join('terraform', env)}:/workspace \
+      -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
       -w /workspace \
       -it \
-      hashicorp/terraform:0.12.12 \
-      destroy"
+      hashicorp/terraform:0.13.0 \
+      destroy \
+      -var='project_name=#{PROJECT_NAME}' \
+      -var='master_key=#{`cat #{Rails.root.join('config', 'master.key')}`}' \
+      -var='region=#{region}' \
+      -var='env=#{env}' \
+      -var='db_username=#{db_username}' \
+      -var='db_password=#{db_password}' \
+      -var='db_name=#{db_name}'"
 
       Rake::Task['ebs:bastion:unpack'].invoke(env, aws_profile, region)
     end
@@ -1921,9 +2026,10 @@ namespace :ebs do
     --env AWS_SECRET_ACCESS_KEY=#{`aws --profile #{aws_profile} configure get aws_secret_access_key`.chomp} \
     --env AWS_DEFAULT_REGION=#{region} \
     -v #{Rails.root.join('terraform', env)}:/workspace \
+    -v #{Rails.root.join('terraform', 'modules')}:/workspace/modules \
     -w /workspace \
     -it \
-    hashicorp/terraform:0.12.12 \
+    hashicorp/terraform:0.13.0 \
     state push errored.tfstate"
 
     Ebs::Helper.announce "'terraform push errored.tfstate' completed. Continue your previous action."
