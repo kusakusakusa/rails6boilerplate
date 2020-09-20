@@ -62,10 +62,6 @@ resource "aws_security_group_rule" "mysql-world-rds" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-output "rds-database-url" {
-  value = "mysql2://${var.db_username}:${var.db_password}@${aws_db_instance.main.endpoint}/${var.db_name}"
-}
-
 locals {
   rds_database_url = "mysql2://${var.db_username}:${var.db_password}@${aws_db_instance.main.endpoint}/${var.db_name}"
 }

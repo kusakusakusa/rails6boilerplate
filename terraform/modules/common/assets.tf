@@ -42,15 +42,3 @@ resource "aws_iam_user_policy_attachment" "assets" {
   user = module.assets-iam_user.this_iam_user_name
   policy_arn = module.assets-iam_policy.arn
 }
-
-output "assets-user-access_key_id" {
-  value = module.assets-iam_user.this_iam_access_key_id
-}
-
-output "assets-user-secret_access_key" {
-  value = module.assets-iam_user.this_iam_access_key_secret
-}
-
-output "assets-bucket_name" {
-  value = aws_s3_bucket.assets.id
-}

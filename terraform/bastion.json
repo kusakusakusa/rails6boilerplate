@@ -1,0 +1,50 @@
+{
+  "variables": {
+    "project_name": "{{env `project_name`}}",
+    "region": "{{env `region`}}",
+    "env": "{{env `env`}}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "{{user `region`}}",
+      "source_ami_filter": {
+        "filters": {
+          "name": "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
+        },  
+        "owners": ["amazon"],
+        "most_recent": true
+      }, 
+      "instance_type": "t2.nano",
+      "ssh_username": "ec2-user",
+      "ami_name": "bastion-{{user `project_name`}}-{{user `env`}}",
+      "shutdown_behavior": "terminate",
+      "run_tags": {
+        "Name": "{{user `project_name`}}",
+        "Env": "{{user `env`}}"
+      },
+      "run_volume_tags": {
+        "Name": "{{user `project_name`}}",
+        "Env": "{{user `env`}}"
+      },
+      "snapshot_tags": {
+        "Name": "{{user `project_name`}}",
+        "Env": "{{user `env`}}"
+      },
+      "tags": {
+        "Name": "bastion-{{user `project_name`}}-{{user `env`}}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm",
+        "sudo yum -y localinstall mysql57-community-release-el7-11.noarch.rpm ",
+        "sudo yum -y install mysql-community-client mysql-community-common mysql-community-libs mysql-community-server",
+        "sudo service mysqld restart"
+      ]
+    }
+  ]
+}

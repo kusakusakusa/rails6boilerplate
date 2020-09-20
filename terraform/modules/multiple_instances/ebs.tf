@@ -102,32 +102,91 @@ resource "aws_elastic_beanstalk_environment" "main" {
   }
 
 #################
-# single instance
+# multiple instances
 #################
+setting {
+  namespace = "aws:ec2:vpc"
+  name = "VPCId"
+  value = aws_vpc.main.id
+}
 
 setting {
-  namespace = "aws:elasticbeanstalk:environment"
-  name = "EnvironmentType"
-  value = "SingleInstance"
+  namespace = "aws:ec2:vpc"
+  name = "ELBScheme"
+  value = "public"
+}
+
+setting {
+  namespace = "aws:ec2:vpc"
+  name = "AssociatePublicIpAddress"
+  value = "false"
+}
+
+setting {
+  namespace = "aws:ec2:vpc"
+  name = "ELBSubnets"
+  value = "${aws_subnet.public-1.id},${aws_subnet.public-2.id}"
+}
+
+setting {
+  namespace = "aws:ec2:vpc"
+  name = "Subnets"
+  value = "${aws_subnet.private-1.id},${aws_subnet.private-2.id}"
 }
 
 setting {
   namespace = "aws:autoscaling:launchconfiguration"
   name = "SecurityGroups"
-  # use name for default vpc
-  value = aws_security_group.web_server-single_instance.name
+  # use id for custom vpc
+  value = aws_security_group.web_server.id
+}
+
+setting {
+  namespace = "aws:elasticbeanstalk:environment"
+  name = "ServiceRole"
+  value = aws_iam_role.service.name
 }
 
 setting {
   namespace = "aws:autoscaling:asg"
   name = "MinSize"
-  value = "1"
+  value = "2"
 }
 
 setting {
   namespace = "aws:autoscaling:asg"
   name = "MaxSize"
-  value = "1"
+  value = "2"
+}
+
+setting {
+  namespace = "aws:elb:loadbalancer"
+  name = "CrossZone"
+  value = "true"
+}
+
+setting {
+  namespace = "aws:elasticbeanstalk:command"
+  name = "BatchSize"
+  value = "30"
+}
+
+setting {
+  namespace = "aws:elasticbeanstalk:command"
+  name = "BatchSizeType"
+  value = "Percentage"
+}
+
+setting {
+  namespace = "aws:autoscaling:updatepolicy:rollingupdate"
+  name = "RollingUpdateType"
+  value = "Immutable"
+}
+
+setting {
+  namespace = "aws:autoscaling:updatepolicy:rollingupdate"
+  name = "RollingUpdateEnabled"
+  value = "true"
 }
   setting {
     namespace = "aws:autoscaling:launchconfiguration"

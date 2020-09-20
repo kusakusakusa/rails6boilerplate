@@ -198,24 +198,20 @@ $ rm -f net-ssh-public_cert.pem
 
 #### Deployment Steps
 
-**NOTE**: make sure to separate each environment into **different git branches**.
-
-Run the command to create the `tf` files required for `Terraform` to deploy:
+Run a rake task to get prompt to enter details. This step is necessary to prevent erroneously change environments.
 ```
 rake ebs:init
 ```
+
 This command will require you to input `aws_profile`, `env`  and `region`, and whether your want to setup a single instance or not.
-This will create terraform files and deploy your infrastructure
 
-It will save the `tfstate` file in the custom tf_state bucket.
+It will save the `tfstate` file in a newly created S3 bucket storing the tf_state.
 
-If creating a single instance, a separate `RDS` that is publicly accessible will be created. This setup should **not** be meant for `production`.
+There is a `multiple_instances` and `single_instance` module for different setup required.
 
-If not, it will create a custom VPC with private and public subnets for basic security.
+The rake function will create the `terraform` files in the `terraform/<ENV>` directory. These `terraform` files will include the relevant modules depending on what you have selected.
 
-A separate `RDS` will be created in the private subnet where the EC2 instances will be deployed in. EC2 instances can communicate with the Internet via a `NAT` gateway, which will be provisioned and associated to all the private subnets.
-
-Public subnets will be associated with a Internet Gateway, which will be provisioned.
+TODO single_instance with ssl.
 
 #### Deploy Application
 
@@ -223,22 +219,14 @@ After deploying the infrastructure, the `eb-user` access key id and access secre
 
 Requires the [`Elastic Beanstalk` cli](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install-osx.html).
 ```
-eb init
+eb init --region <REGION>--profile <YOUR_AWS_NAMED_PROFILE>
 
 eb deploy # OR eb deploy --staged
 ```
 
 Note that `eb deploy` deploys only committed files to the server, or at the very least, staged files but that will require the `--staged` option.
 
-#### Helpful functions
-
-Running `rails console` to single instance databases, run this command.
-```
-DATABASE_URL=mysql2://<RDS_ENDPOINT>/<DB_NAME> RAILS_ENV=<ENV> rails console
-```
-The RDS endpoint can be obtain be running in the `rake ebs:apply` to make trivial changes to the terraform state and show the output of the various resources in the infrastructure.
-
-#### Troubleshooting
+### Troubleshooting
 
 #### Logs
 
@@ -254,11 +242,20 @@ Sometimes the application fails to deploy right at the start. You will have to s
 tail -f /var/log/**/*log* /var/log/*log*
 ```
 
+#### Rails console
+
+The database of `single_instance` is be made publicly/remotely accessible.
+
+To connect to it via rails console from the developer's local machine, run this command.
+```
+DATABASE_URL=mysql2://<RDS_ENDPOINT>/<DB_NAME> RAILS_ENV=<ENV> rails console
+```
+
+The RDS endpoint can be obtain be running in the `rake ebs:output` to make trivial changes to the terraform state and show the output of the various resources in the infrastructure.
+
 #### Bastion
 
-This will only be used by the environment that requires separate instances.
-
-Communicate with the instances in the private subnet via a bastion server and ssh agent forwarding.
+The database of `multiple_instances` will not be made publicly/remotely accessible. As such, to communicate with the instances which are in the private subnets, a bastion server is required with the use of ssh agent forwarding.
 
 ###### Deploy bastion server
 
@@ -279,7 +276,7 @@ rake ebs:bastion:down
 
 ###### Remove bastion AMI
 
-This will remove the bastion AMI (to save on the negligible S3 storage cost for storing the image)
+This will remove the bastion AMI (to save on S3 storage cost for storing the image which may be negligible)
 ```
 rake ebs:bastion:unpack
 ```
@@ -296,7 +293,7 @@ rake ebs:rails:reseed
 
 These tasks involves tunneling through the bastion server, which means the bastion server has to be setup before hand.
 
-If the environment created is a single instance, its RDS should be publicly accessible. Hence, you can connect from your local machine and run the commands locally instead of having to use these comands.
+If the environment created is a single instance, its RDS should be publicly accessible. Hence, you can connect from your local machine and run the commands locally instead of having to use these commands.
 
 #### Logging
 
