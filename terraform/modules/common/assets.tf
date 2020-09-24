@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "assets" {
   bucket = "${var.project_name}-${var.env}-assets"
-  region = "ap-southeast-1"
+  region = var.region
 
   cors_rule {
     allowed_headers = ["*"]
