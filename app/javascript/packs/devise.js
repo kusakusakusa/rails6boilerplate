@@ -21,3 +21,11 @@ require("../scss/floating-labels.sass")
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
+
+import { autocapitalize } from './autocapitalize.js';
+
+document.addEventListener("turbolinks:load", () => {
+  window.scrollTo(0, 0);
+
+  autocapitalize();
+});

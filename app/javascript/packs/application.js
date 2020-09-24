@@ -30,7 +30,11 @@ const imagePath = (name) => images(name, true)
 
 import { WOW } from 'wowjs';
 
+import { autocapitalize } from './autocapitalize.js';
+
 document.addEventListener("turbolinks:load", () => {
+  autocapitalize();
+
   // Back to top button
   $(window).scroll(function() {
     if ($(this).scrollTop() > 100) {
