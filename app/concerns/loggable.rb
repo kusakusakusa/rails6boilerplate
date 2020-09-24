@@ -6,15 +6,15 @@ module Loggable
   def log message:, log_level: :info, stream: 'errors'
     return if Rails.env.test?
 
-    logger(stream: stream).send(log_level, message)
+    custom_logger(stream: stream).send(log_level, message)
   end
 
   private
 
-  def logger(stream: 'errors')
+  def custom_logger(stream: 'errors')
     return nil if Rails.env.test?
 
-    @logger ||= CloudWatchLogger.new(
+    @custom_logger ||= CloudWatchLogger.new(
       {
         access_key_id: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :cloudwatch, :access_key_id),
         secret_access_key: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :cloudwatch, :secret_access_key)
