@@ -68,5 +68,10 @@ module Rails6boilerplate
       text/csv
       application/pdf
     ]
+
+    config.recaptcha_threshold = {
+      possible: 0.9,
+      spam: 0.3,
+    }.freeze
   end
 end

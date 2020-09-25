@@ -23,7 +23,7 @@ class ApplicationMailer < ActionMailer::Base
     mail(
       subject: "[Contact] #{subject}",
       to: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :to),
-      from: email,
+      from: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :from),
     )
   end
 end

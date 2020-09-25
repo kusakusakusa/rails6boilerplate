@@ -691,10 +691,11 @@ main#main
             p
               a href="mailto:cms@mailinator.com" cms@mailinator.com
       .form
-        = form_with url: contact_form_path, method: :post, local: true do |form|
+        = form_with url: api_contact_form_path, method: :post, remote: true, class: 'recaptcha' do |form|
+          = render 'layouts/fields/recaptcha'
           .form-row
             .form-group.col-md-6
-              = text_field_tag 'contact[name]', nil, placeholder: "Full name", class: 'form-control', required: true
+              = text_field_tag 'contact[name]', nil, placeholder: "Full name", class: 'form-control autocapitalize', required: true
             .form-group.col-md-6
               = email_field_tag 'contact[email]', nil, placeholder: "Your email", class: 'form-control', required: true
           .form-group

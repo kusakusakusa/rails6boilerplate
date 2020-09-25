@@ -2,10 +2,11 @@
 
 module Api
   class BaseController < ActionController::API
-    include ApiRescues
-
+    # order or macros matter
     before_action :add_default_response_keys
     before_action :doorkeeper_authorize!
+
+    include ApiRescues, Contactable
 
     private
 

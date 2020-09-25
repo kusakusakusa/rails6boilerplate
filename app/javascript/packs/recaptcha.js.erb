@@ -1,0 +1,34 @@
+window.renderCaptcha = function() {
+  document.grecaptchaClientId = grecaptcha.render('recaptcha_badge', {
+    sitekey: "<%= Rails.application.credentials.dig(Rails.env.to_sym, :recaptcha, :site_key) %>",
+    badge: 'inline', // must be inline
+    size: 'invisible' // must be invisible
+  });
+  window.pollCaptchaToken();
+}
+
+window.pollCaptchaToken = function() {
+  getCaptchaToken();
+  setTimeout(window.pollCaptchaToken, 90000);
+}
+
+window.getCaptchaToken = function() {
+  grecaptcha.execute(document.grecaptchaClientId).then(function(token) {
+    document.getElementById('recaptcha_token').value = token;
+  });
+}
+
+document.addEventListener("turbolinks:load", () => {
+  // cannot use $(document) or else will add event count on navigation
+  $('form.recaptcha').on('ajax:success', event => {
+    const [response, status, xhr] = event.detail;
+    alert(response.message);
+    $('form.recaptcha').trigger('reset');
+    window.getCaptchaToken();
+  });
+
+  $('form.recaptcha').on('ajax:error', event => {
+    const [response, status, xhr] = event.detail;
+    alert(response.message);
+  });
+});

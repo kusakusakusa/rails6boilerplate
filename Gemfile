@@ -88,3 +88,4 @@ gem 'natural_sort', '~> 0.3'
 gem 'wkhtmltopdf-binary-edge', '~> 0.12.4.0' # dont use 0.12.5.X https://github.com/pallymore/wkhtmltopdf-binary-edge/issues/15
 gem 'rpush', '~> 5.0.0'
 gem 'enumerize', '~> 2.3.1'
+gem 'rest-client', '~> 2.1.0' # for recaptcha

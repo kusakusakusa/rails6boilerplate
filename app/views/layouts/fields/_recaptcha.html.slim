@@ -1,0 +1,6 @@
+#recaptcha_badge data-turbolinks-permanent=''
+= hidden_field_tag :recaptcha_token, '', data: { turbolinks_permanent:'' }
+
+- content_for :javascript_in_head do
+  script src='https://www.google.com/recaptcha/api.js?render=explicit&onload=renderCaptcha'
+  = javascript_pack_tag 'recaptcha', 'data-turbolinks-track': 'reload'
