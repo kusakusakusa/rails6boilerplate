@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   get '/healthcheck', to: 'application#healthcheck'
   get '/sample_pdf', to: 'application#sample_pdf', defaults: { format: :pdf }
   get '/sample_pdf_email', to: 'application#sample_pdf_email'
+  post '/contact_form', to: 'application#contact_form'
 
   unless Rails.env.production?
     get '/log-test', to: 'application#log_test'

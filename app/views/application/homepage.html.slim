@@ -691,20 +691,16 @@ main#main
             p
               a href="mailto:cms@mailinator.com" cms@mailinator.com
       .form
-        form action="forms/contact.php" method="post" role="form" 
+        = form_with url: contact_form_path, method: :post, local: true do |form|
           .form-row
             .form-group.col-md-6
-              input#name.form-control data-msg=("Please enter at least 4 chars") data-rule="minlen:4" name="name" placeholder=("Your Name") type="text"
-              .validate
+              = text_field_tag 'contact[name]', nil, placeholder: "Full name", class: 'form-control', required: true
             .form-group.col-md-6
-              input#email.form-control data-msg=("Please enter a valid email") data-rule="email" name="email" placeholder=("Your Email") type="email"
-              .validate
+              = email_field_tag 'contact[email]', nil, placeholder: "Your email", class: 'form-control', required: true
           .form-group
-            input#subject.form-control data-msg=("Please enter at least 8 chars of subject") data-rule="minlen:4" name="subject" placeholder="Subject" type="text"
-            .validate
+            = text_field_tag 'contact[subject]', nil, placeholder: "Subject", class: 'form-control', required: true
           .form-group
-            textarea.form-control data-msg=("Please write something for us") data-rule="required" name="message" placeholder="Message" rows="5" 
-            .validate
+            = text_area_tag 'contact[message]', nil, placeholder: "Message", class: 'form-control', required: true, rows: 5
           .mb-3
             .loading Loading
             .error-message

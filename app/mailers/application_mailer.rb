@@ -13,4 +13,17 @@ class ApplicationMailer < ActionMailer::Base
       from: 'sample@mailinator.com',
     )
   end
+
+  def contact name:, email:, subject:, message:
+    @name = name
+    @email = email
+    @subject = subject
+    @message = message
+
+    mail(
+      subject: "[Contact] #{subject}",
+      to: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :to),
+      from: email,
+    )
+  end
 end

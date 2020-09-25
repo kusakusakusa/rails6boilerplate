@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
-  include WithPdf
+  include WithPdf, Contactable
 
   layout :layout_by_resource
 
