@@ -4,9 +4,7 @@
   h1.h4.text-gray-900.mb-4 Change your password
 = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
   = f.hidden_field :reset_password_token
-  .form-group
-    = f.password_field :password, autocomplete: 'new-password', class: 'form-control form-control-user', placeholder: 'New password'
-
+  = render 'layouts/fields/password_field', form: f, key: :password, options: { autocomplete: 'new-password' }
   .form-group
     = f.password_field :password_confirmation, autocomplete: 'new-password-confirmation', class: 'form-control form-control-user', placeholder: 'New password confirmation'
 

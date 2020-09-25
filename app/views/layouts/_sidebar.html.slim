@@ -1,25 +1,14 @@
-/! Sidebar
 ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion
-  /! Sidebar - Brand
   = link_to edit_admin_user_registration_path, class: 'sidebar-brand d-flex align-items-center justify-content-center' do
-    .sidebar-brand-icon.rotate-n-15
-      i.fas.fa-laugh-wink
-    .sidebar-brand-text.mx-3
-      | SB Admin
-      sup 2
-  /! Divider
-  hr.sidebar-divider.my-0/
-  /! Nav Item - Dashboard
+    .small= current_admin_user.email
+  hr.sidebar-divider.my-0
   li.nav-item.active
     a.nav-link href="index.html" 
       i.fas.fa-fw.fa-tachometer-alt
       span Dashboard
-  /! Divider
-  hr.sidebar-divider/
-  /! Heading
+  hr.sidebar-divider
   .sidebar-heading
     | Interface
-  /! Nav Item - Pages Collapse Menu
   li.nav-item
     a.nav-link.collapsed aria-controls="collapseTwo" aria-expanded="true" data-target="#collapseTwo" data-toggle="collapse" href="#" 
       i.fas.fa-fw.fa-cog
@@ -29,7 +18,6 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
         h6.collapse-header Custom Components:
         a.collapse-item href="buttons.html"  Buttons
         a.collapse-item href="cards.html"  Cards
-  /! Nav Item - Utilities Collapse Menu
   li.nav-item
     a.nav-link.collapsed aria-controls="collapseUtilities" aria-expanded="true" data-target="#collapseUtilities" data-toggle="collapse" href="#" 
       i.fas.fa-fw.fa-wrench
@@ -41,12 +29,9 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
         a.collapse-item href="utilities-border.html"  Borders
         a.collapse-item href="utilities-animation.html"  Animations
         a.collapse-item href="utilities-other.html"  Other
-  /! Divider
-  hr.sidebar-divider/
-  /! Heading
+  hr.sidebar-divider
   .sidebar-heading
     | Addons
-  /! Nav Item - Pages Collapse Menu
   li.nav-item
     a.nav-link.collapsed aria-controls="collapsePages" aria-expanded="true" data-target="#collapsePages" data-toggle="collapse" href="#" 
       i.fas.fa-fw.fa-folder
@@ -61,28 +46,22 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
         h6.collapse-header Other Pages:
         a.collapse-item href="404.html"  404 Page
         a.collapse-item href="blank.html"  Blank Page
-  /! Nav Item - Samples
   li.nav-item
     = link_to cms_samples_path, class: 'nav-link' do
       i.fas.fa-fw.fa-chart-area
       span Samples
-  /! Nav Item - Tables
   li.nav-item
     a.nav-link href="tables.html" 
       i.fas.fa-fw.fa-table
       span Tables
-  /! Divider
-  hr.sidebar-divider/
-  /! Heading
+  hr.sidebar-divider
   .sidebar-heading
     | Taxonomy
   li class="nav-item #{request.path.include?('privacy-policy') ? 'active' : ''}"
     = link_to edit_cms_hygiene_page_path('privacy-policy'), class: 'nav-link' do
       i.fas.fa-fw.fa-user-lock
       span Privacy Policy
-  /! Divider
-  hr.sidebar-divider/
-  /! Heading
+  hr.sidebar-divider
   .sidebar-heading
     | Account
   li.nav-item
@@ -93,9 +72,4 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
     a.nav-link data-target="#logoutModal" data-toggle="modal" href="#" 
       i.fas.fa-sign-out-alt
       span Logout
-  /! Divider
-  hr.sidebar-divider.d-none.d-md-block/
-  /! Sidebar Toggler (Sidebar)
-  .text-center.d-none.d-md-inline
-    button#sidebarToggle.rounded-circle.border-0
-/! End of Sidebar
+  hr.sidebar-divider.d-none.d-md-block

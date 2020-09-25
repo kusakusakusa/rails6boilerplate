@@ -21,28 +21,16 @@ html lang="en"
     = javascript_include_tag Ckeditor.cdn_url
     = yield :javascript_in_head
   body#page-top
-    /! Page Wrapper
     #wrapper
       = render 'layouts/sidebar'
-      /! Content Wrapper
       #content-wrapper.d-flex.flex-column
-        /! Main Content
-        #content
-          = render 'layouts/topbar'
-          /! Begin Page Content
+        #content.pt-5
           .container-fluid
             = render 'layouts/flash'
             = yield
-          /! End of Page Content
-        /! End of Main Content
-        /! Footer
         = render 'layouts/cms_footer'
-        /! End of Footer
-      /! End of Content Wrapper
-    /! End of Page Wrapper
-    /! Scroll to Top Button
     = render 'components/scroll_to_top_button'
-    /! Logout Modal
     = render 'components/logout_modal'
-  /! page specific js
+
+  / page specific js
   = yield :javascript

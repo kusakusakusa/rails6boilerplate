@@ -25,6 +25,9 @@ const imagePath = (name) => images(name, true)
 
 import flatpickr from "flatpickr"
 
+import { togglePasswordField } from './password.js';
+import autocapitalize from './autocapitalize.js';
+
 document.addEventListener("turbolinks:load", () => {
   flatpickr("[data-behavior='flatpickr']:not(.flatpickr-input)", {
     altInput: true,
@@ -37,6 +40,9 @@ document.addEventListener("turbolinks:load", () => {
     enableTime: true,
     dateFormat: 'Y-m-d H:i',
   });
+
+  togglePasswordField();
+  autocapitalize();
 
   $('.file-input').on('change', function() {
     const element = this;

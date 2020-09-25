@@ -23,6 +23,7 @@ require("venobox/venobox/venobox.min.css")
 // custom
 require("../scss/web/web.scss")
 require("../scss/fontawesome.scss")
+require("../scss/fields.sass")
 
 // images
 const images = require.context('../images', true)
@@ -30,9 +31,13 @@ const imagePath = (name) => images(name, true)
 
 import { WOW } from 'wowjs';
 
-import { autocapitalize } from './autocapitalize.js';
+import { togglePasswordField } from './password.js';
+import autocapitalize from './autocapitalize.js';
 
 document.addEventListener("turbolinks:load", () => {
+  window.scrollTo(0, 0);
+
+  togglePasswordField();
   autocapitalize();
 
   // Back to top button
