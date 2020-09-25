@@ -27,7 +27,7 @@ module Cms
         flash[:success] = "Sample successfully created"
         redirect_to cms_sample_path(@sample)
       else
-        flash[:danger] = @sample.errors.full_messages.to_sentence
+        flash[:danger] = @sample.print_errors
         render :new
       end
     end
@@ -40,7 +40,7 @@ module Cms
         flash[:success] = "Sample successfully updated"
         redirect_to cms_sample_path(@sample)
       else
-        flash[:danger] = @sample.errors.full_messages.to_sentence
+        flash[:danger] = @sample.print_errors
         render :edit
       end
     end
@@ -51,7 +51,7 @@ module Cms
       if @sample.errors.empty?
         flash[:success] = "#{@sample.title} successfully deleted!"
       else
-        flash[:danger] = @sample.errors.full_messages.to_sentence
+        flash[:danger] = @sample.print_errors
       end
       redirect_to cms_samples_path
     end

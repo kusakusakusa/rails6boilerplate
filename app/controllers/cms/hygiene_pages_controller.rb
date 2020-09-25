@@ -15,7 +15,7 @@ class Cms::HygienePagesController < Cms::BaseController
       flash[:success] = "#{@hygiene_page.slug.underscore.humanize.capitalize} successfully updated!"
       redirect_to cms_root_path
     else
-      flash.now[:danger] = @hygiene_page.errors.full_messages.to_sentence
+      flash.now[:danger] = @hygiene_page.print_errors
       render :new
     end
   end

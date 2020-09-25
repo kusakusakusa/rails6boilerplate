@@ -32,7 +32,7 @@ module Api
           @response_message = I18n.t('devise.confirmations.send_instructions')
         else
           @response_code = 'custom.errors.devise.registrations'
-          @response_message = user.errors.full_messages.to_sentence.capitalize
+          @response_message = user.print_errors.capitalize
 
           render :default, status: 400
         end
@@ -54,7 +54,7 @@ module Api
           render :default, status: 200
         else
           @response_code = 'custom.errors.devise.confirmations'
-          @response_message = user.errors.full_messages.to_sentence
+          @response_message = user.print_errors
           render :default, status: 400
         end
       end
@@ -70,7 +70,7 @@ module Api
           render :default, status: 200
         else
           @response_code = 'custom.errors.devise.confirmations'
-          @response_message = user.errors.full_messages.to_sentence
+          @response_message = user.print_errors
           render :default, status: 400
         end
       end
@@ -97,7 +97,7 @@ module Api
         current_user.save
         unless current_user.errors.empty?
           @response_code = 'custom.errors.users.update_profile'
-          @response_message = current_user.errors.full_messages.to_sentence
+          @response_message = current_user.print_errors
           render :default, status: 400 and return
         end
       end
@@ -122,7 +122,7 @@ module Api
           render :default, status: 400 and return
         rescue ActiveRecord::RecordInvalid => error
           @response_code = 'custom.errors.users.update_avatar'
-          @response_message = current_user.errors.full_messages.to_sentence
+          @response_message = current_user.print_errors
           render :default, status: 400 and return
         end
       end
@@ -144,7 +144,7 @@ module Api
         current_user.update(password: update_password_params[:password])
         unless current_user.errors.empty?
           @response_code = 'custom.errors.users.update_password'
-          @response_message = current_user.errors.full_messages.to_sentence
+          @response_message = current_user.print_errors
           render :default, status: 400 and return
         end
 
@@ -167,7 +167,7 @@ module Api
           render :default, status: 200
         else
           @response_code = 'custom.errors.devise.passwords'
-          @response_message = user.errors.full_messages.to_sentence
+          @response_message = user.print_errors
           render :default, status: 400
         end
       end
@@ -197,7 +197,7 @@ module Api
           render :default, status: 200
         else
           @response_code = 'custom.errors.devise.passwords'
-          @response_message = user.errors.full_messages.to_sentence
+          @response_message = user.print_errors
           render :default, status: 400
         end
       end

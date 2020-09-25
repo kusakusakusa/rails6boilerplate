@@ -27,7 +27,7 @@ module Cms
         flash[:success] = "<%= name.camelcase %> successfully created"
         redirect_to cms_<%= underscored %>_path(@<%= underscored %>)
       else
-        flash[:danger] = @<%= underscored %>.errors.full_messages.to_sentence
+        flash[:danger] = @<%= underscored %>.print_errors
         render :new
       end
     end
@@ -40,7 +40,7 @@ module Cms
         flash[:success] = "<%= name.camelcase %> successfully updated"
         redirect_to cms_<%= underscored %>_path(@<%= underscored %>)
       else
-        flash[:danger] = @<%= underscored %>.errors.full_messages.to_sentence
+        flash[:danger] = @<%= underscored %>.print_errors
         render :edit
       end
     end
@@ -51,7 +51,7 @@ module Cms
       if @<%= underscored %>.errors.empty?
         flash[:success] = "<%= file_name.humanize %> successfully deleted!"
       else
-        flash[:danger] = @<%= underscored %>.errors.full_messages.to_sentence
+        flash[:danger] = @<%= underscored %>.print_errors
       end
       redirect_to cms_<%= file_name.pluralize %>_path
     end
