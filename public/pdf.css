@@ -21,10 +21,11 @@ table {
 }
 
 table td,
-  table th {
+table th {
   border: 0;
   padding: 16px 0;
   vertical-align: top;
+  font-size: 40px;
 }
 
 table th {
