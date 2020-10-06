@@ -27,3 +27,8 @@ variable "db_name" {
 variable "master_key" {
   type = string
 }
+
+variable "ssl_arn" {
+  type = string
+  default = ""
+}

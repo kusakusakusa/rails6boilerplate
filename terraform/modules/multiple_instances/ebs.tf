@@ -244,4 +244,38 @@ setting {
     name = "RACK_ENV"
     value = var.env
   }
+
+  #################
+  # custom - ssl setting
+  #################
+
+  dynamic "setting" {
+    for_each = var.ssl_arn == "" ? [] : [1]
+
+    content {
+      namespace = "aws:elb:listener:443"
+      name = "SSLCertificateId"
+      value = var.ssl_arn
+    }
+  }
+
+  dynamic "setting" {
+    for_each = var.ssl_arn == "" ? [] : [1]
+
+    content {
+      namespace = "aws:elb:listener:443"
+      name = "InstancePort"
+      value = "80"
+    }
+  }
+
+  dynamic "setting" {
+    for_each = var.ssl_arn == "" ? [] : [1]
+
+    content {
+      namespace = "aws:elb:listener:443"
+      name = "ListenerProtocol"
+      value = "HTTPS"
+    }
+  }
 }
