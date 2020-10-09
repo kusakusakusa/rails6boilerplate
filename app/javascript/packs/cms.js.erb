@@ -46,6 +46,7 @@ document.addEventListener("turbolinks:load", () => {
 
   $('.file-input').on('change', function() {
     const element = this;
+    const formGroup = $(this).parent('.form-group');
     const imageTypes = <%= Rails.application.config.image_types %>;
     const videoTypes = <%= Rails.application.config.video_types %>;
     const audioTypes = <%= Rails.application.config.audio_types %>;
@@ -53,7 +54,7 @@ document.addEventListener("turbolinks:load", () => {
     if (element.files && element.files[0]) {
       if (!imageTypes.concat(videoTypes).concat(audioTypes).concat(miscellaneousTypes).includes(element.files[0].type)) {
         alert('Invalid media type');
-        $('.input-preview').addClass('d-none');
+        $(formGroup).find('.input-preview').addClass('d-none');
         element.value = '';
         return;
       }
@@ -61,25 +62,25 @@ document.addEventListener("turbolinks:load", () => {
       const reader = new FileReader();
 
       reader.onload = function(e) {
-        $('.input-preview').addClass('d-none');
+        $(formGroup).find('.input-preview').addClass('d-none');
 
         switch(true) {
           case videoTypes.includes(element.files[0].type):
-            $('.video-input-preview').removeClass('d-none');
-            $('.video-input-preview').find('source').attr('src', e.target.result);
-            $('.video-input-preview').load();
+            $(formGroup).find('.video-input-preview').removeClass('d-none');
+            $(formGroup).find('.video-input-preview').find('source').attr('src', e.target.result);
+            $(formGroup).find('.video-input-preview').load();
             break;
           case imageTypes.includes(element.files[0].type):
-            $('.image-input-preview').removeClass('d-none');
-            $('.image-input-preview').attr('src', e.target.result);
+            $(formGroup).find('.image-input-preview').removeClass('d-none');
+            $(formGroup).find('.image-input-preview').attr('src', e.target.result);
             break;
           case audioTypes.includes(element.files[0].type):
-            $('.audio-input-preview').removeClass('d-none');
-            $('.audio-input-preview').find('source').attr('src', e.target.result);
+            $(formGroup).find('.audio-input-preview').removeClass('d-none');
+            $(formGroup).find('.audio-input-preview').find('source').attr('src', e.target.result);
             break;
           case miscellaneousTypes.includes(element.files[0].type):
-            $('.miscellaneous-input-preview').removeClass('d-none');
-            $('.miscellaneous-input-preview').text(`Uploaded ${element.files[0].name}`);
+            $(formGroup).find('.miscellaneous-input-preview').removeClass('d-none');
+            $(formGroup).find('.miscellaneous-input-preview').text(`Uploaded ${element.files[0].name}`);
             break;
         }
       }
