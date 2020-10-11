@@ -11,6 +11,7 @@ module WithPdf
     kit = PDFKit.new(
       html,
       page_size: 'A4',
+      zoom: Rails.env.development? ? 1 : 0.3,
       footer_html: Rails.root.join("public", "footer.html").to_s,
       footer_line: true,
     )
