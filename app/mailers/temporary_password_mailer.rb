@@ -6,7 +6,7 @@ class TemporaryPasswordMailer < ApplicationMailer
     mail(
       to: email,
       subject: '[Rails6boilerplate] Temporary Password',
-      from: %("Rails6boilerplate" <no-reply@TBC.com>)
+      from: "Rails6boilerplate <#{Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :from)}>"
     )
   end
 end
