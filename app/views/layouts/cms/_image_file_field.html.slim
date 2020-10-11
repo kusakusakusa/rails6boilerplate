@@ -1,5 +1,8 @@
 .form-group
-  = form.label key, class: 'small font-weight-bold'
+  - if defined? field_label
+    = form.label key, field_label, class: 'small font-weight-bold'
+  - else
+    = form.label key, class: 'small font-weight-bold'
   = image_tag form.object.public_send(key).attachment ? rails_blob_path(form.object.public_send(key), only_path: true) : '', class: 'image-input-preview w-25', data: { field_name: "#{form.object.class.name.underscore}[#{key}]" }, alt: ''
   = form.file_field key, class: 'image-input file-input form-control-file', required: form.object.new_record?
   = form.label key, 'Browse Image', class: 'btn btn-secondary'

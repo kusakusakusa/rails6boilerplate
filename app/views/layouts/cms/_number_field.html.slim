@@ -1,4 +1,6 @@
 .form-group
-  - unless form.object.new_record?
-    = form.label key, defined?(form_label) ? form_label : nil, class: 'small font-weight-bold'
+  - if defined? field_label
+    = form.label key, field_label, class: 'small font-weight-bold'
+  - else
+    = form.label key, class: 'small font-weight-bold'
   = form.number_field key, { placeholder: key.to_s.titlecase, class: 'form-control' }.merge((defined? options) ? options : {})
