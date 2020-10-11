@@ -62,6 +62,15 @@ Rails.application.configure do
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "rails6boilerplate_production"
 
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :ses, :address),
+    port: 587,
+    user_name: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :ses, :username),
+    password: Rails.application.credentials.dig(Rails.env.to_sym, :aws, :ses, :password),
+    authentication: :login,
+    enable_starttls_auto: true
+  }
   config.action_mailer.default_url_options = {
     host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :host),
     protocol: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :protocol)
