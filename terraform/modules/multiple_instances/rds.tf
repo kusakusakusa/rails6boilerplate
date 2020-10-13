@@ -15,7 +15,9 @@ resource "aws_db_instance" "main" {
   lifecycle {
     prevent_destroy = false
   }
-  backup_window = "15:00-16:00"
+  backup_window = "15:00-15:30"
+  backup_retention_period = 30
+  delete_automated_backups = false
   db_subnet_group_name = aws_db_subnet_group.main.id
 
   tags = {
