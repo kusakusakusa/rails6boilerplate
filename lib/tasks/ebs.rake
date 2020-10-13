@@ -167,7 +167,7 @@ module Ebs
 end
 
 namespace :ebs do
-  PROJECT_NAME = Rails.application.class.module_parent_name.downcase
+  PROJECT_NAME = Rails.application.class.module_parent_name.underscore
 
   ####################
   ### Common Tasks ###
@@ -865,10 +865,6 @@ namespace :ebs do
     region
   ] => :environment do |_, args|
     env, aws_profile, region = Ebs::Helper.inputs(args)
-
-    db_name = Rails.application.credentials.dig(env.to_sym, :database, :db)
-    db_username = Rails.application.credentials.dig(env.to_sym, :database, :username)
-    db_password = Rails.application.credentials.dig(env.to_sym, :database, :password)
 
     sh "cd #{Rails.root.join('terraform', env)} && \
       docker run \

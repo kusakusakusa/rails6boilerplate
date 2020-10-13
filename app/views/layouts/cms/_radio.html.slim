@@ -6,4 +6,4 @@
   - options.each do |hash|
     .custom-control.custom-radio
       = form.radio_button key, hash[:value], class: 'custom-control-input', required: required
-      label.custom-control-label id="label_#{form.object.class.name.downcase}_#{key}_#{hash[:value]}" for="#{form.object.class.name.downcase}_#{key}_#{hash[:value]}"= hash[:label]
+      label.custom-control-label id="label_#{form.object.class.name.underscore}_#{key}_#{hash[:value]}" for="#{form.object.class.name.underscore}_#{key}_#{hash[:value]}"= hash[:label]
