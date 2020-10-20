@@ -1,26 +1,25 @@
-body style="background-color: #e9ecef;" 
-  .preheader style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;" 
-    | [Contact] Subject: #{@subject}
-  table border="0" cellpadding="0" cellspacing="0" width="100%" 
-    tr
-      td align="center" bgcolor="#e9ecef"
-        table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px;" width="100%" 
-          tr
-            td align="center" style="padding: 36px 24px;" valign="top" 
-              = link_to root_url, target: "_blank", style: "display: inline-block;" do
-                = image_pack_tag 'logo.jpg', alt: 'Logo', border: "0", width: "48", style: "display: block; width: 48px; max-width: 48px; min-width: 48px;"
-    tr
-      td align="center" bgcolor="#e9ecef"
-        table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px;" width="100%" 
-          tr
-            td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;"
-              p style="margin: 0;" Contact from #{@name} (#{@email}):
-              
-              = simple_format @message
-    tr
-      td align="center" bgcolor="#e9ecef" style="padding: 24px;" 
-        table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px;" width="100%"
-          tr
-            td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;" 
-              p style="margin: 0;" 
-                | Rails6boilerplate © #{Date.today.year}
+.preheader style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;" 
+  | [Contact] Subject: #{@subject}
+table border="0" cellpadding="0" cellspacing="0" width="100%" 
+  tr
+    td align="center" bgcolor="#e9ecef"
+      table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px;" width="100%" 
+        tr
+          td align="center" style="padding: 36px 24px;" valign="top" 
+            = link_to root_url, target: "_blank", style: "display: inline-block;" do
+              = image_pack_tag 'logo.jpg', alt: 'Logo', border: "0", width: "48", style: "display: block; width: 48px; max-width: 48px; min-width: 48px;"
+  tr
+    td align="center" bgcolor="#e9ecef"
+      table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px;" width="100%" 
+        tr
+          td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;"
+            p style="margin: 0;" Contact from #{@name} (#{@email}):
+            
+            = simple_format @message
+  tr
+    td align="center" bgcolor="#e9ecef" style="padding: 24px;" 
+      table border="0" cellpadding="0" cellspacing="0" style="max-width: 600px;" width="100%"
+        tr
+          td align="center" bgcolor="#e9ecef" style="padding: 12px 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #666;" 
+            p style="margin: 0;" 
+              | Rails6boilerplate © #{Date.today.year}
