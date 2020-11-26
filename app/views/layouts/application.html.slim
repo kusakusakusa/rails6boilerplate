@@ -21,6 +21,7 @@ html lang="en"
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
 
     = yield :javascript_in_head
+    = render 'layouts/ga_script'
   body
     = render 'layouts/header'
     = yield
