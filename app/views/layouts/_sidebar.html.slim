@@ -32,6 +32,10 @@ ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordio
   hr.sidebar-divider
   .sidebar-heading
     | Addons
+  li class="nav-item #{request.path.include?('users') ? 'active' : ''}"
+    = link_to cms_users_path, class: 'nav-link' do
+      i.fas.fa-fw.fa-user
+      span Users
   li.nav-item
     a.nav-link.collapsed aria-controls="collapsePages" aria-expanded="true" data-target="#collapsePages" data-toggle="collapse" href="#" 
       i.fas.fa-fw.fa-folder

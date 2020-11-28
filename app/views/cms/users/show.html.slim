@@ -1,0 +1,21 @@
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-header.py-3
+        h6.m-0.font-weight-bold.text-primary
+          | User #{@user.id}
+          .float-right
+            = link_to edit_cms_user_path(@user) do
+              i.fas.fa-fw.fa-edit
+            = link_to cms_user_path(@user), method: :delete, data: { confirm: 'Are you sure?' } do
+              i.fas.fa-fw.fa-trash-alt
+      .card-body
+
+        h4.small.font-weight-bold ID
+        p= @user.id
+
+        h4.small.font-weight-bold Email
+        p= @user.email
+
+        h4.small.font-weight-bold Full name
+        p= @user.full_name

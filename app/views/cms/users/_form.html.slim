@@ -1,0 +1,8 @@
+= form_with(model: user, url: user.new_record? ? cms_users_path : cms_user_path(user), local: true) do |form|
+
+  = render 'layouts/cms/email_field', form: form, key: :email
+  = render 'layouts/cms/text_field', form: form, key: :first_name
+  = render 'layouts/cms/text_field', form: form, key: :last_name
+
+  .actions
+    = form.submit class: 'btn btn-primary'

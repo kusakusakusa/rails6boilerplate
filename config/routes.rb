@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   namespace :cms do
     root to: 'application#index'
     resources :hygiene_pages, only: %i[edit update]
+    resources :users
     resources :samples do
       resources :images, controller: 'attachments', resource: 'images', except: :show do
         collection do
@@ -47,7 +48,9 @@ Rails.application.routes.draw do
     patch 'admin_users', to: 'devise/registrations#update', as: 'admin_user_registration'
   end
 
-  devise_for :users, skip: :all
+  # code below is commented and the one below it is used to accommodate Createable test
+  # devise_for :users, skip: :all
+  devise_for :users
 
   namespace 'api' do
     post '/contact_form', to: 'base#contact_form'

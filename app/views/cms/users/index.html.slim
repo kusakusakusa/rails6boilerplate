@@ -1,0 +1,35 @@
+.row.no-gutters
+  .col-md-12
+    .card.shadow.mb-4
+      .card-header.py-3
+        h6.m-0.font-weight-bold.text-primary
+          | Users (Total: #{@users.count})
+          .float-right
+            = link_to new_cms_user_path do
+              i.fas.fa-fw.fa-plus
+      .card-body
+        .table-responsive
+          table.table.table-bordered.data-table width="100%" 
+            thead
+              tr
+                th ID
+                th Name
+                th Email
+                th
+            tbody
+              - @users.each do |user|
+                tr
+                  td= user.id
+                  td= user.full_name
+                  td= user.email
+                  td
+                    = link_to cms_user_path(user) do
+                      i.fas.fa-fw.fa-info-circle
+                    = link_to edit_cms_user_path(user) do
+                      i.fas.fa-fw.fa-edit
+                    = link_to cms_user_path(user), method: :delete, data: { confirm: 'Are you sure?' } do
+                      i.fas.fa-fw.fa-trash-alt
+
+- content_for :javascript_in_head do
+  = stylesheet_pack_tag 'datatables', 'data-turbolinks-track': 'reload'
+  = javascript_pack_tag 'datatables', 'data-turbolinks-track': 'reload'

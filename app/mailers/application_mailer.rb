@@ -26,4 +26,14 @@ class ApplicationMailer < ActionMailer::Base
       from: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :from),
     )
   end
+
+  def send_temporary_password_email user
+    # Content needs to change if its an API environment where the login method is different
+    @user = user
+    mail(
+      subject: "Your account has been created",
+      to: user.email,
+      from: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :from),
+    )
+  end
 end
