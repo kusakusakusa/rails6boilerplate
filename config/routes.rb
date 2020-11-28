@@ -19,24 +19,16 @@ Rails.application.routes.draw do
     resources :hygiene_pages, only: %i[edit update]
     resources :users
     resources :samples do
-      resources :images, controller: 'attachments', resource: 'images', except: :show do
-        collection do
-          post '/update_order', to: 'attachments#update_order', resource: 'images'
-          get '/mass_upload', to: 'attachments#mass_upload', resource: 'images'
-        end
-      end
-
-      resources :videos, controller: 'attachments', resource: 'videos', except: :show do
-        collection do
-          post '/update_order', to: 'attachments#update_order', resource: 'videos'
-          get '/mass_upload', to: 'attachments#mass_upload', resource: 'videos'
-        end
-      end
-
-      resources :audios, controller: 'attachments', resource: 'audios', except: :show do
-        collection do
-          post '/update_order', to: 'attachments#update_order', resource: 'audios'
-          get '/mass_upload', to: 'attachments#mass_upload', resource: 'audios'
+      %i[
+        images
+        videos
+        audios
+      ].each do |resource|
+        resources resource, controller: 'attachments', resource: resource.to_s, except: :show do
+          collection do
+            post '/update_order', to: 'attachments#update_order', resource: resource.to_s
+            get '/mass_upload', to: 'attachments#mass_upload', resource: resource.to_s
+          end
         end
       end
     end

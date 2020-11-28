@@ -21,6 +21,9 @@
         p= @sample.title
         h4.small.font-weight-bold Publish Date
         p= display_date @sample.publish_date
-        = link_to 'Manage Images', cms_sample_images_path(@sample), class: 'btn btn-primary'
-        = link_to 'Manage Videos', cms_sample_videos_path(@sample), class: 'btn btn-primary'
-        = link_to 'Manage Audio', cms_sample_audios_path(@sample), class: 'btn btn-primary'
+        = link_to 'Manage Images', cms_sample_images_path(@sample), class: 'btn btn-primary mb-3'
+        br
+        = link_to 'Manage Videos', cms_sample_videos_path(@sample), class: 'btn btn-primary mb-3'
+        br
+        = link_to 'Manage Audio', cms_sample_audios_path(@sample), class: 'btn btn-primary mb-3'
+        br
