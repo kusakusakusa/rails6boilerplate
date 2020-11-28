@@ -10,14 +10,14 @@ development:
   username: root
   password: password
   socket: /tmp/mysql.sock
-  database: <%= Rails.application.class.module_parent_name.downcase %>_development
+  database: <%= Rails.application.class.module_parent_name.underscore %>_development
 
 test:
   <<: *default
   username: root
   password: password
   socket: /tmp/mysql.sock
-  database: <%= Rails.application.class.module_parent_name.downcase %>_test
+  database: <%= Rails.application.class.module_parent_name.underscore %>_test
 
 staging:
   <<: *default
