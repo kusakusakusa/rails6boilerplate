@@ -17,5 +17,9 @@ FactoryBot.define do
         user.confirmed_at = nil
       end
     end
+
+    trait :created do
+      on_temporary_password { true }
+    end
   end
 end

@@ -4,6 +4,7 @@ require 'rails_helper'
 
 RSpec.describe 'Users', type: :request do
   let!(:user) { create(:user) }
+  let!(:created_user) { create(:user, :created) }
 
   before :each do
     @access_token, @refresh_token = get_tokens(user)
@@ -201,6 +202,19 @@ RSpec.describe 'Users', type: :request do
       expect(response_body.response_message).to eq I18n.t('custom.success.default')
       expect(response.status).to eq 200
       expect(user.reload.encrypted_password).not_to eq initial_encrypted_password
+    end
+
+    scenario 'should update user on_temporary_password to false' do
+      access_token, refresh_token = get_tokens(created_user)
+      expect(created_user.on_temporary_password?).to eq true
+
+      post '/api/v1/update-password', params: @params.to_json, headers: { 'Authorization': "Bearer #{access_token}" }.merge!(DEFAULT_HEADERS)
+
+      expect(response_body.response_code).to eq 'custom.success.default'
+      expect(response_body.response_message).to eq I18n.t('custom.success.default')
+      expect(response.status).to eq 200
+
+      expect(created_user.reload.on_temporary_password?).to eq false
     end
   end
 end

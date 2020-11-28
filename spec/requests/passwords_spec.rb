@@ -8,6 +8,18 @@ RSpec.describe 'Passwords', type: :request do
   let(:unconfirmed_user) { create(:user, :unconfirmed, email: 'user3@mailinator.com') }
 
   describe 'POST /api/v1/forgot-password' do
+    scenario 'should send email' do
+      expect(ActionMailer::Base.deliveries.count).to eq 0
+      params = {
+        email: user1.email
+      }
+      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
+      expect(ActionMailer::Base.deliveries.count).to eq 1
+      email = ActionMailer::Base.deliveries.last
+      expect(email.to).to include user1.email
+      expect(email.body).to include "<p id=\"reset-password-token\""
+    end
+
     scenario 'should fail on invalid email' do
       params = {
         email: 'some@email.com'
@@ -59,18 +71,6 @@ RSpec.describe 'Passwords', type: :request do
   end
 
   describe 'POST /api/v1/reset-password' do
-    scenario 'should send email' do
-      expect(ActionMailer::Base.deliveries.count).to eq 0
-      params = {
-        email: user1.email
-      }
-      post '/api/v1/forgot-password', params: params.to_json, headers: DEFAULT_HEADERS
-      expect(ActionMailer::Base.deliveries.count).to eq 1
-      email = ActionMailer::Base.deliveries.last
-      expect(email.to).to include user1.email
-      expect(email.body).to include "<p id=\"reset-password-token\""
-    end
-
     scenario 'should implicitly confirm unconfirmed users' do
       unconfirmed_user # lazyload
       ActionMailer::Base.deliveries.clear # clean emails

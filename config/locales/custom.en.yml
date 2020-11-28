@@ -15,4 +15,5 @@ en:
         update_profile: ""
         update_password: ""
         update_avatar: ""
+        on_temp_password: "Please update your temporary password"
         wrong_current_password: "Your current password is wrong"

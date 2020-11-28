@@ -17,10 +17,11 @@
 #  updated_at             :datetime         not null
 #  first_name             :string(255)
 #  last_name              :string(255)
+#  on_temporary_password  :boolean
 #
 
 class User < ApplicationRecord
-  include Avatarable, Userable, Devicable
+  include Userable, Avatarable, Devicable, Createable
 
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
