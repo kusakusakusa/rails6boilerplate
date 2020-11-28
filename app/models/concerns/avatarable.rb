@@ -27,7 +27,7 @@ module Avatarable
     custom_attributes = super
 
     if avatar.attached?
-      custom_attributes[:avatar] = Rails.application.routes.url_helpers.rails_blob_url(avatar, host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :asset_host))
+      custom_attributes[:avatar] = Rails.env.test? ? 'http://localhost:3333' : Rails.application.routes.url_helpers.rails_blob_url(avatar, host: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :asset_host))
     else
       custom_attributes[:avatar] = nil
     end
