@@ -14,6 +14,7 @@ module Createable
       resource.skip_confirmation!
       resource.password = resource.temp_password
       resource.on_temporary_password = true
+      resource.send("#{resource.temporary_password_change_flag}=", true)
       resource.save!
       ApplicationMailer.send_temporary_password_email(resource).deliver_now
       resource
@@ -21,18 +22,22 @@ module Createable
   end
 
   def on_temporary_password?
-    on_temporary_password
+    send(temporary_password_change_flag)
   end
 
   def temp_password
     "#{Digest::MD5.hexdigest("#{email}#{Rails.env}")}"
   end
 
+  def temporary_password_change_flag
+    "on_temporary_password"
+  end
+
   private
 
   def update_temporary_password
     if on_temporary_password?
-      self.on_temporary_password = false
+      self.send("#{temporary_password_change_flag}=", false)
     end
   end
 end
