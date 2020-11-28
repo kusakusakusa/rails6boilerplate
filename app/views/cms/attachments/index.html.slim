@@ -41,7 +41,6 @@ h1.h3.mb-2.text-gray-800
         - if respond_to? "update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path"
           p Drag and drop to set the order of appearance
 
-        - if respond_to? "update_order_cms_#{@record.class.name.underscore}_#{params[:resource]}_path"
           #sortable
             = attachment_containers
         - else
