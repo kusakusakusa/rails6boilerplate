@@ -33,18 +33,6 @@ class User < ApplicationRecord
          :validatable
 
   has_many :samples
-
-  def json_attributes
-    custom_attributes = super
-    custom_attributes.delete 'encrypted_password'
-    custom_attributes.delete 'reset_password_token'
-    custom_attributes.delete 'reset_password_sent_at'
-    custom_attributes.delete 'remember_created_at'
-    custom_attributes.delete 'confirmation_token'
-    custom_attributes.delete 'confirmed_at'
-    custom_attributes.delete 'confirmation_sent_at'
-    custom_attributes
-  end
 end
 
 class User::ParameterSanitizer < Devise::ParameterSanitizer
