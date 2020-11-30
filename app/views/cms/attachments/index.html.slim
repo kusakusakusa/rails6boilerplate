@@ -33,8 +33,9 @@ h1.h3.mb-2.text-gray-800
         h6.m-0.font-weight-bold.text-primary
           | Total: #{@attachments.count}
           .float-right
-            = link_to public_send("mass_upload_cms_#{@record.class.name.underscore}_#{params[:resource].underscore}_path") do
-              i.fas.fa-fw.fa-folder-plus
+            - if respond_to? "mass_upload_cms_#{@record.class.name.underscore}_#{params[:resource].underscore}_path"
+              = link_to public_send("mass_upload_cms_#{@record.class.name.underscore}_#{params[:resource].underscore}_path") do
+                i.fas.fa-fw.fa-folder-plus
             = link_to public_send("new_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path") do
               i.fas.fa-fw.fa-plus
       .card-body
