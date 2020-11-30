@@ -26,7 +26,9 @@ module Cms
           end
         end
       rescue ActiveRecord::RecordInvalid => e
-        unless request.xhr?
+        if request.xhr?
+          render plain: e.message, status: :bad_request
+        else
           flash[:danger] = e.message
           redirect_to public_send("new_cms_#{@record.class.name.underscore}_#{params[:resource].singularize}_path")
         end
