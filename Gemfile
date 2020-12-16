@@ -57,14 +57,12 @@ group :development do
 end
 
 group :test do
-  gem 'capybara', '~> 3.29.0'
+  gem 'capybara', '~> 3.34'
   gem 'factory_bot_rails', '~> 5.0.2'
-  # Adds support for Capybara system testing and selenium driver
-  gem 'selenium-webdriver', '~> 3.142.6'
   gem 'shoulda-matchers', '~> 4.1.2'
   gem 'timecop', '~> 0.9.1'
   # Easy installation and use of web drivers to run system tests with browsers
-  gem 'webdrivers'
+  gem 'webdrivers', '~> 4.0', require: false
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
