@@ -75,4 +75,7 @@ Rails.application.configure do
 
   # https://github.com/sass/sassc-rails
   config.sass.inline_source_maps = true
+
+  # use delayed job only in development
+  config.active_job.queue_adapter = :delayed_job
 end

@@ -40,6 +40,7 @@ end
 
 group :development do
   gem 'annotate', '~> 2.7.5'
+  gem 'delayed_job_active_record', '~> 4.1'
   gem 'rename', '~> 1.0.6'
   # Access an interactive console on exception pages or
   # by calling 'console' anywhere in the code.
