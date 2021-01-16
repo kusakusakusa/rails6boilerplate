@@ -368,3 +368,24 @@ Download to local computer
 ```
 scp -i <SSH_KEY> ec2-user@<BASTION_PUBLIC_IP>:~/dump.sql ./dump.sql
 ```
+
+# Experiments
+
+## Asynchronous Worker in Elastic Beanstalk
+
+Setup Delayed Job in development only.
+In production, will use the worker tier to handle async jobs.
+
+Installed delayed job and daemons gems
+Ran these commands to get set up
+```
+rails generate delayed_job:active_record
+rake db:migrate
+rails generate delayed_job
+```
+
+Command to run Delayed Job has changed from documentation:
+```
+bin/delayed_job start
+bin/delayed_job stop
+```

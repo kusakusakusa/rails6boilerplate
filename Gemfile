@@ -40,7 +40,6 @@ end
 
 group :development do
   gem 'annotate', '~> 2.7.5'
-  gem 'delayed_job_active_record', '~> 4.1'
   gem 'rename', '~> 1.0.6'
   # Access an interactive console on exception pages or
   # by calling 'console' anywhere in the code.
@@ -55,6 +54,10 @@ group :development do
   gem 'bcrypt_pbkdf', '~> 1.0.1' # for OpenSSH to work with Net::SSH tunneling
   gem 'ed25519', '~> 1.2.4' # for OpenSSH to work with Net::SSH tunneling
   gem 'net-ssh-gateway', '~> 2.0.0' # for establishing ssh tunneling from bastion to private instances
+
+  # experiments
+  gem 'daemons', '~> 1.3'
+  gem 'delayed_job_active_record', '~> 4.1'
 end
 
 group :test do

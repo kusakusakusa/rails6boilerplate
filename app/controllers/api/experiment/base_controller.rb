@@ -10,7 +10,7 @@ module Api
 
       def send_emails
         5.times.each do
-          ApplicationMailer.send_emails(Sample.first).deliver
+          ExperimentEmailsJob.perform_later(Sample.first.id)
         end
 
         render template: 'api/base/default', status: 200
