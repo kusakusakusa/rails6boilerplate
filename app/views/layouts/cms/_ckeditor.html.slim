@@ -1,0 +1,6 @@
+.form-group
+  - if defined? field_label
+    = form.label key, field_label, class: 'small font-weight-bold'
+  - else
+    = form.label key, class: 'small font-weight-bold'
+  = form.cktext_area key, { placeholder: key.to_s.titlecase }.merge((defined? options) ? options : {})

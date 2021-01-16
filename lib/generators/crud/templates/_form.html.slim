@@ -8,12 +8,14 @@
         - <%= underscored %>.errors.full_messages.each do |message|
           li= message
 
-  = render 'layouts/cms/text_field', form: form, key: :something
+  = render 'layouts/cms/text_field', form: form, key: :something, options: { required: true }
   = render 'layouts/cms/text_area', form: form, key: :something, options: { rows: 5 }
   = render 'layouts/cms/radio', form: form, key: :featured, options: [{value: true,label: 'True'}, {value: false,label: "False"}], required: true
   = render 'layouts/cms/date_field', form: form, key: :something
   = render 'layouts/cms/number_field', form: form, key: :something
   = render 'layouts/cms/image_file_field', form: form, key: :something
+  = render 'layouts/cms/select', form: form, key: :something, data: ['yes', 'no'], html: { required: true }, options: { selected: '', disabled: '' }, form_label: 'Custom Form Label'
+  = render 'layouts/cms/ckeditor', form: form, key: :something
 
   .actions
     = form.submit class: 'btn btn-primary'
