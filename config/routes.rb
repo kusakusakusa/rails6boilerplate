@@ -47,6 +47,10 @@ Rails.application.routes.draw do
   namespace 'api' do
     post '/contact_form', to: 'base#contact_form'
 
+    namespace 'experiment' do
+      get '/send_emails', to: 'base#send_emails', defaults: { format: 'application/json' }
+    end
+
     namespace 'v1' do
       # devise related
       post 'register', to: 'users#register'

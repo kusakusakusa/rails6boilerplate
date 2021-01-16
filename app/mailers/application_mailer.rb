@@ -36,4 +36,13 @@ class ApplicationMailer < ActionMailer::Base
       from: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :from),
     )
   end
+
+  def send_emails sample
+    @sample = sample
+    mail(
+      subject: "[Experiment] #{@sample.title}",
+      to: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :to),
+      from: Rails.application.credentials.dig(Rails.env.to_sym, :action_mailer, :default, :from),
+    )
+  end
 end
