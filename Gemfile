@@ -10,7 +10,7 @@ gem 'rails', '~> 6.0.3'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4'
 # Use Puma as the app server
-gem 'puma', '~> 3.11'
+gem 'puma', '~> 4.3'
 # Use SCSS for stylesheets
 gem 'sassc', '~>  2.3.0'
 gem 'sassc-rails', '~>  2.1.2'
